@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    const fetchFn = async () => {
+      const p = new URLSearchParams({
+        pname:'广东省',
+        cname:'深圳市'
+      })
+      const res = await fetch('http://hmajax.itheima.net/api/area?'+p.toString())
+      console.log(res);
+    }
+    fetchFn()
+  </script>
+</body>
+</html>

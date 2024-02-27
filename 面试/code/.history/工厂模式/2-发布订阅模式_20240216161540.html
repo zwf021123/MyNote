@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <button class="on">注册事件</button>
+  <button class="emit">触发事件</button>
+  <button class="off">移除事件</button>
+  <button class="once-on">一次性事件注册</button>
+  <button class="once-emit">一次性事件触发</button>
+  <script>
+    class MyBus {
+      // 存储事件及其回调函数
+      #handlers = {}
+
+      $on(eventName,callBack) {
+        if(this.#handlers[eventName]===undefined) {
+          // 初始化为空数组
+          this.#handlers[eventName] = []
+        }
+        this.#handlers[eventName].push(callBack)
+      }
+    }
+
+    const bus = new MyBus()
+
+  </script>
+</body>
+</html>

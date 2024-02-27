@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    const PENDING = 'pending'
+    const FULFILLED = 'fulfilled'
+    const REJECTED = 'rejected'
+
+    function runAsyncTask(callback) {
+      if (typeof queueMicrotask === "function") {
+        queueMicrotask(() => {
+          callback()
+        })
+      } else if (typeof MutationObserver === "function") {
+        const obs = new MutationObserver(callback)
+        const divNode = document.createElement('div')
+        obs.observe(divNode, { childList: true })
+        divNode.innerText = '随便写'
+      } else {
+        setTimeout(callback, 0)
+      }
+    }
+
+    function resolvePromise(x, p2, resolve, reject) {
+      // 判断重复引用
+      if (x === p2) {
+        throw new TypeError('重复引用错误~')
+      }
+
+      if (x instanceof MyPromise) {// 判断返回值是否是promise
+        x.then(res => {
+          resolve(res) // 将传入的值给到内置new的promise
+        }, err => {
+          reject(err)
+        })
+      } else {
+        resolve(x)
+      }
+    }
+
+
+    class MyPromise {
+      state = PENDING
+      result = undefined
+      // 存储处理逻辑
+      #handlers = []
+
+      constructor(func) {
+        const resolve = (result) => {
+          if (this.state === PENDING) {
+            this.state = FULFILLED
+            this.result = result
+            // 当状态改变时执行对应操作
+            this.#handlers.forEach(({ onFulfilled }) => {
+              onFulfilled(this.result)
+            })
+          }
+        }
+        const reject = (result) => {
+          if (this.state === PENDING) {
+            this.state = REJECTED
+            this.result = result
+            // 当状态改变时执行对应操作
+            this.#handlers.forEach(({ onRejected }) => {
+              onRejected(this.result)
+            })
+          }
+        }
+        try {
+          func(resolve, reject)
+        } catch (error) {
+          reject(error)
+        }
+      }
+
+      then(onFulfilled, onRejected) {
+        // 判断传入参数是否为回调函数
+        onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : x => x
+        onRejected = typeof onRejected === 'function' ? onRejected : x => { throw x }
+
+        const p2 = new MyPromise((resolve, reject) => {
+          // 根据不同状态执行不同处理逻辑
+          if (this.state === FULFILLED) {
+            // 状态已经改变则执行对应处理逻辑
+            // 将执行的回调函数都变成异步执行
+            runAsyncTask(() => {
+              try {
+                const x = onFulfilled(this.result)
+                resolvePromise(x, p2, resolve, reject)
+              } catch (err) {
+                reject(err)
+              }
+            })
+          }
+          else if (this.state === REJECTED) {
+            runAsyncTask(() => {
+              try {
+                const x = onRejected(this.result)
+                resolvePromise(x, p2, resolve, reject)
+              } catch (error) {
+                reject(error)
+              }
+            })
+          }
+          else if (this.state === PENDING) {
+            // 此时状态还未改变
+            // 存储处理逻辑
+            this.#handlers.push({
+              onFulfilled: () => {
+                runAsyncTask(() => {
+                  try {
+                    const x = onFulfilled(this.result)
+                    resolvePromise(x, p2, resolve, reject)
+                  } catch (error) {
+                    reject(error)
+                  }
+                })
+              },
+              onRejected: () => {
+                runAsyncTask(() => {
+                  try {
+                    const x = onRejected(this.result)
+                    resolvePromise(x, p2, resolve, reject)
+                  } catch (error) {
+                    reject(error)
+                  }
+                })
+              }
+            })
+          }
+        })
+
+        return p2
+      }
+
+      catch(onRejected) {
+        return this.then(undefined, onRejected)
+      }
+
+      finally(onFinally) {
+        return this.then(onFinally, onFinally)
+      }
+
+      static resolve(val) {
+        if (val instanceof MyPromise) {
+          // 传入的是一个promise
+          return val
+        }
+        // 包装为promise返回
+        return new MyPromise((resolve, reject) => {
+          resolve(val)
+        })
+      }
+
+      static reject(val) {
+        return new MyPromise((undefined, reject) => {
+          reject(val)
+        })
+      }
+
+      static race(promises) {
+        // 返回一个promise实例
+        return new MyPromise((resolve, reject) => {
+          // 判断传入参数是否为数组
+          if (!Array.isArray(promises)) {
+            return reject(new TypeError('race方法的参数不能为非数组~'))
+          }
+          // 等待第一个敲定
+          promises.forEach(p => {
+            // 注意要将所有的数组元素转换为promise对象
+            MyPromise.resolve(p).then(res => { resolve(res) }, err => { reject(err) })
+          })
+        })
+      }
+
+      static all(promises) {
+        // 返回一个promise实例
+        return new MyPromise((resolve, reject) => {
+          // 判断传入参数是否为数组
+          if (!Array.isArray(promises)) {
+            return reject(new TypeError('all方法的参数不能为非数组~'))
+          }
+          // 如果是空数组则直接兑现
+          promises.length === 0 && resolve(promises)
+          // 非空数组
+          const results = []
+          let count = 0
+          // count用于辅助判断是否全部兑现
+          promises.forEach((p, index) => {
+            // 将数组元素都变为promise实例
+            MyPromise.resolve(p).then(res => {
+              // 等待全部兑现
+              // 返回一个数组
+              results[index] = res
+              count++
+              count === promises.length && resolve(results)
+            },
+              err => {
+                // 存在一个失败则直接reject
+                reject(err)
+              })
+          })
+        })
+      }
+
+      static allSelected(promises) {
+        // 返回一个promise实例
+        return new MyPromise((resolve, reject) => {
+          // 判断传入参数是否为数组
+          if (!Array.isArray(promises)) {
+            return reject(new TypeError('all方法的参数不能为非数组~'))
+          }
+          // 如果是空数组则直接兑现
+          promises.length === 0 && resolve(promises)
+          // 非空数组
+          const results = []
+          let count = 0
+          // count用于辅助判断是否全部兑现
+          promises.forEach((p, index) => {
+            // 将数组元素都变为promise实例
+            MyPromise.resolve(p).then(res => {
+              // 等待全部兑现
+              // 返回一个数组
+              results[index] = { status: FULFILLED, value: res }
+              count++
+              count === promises.length && resolve(results)
+            },
+              err => {
+                results[index] = { status: REJECTED, reason: err }
+                count++
+                count === promises.length && resolve(results)
+              })
+          })
+        })
+      }
+
+      static any(promises) {
+        return new MyPromise((resolve,reject)=>{
+          // 先判断参数是否为数组
+          if(!Array.isArray(promises)) {
+            return reject(new TypeError('any方法的参数不能为非数组~'))
+          }
+          // 是空数组
+          promises.length === 0 && reject(new AggregateError(promises,'All promises were rejected'))
+          
+        })
+      }
+    }
+
+    const p1 = new MyPromise((resolve, reject) => {
+      setTimeout(() => {
+        // resolve(2)
+        reject(2)
+      }, 2000)
+    })
+
+    const p2 = new MyPromise((resolve, reject) => {
+      setTimeout(() => {
+        resolve(2)
+        // reject(2)
+      }, 1000)
+    })
+
+    const p3 = 3
+
+    MyPromise.any([p1, p2, p3]).then(res => {
+      console.log(res);
+    }, err => {
+      console.log(err);
+    })
+  </script>
+</body>
+
+</html>

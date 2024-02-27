@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    const PENDING = 'pending'
+    const FULFILLED = 'fulfilled'
+    const REJECTED = 'rejected'
+
+    function runAsyncTask(callback) {
+      if(typeof queueMicrotask==="function") {
+        queueMicrotask(()=>{
+          callback()
+        })
+      }else if(typeof MutationObserver==="function") {
+        const obs = new MutationObserver(callback)
+        const divNode = document.createElement('div')
+        obs.observe(divNode,{childList:true})
+        divNode.innerText = '随便写'
+      }
+    }
+
+
+    class MyPromise {
+      state = PENDING
+      result = undefined
+      // 存储处理逻辑
+      #handlers = []
+
+      constructor(func) {
+        const resolve = (result) => {
+          if (this.state === PENDING) {
+            this.state = FULFILLED
+            this.result = result
+            // 当状态改变时执行对应操作
+            this.#handlers.forEach(({ onFulfilled }) => {
+              onFulfilled(this.result)
+            })
+          }
+        }
+        const reject = (result) => {
+          if (this.state === PENDING) {
+            this.state = REJECTED
+            this.result = result
+            // 当状态改变时执行对应操作
+            this.#handlers.forEach(({ onRejected }) => {
+              onRejected(this.result)
+            })
+          }
+        }
+        func(resolve, reject)
+      }
+
+      then(onFulfilled, onRejected) {
+        // 判断传入参数是否为回调函数
+        onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : x => x
+        onRejected = typeof onRejected === 'function' ? onRejected : x => { throw x }
+        // 根据不同状态执行不同处理逻辑
+        if (this.state === FULFILLED) {
+          // 状态已经改变则执行对应处理逻辑
+          onFulfilled(this.result)
+        } else if (this.state === REJECTED) {
+          onRejected(this.result)
+        } else if (this.state === PENDING) {
+          // 此时状态还未改变
+          // 存储处理逻辑
+          this.#handlers.push({
+            onFulfilled,
+            onRejected
+          })
+        }
+      }
+    }
+
+
+    const p = new MyPromise((resolve, reject) => {
+      // 根据异步做判断执行resolve/reject
+      setTimeout(() => {
+        // resolve('success12')
+        reject('error12')
+      }, 2000)
+    })
+
+    p.then(res => {
+      console.log(res);
+    }, err => {
+      console.log(err);
+    })
+
+    p.then(res => {
+      console.log(res);
+    }, err => {
+      console.log(err);
+    })
+  </script>
+</body>
+
+</html>

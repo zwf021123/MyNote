@@ -1,0 +1,5 @@
+
+const person = {
+  name:'haha'
+}
+

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    class MyClass {
+      #instance
+      static createInstance() {
+        if(this.#instance===undefined) {
+          this.#instance = new MyClass()
+        }
+        return this.#instance
+      }
+    }
+    const s1 = MyClass.createInstance()
+    const s2 = MyClass.createInstance()
+    console.log(s1===s2);
+  </script>
+</body>
+</html>

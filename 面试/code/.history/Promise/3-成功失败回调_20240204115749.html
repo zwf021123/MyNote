@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    const PENDING = 'pending'
+    const FULFILLED = 'fulfilled'
+    const REJECTED = 'rejected'
+
+    class MyPromise {
+      state = PENDING
+      result = undefined
+
+      constructor(func) {
+        const resolve = (result) => {
+          if(this.state===PENDING) {
+            this.state = FULFILLED
+            this.result = result
+          }
+        }
+        const reject = (result) => {
+          if(this.state===PENDING) {
+            this.state = REJECTED
+            this.result = result
+          }
+        }
+        func(resolve,reject)
+      }
+    
+      then(onFulfilled,onRejected) {
+        // 判断传入参数是否为回调函数
+        onFulfilled = typeof onFulfilled === 'function'?onFulfilled:x=>x
+        onRejected = typeof onRejected === 'function'?onRejected:x=>{throw x}
+        // 根据不同状态执行不同处理逻辑
+        if(this.state===FULFILLED) {
+          onFulfilled(this.result)
+        }else if(this.state===REJECTED) {
+          onRejected(this.result)
+        }
+      }
+    }
+
+
+    const p = new MyPromise((resolve,reject)=>{
+      // 根据异步做判断执行resolve/reject
+      // resolve('success12')
+      reject('error')
+    })
+
+    p.then(res=> {
+      console.log(res);
+    })
+  </script>
+</body>
+</html>

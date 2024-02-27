@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <button class="on">注册事件</button>
+  <button class="emit">触发事件</button>
+  <button class="off">移除事件</button>
+  <button class="once-on">一次性事件注册</button>
+  <button class="once-emit">一次性事件触发</button>
+  <script>
+    class MyBus {
+      // 存储事件及其回调函数
+      #handlers = {}
+
+      $on(eventName,callBack) {
+        if(this.#handlers[eventName]===undefined) {
+          // 初始化为空数组
+          this.#handlers[eventName] = []
+        }
+        this.#handlers[eventName].push(callBack)
+      }
+
+      $emit(eventName,...args) {
+        // 避免获取到undefined
+        const fns = this.#handlers[eventName] || []
+        fns.forEach(callBack => {
+          callBack(...args)
+        });
+      }
+
+      $off(event) {
+        // 清空事件
+        this.#handlers[event] = undefined
+      }
+    }
+
+    const bus = new MyBus()
+
+    document.querySelector('.on').addEventListener('click',()=>{
+      bus.$on('event1',()=>{console.log('我是event的回调函数1');})
+      bus.$on('event2',(name,age)=>{console.log('我是event的回调函数2',name,age);})
+    })
+    document.querySelector('.emit').addEventListener('click',()=>{
+      bus.$emit('event1')
+      bus.$emit('event2','zs',20)
+    })
+    document.querySelector('.off').addEventListener('click',()=>{
+
+    })
+    document.querySelector('.once-on').addEventListener('click',()=>{
+
+    })
+    document.querySelector('.once-emit').addEventListener('click',()=>{
+
+    })
+    
+  </script>
+</body>
+</html>

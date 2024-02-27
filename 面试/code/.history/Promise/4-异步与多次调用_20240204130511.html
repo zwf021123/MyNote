@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    const PENDING = 'pending'
+    const FULFILLED = 'fulfilled'
+    const REJECTED = 'rejected'
+
+    class MyPromise {
+      state = PENDING
+      result = undefined
+      // 存储处理逻辑
+      #handlers = []
+
+      constructor(func) {
+        const resolve = (result) => {
+          if(this.state===PENDING) {
+            this.state = FULFILLED
+            this.result = result
+            // 当状态改变时执行对应操作
+          }
+        }
+        const reject = (result) => {
+          if(this.state===PENDING) {
+            this.state = REJECTED
+            this.result = result
+          }
+        }
+        func(resolve,reject)
+      }
+    
+      then(onFulfilled,onRejected) {
+        // 判断传入参数是否为回调函数
+        onFulfilled = typeof onFulfilled === 'function'?onFulfilled:x=>x
+        onRejected = typeof onRejected === 'function'?onRejected:x=>{throw x}
+        // 根据不同状态执行不同处理逻辑
+        if(this.state===FULFILLED) {
+          onFulfilled(this.result)
+        }else if(this.state===REJECTED) {
+          onRejected(this.result)
+        }else if(this.state===PENDING) {
+          // 存储处理逻辑
+          this.#handlers.push({
+            onFulfilled,
+            onRejected
+          })
+        }
+      }
+    }
+
+
+    const p = new MyPromise((resolve,reject)=>{
+      // 根据异步做判断执行resolve/reject
+      setTimeout(()=>{
+        resolve('success12')
+      },2000)
+      // reject('error12')
+    })
+
+    p.then(res=> {
+      console.log(res);
+    },err=>{
+      console.log(err);
+    })
+
+    p.then(res=> {
+      console.log(res);
+    },err=>{
+      console.log(err);
+    })
+  </script>
+</body>
+</html>

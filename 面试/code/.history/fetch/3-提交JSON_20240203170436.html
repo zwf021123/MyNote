@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    async function fetchFn() {
+      const headers = new Headers()
+      headers.append('content-type','application/json')
+      const res = await fetch('http://hmajax.itheima.net/api/register',{
+        method:'post',
+        headers:headers,
+        body: JSON.stringify({
+          username:'zwfffffffff1',
+          password:'123456'
+        })
+      })
+      if(res.status>=200&&res.status<300) {
+        const data = await res.json()
+        console.log(data);
+      }
+    }
+    fetchFn()
+  </script>
+</body>
+</html>

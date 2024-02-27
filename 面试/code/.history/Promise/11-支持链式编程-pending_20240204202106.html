@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    const PENDING = 'pending'
+    const FULFILLED = 'fulfilled'
+    const REJECTED = 'rejected'
+
+    function runAsyncTask(callback) {
+      if (typeof queueMicrotask === "function") {
+        queueMicrotask(() => {
+          callback()
+        })
+      } else if (typeof MutationObserver === "function") {
+        const obs = new MutationObserver(callback)
+        const divNode = document.createElement('div')
+        obs.observe(divNode, { childList: true })
+        divNode.innerText = '随便写'
+      } else {
+        setTimeout(callback, 0)
+      }
+    }
+
+    class MyPromise {
+      state = PENDING
+      result = undefined
+      // 存储处理逻辑
+      #handlers = []
+
+      constructor(func) {
+        const resolve = (result) => {
+          if (this.state === PENDING) {
+            this.state = FULFILLED
+            this.result = result
+            // 当状态改变时执行对应操作
+            this.#handlers.forEach(({ onFulfilled }) => {
+              onFulfilled(this.result)
+            })
+          }
+        }
+        const reject = (result) => {
+          if (this.state === PENDING) {
+            this.state = REJECTED
+            this.result = result
+            // 当状态改变时执行对应操作
+            this.#handlers.forEach(({ onRejected }) => {
+              onRejected(this.result)
+            })
+          }
+        }
+        func(resolve, reject)
+      }
+
+      then(onFulfilled, onRejected) {
+        // 判断传入参数是否为回调函数
+        onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : x => x
+        onRejected = typeof onRejected === 'function' ? onRejected : x => { throw x }
+
+        const p2 = new MyPromise((resolve, reject) => {
+          // 根据不同状态执行不同处理逻辑
+          if (this.state === FULFILLED) {
+            // 状态已经改变则执行对应处理逻辑
+            // 将执行的回调函数都变成异步执行
+            runAsyncTask(() => {
+              try {
+                const x = onFulfilled(this.result)
+                resolvePromise(x,p2,resolve,reject)
+              } catch (err) {
+                reject(err)
+              }
+            })
+          }
+          else if (this.state === REJECTED) {
+            runAsyncTask(() => {
+              try {
+                const x = onRejected(this.result)
+                resolvePromise(x,p2,resolve,reject)
+              } catch (error) {
+                reject(error)
+              }
+            })
+          }
+          else if (this.state === PENDING) {
+            // 此时状态还未改变
+            // 存储处理逻辑
+            this.#handlers.push({
+              onFulfilled: () => {
+                runAsyncTask(() => {
+                  onFulfilled(this.result)
+                })
+              },
+              onRejected: () => {
+                runAsyncTask(() => {
+                  onRejected(this.result)
+                })
+              }
+            })
+          }
+        })
+
+        return p2
+      }
+    }
+
+    function resolvePromise(x,p2,resolve,reject) {
+      // 判断重复引用
+      if (x === p2) {
+        throw new TypeError('重复引用错误~')
+      }
+
+      if (x instanceof MyPromise) {// 判断返回值是否是promise
+        x.then(res => {
+          resolve(res) // 将传入的值给到内置new的promise
+        }, err => {
+          reject(err)
+        })
+      } else {
+        resolve(x)
+      }
+    }
+
+    const p = new MyPromise((resolve, reject) => {
+      setTimeout(()=>{
+        resolve(1)
+      },2000)
+    })
+
+    const p2 = p.then(res=>{
+      throw 'error'
+      // return p2
+      // return 2
+      // return new MyPromise((resolve,reject)=>{
+      //   // resolve('p2-2')
+      //   reject('err-2')
+      // })
+    })
+
+    p2.then(res => {
+      console.log('p2', res);
+    }, err => {
+      console.log('p2', err);
+    })
+
+  </script>
+</body>
+
+</html>

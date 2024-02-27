@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    class MyPromise {
+      state = 'pending'
+      result
+
+      constructor(func) {
+        const resolve = (result) => {
+          if(this.state==='pending') {
+            this.state = 'fulfilled'
+            this.result = result
+          }
+          console.log('resolve-',result);
+        }
+        const reject = (result) => {
+          if(this.state==='pending') {
+            this.state = 'rejected'
+            this.result = result
+          }
+          console.log('reject-',result);
+        }
+        func(resolve,reject)
+      }
+    }
+
+
+    const p = new MyPromise((resolve,reject)=>{
+      console.log('执行啦');
+      resolve('success')
+      reject('error')
+    })
+  </script>
+</body>
+</html>

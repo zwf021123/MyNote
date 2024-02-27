@@ -1,0 +1,32 @@
+<script>
+  // 为刷新按钮添加点击事件监听器
+document.getElementById('refreshButton').addEventListener('click', function() {
+  // 发起 10 个独立的 API 请求
+  Promise.all([
+    OrderDetailPromise(1),
+    OrderDetailPromise(2),
+    // ...以此类推，直到订单 10
+  ]).then(function(orders) {
+    // 在所有订单信息都被获取后，按最后更新时间进行排序
+    orders.sort(function(a, b) {
+      return new Date(b.lastUpdated) - new Date(a.lastUpdated);
+    });
+    
+    // 更新页面上的订单信息
+    updateOrdersOnPage(orders);
+  });
+});
+
+// 获取单个订单的详细信息的函数
+function OrderDetailPromise(id) {
+  //或者使用xmlhttprequest结合promise发请求并返回一个promise对象
+  return fetch(`/api/order/${id}`)
+    .then(response => response.json())
+    .catch(error => console.error('Error fetching order:', error));
+}
+
+// 更新页面上订单信息的函数
+function updateOrdersOnPage(orders) {
+  // 在这里将排序后的订单信息更新到页面上
+}
+</script>

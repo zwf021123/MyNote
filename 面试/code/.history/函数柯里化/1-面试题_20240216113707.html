@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    function sum(a, b, c, d, e) {
+      return a + b + c + d + e
+    }
+    // 改写函数sum使得参数传递到5个即可累加
+    
+    let arr = []
+    function fn(...args) {
+      arr.push(...args)
+      if(arr.length>=5) {
+        // 清空数组
+        arr = []
+        return arr.slice(0,5).reduce((item,sum)=>sum+item,0)
+      }else {
+        return fn
+      }
+    }
+
+  </script>
+</body>
+
+</html>

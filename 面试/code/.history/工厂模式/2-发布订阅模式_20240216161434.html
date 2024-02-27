@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <button class="on"></button>
+  <script>
+    class MyBus {
+      // 存储事件及其回调函数
+      #handlers = {}
+
+      $on(eventName,callBack) {
+        if(this.#handlers[eventName]===undefined) {
+          // 初始化为空数组
+          this.#handlers[eventName] = []
+        }
+        this.#handlers[eventName].push(callBack)
+      }
+    }
+
+    const bus = new MyBus()
+
+  </script>
+</body>
+</html>

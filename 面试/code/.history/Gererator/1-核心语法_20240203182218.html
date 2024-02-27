@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    // 定义生成器函数
+    function* myGenerator() {
+      console.log('执行啦');
+      yield 'a'
+      yield 'b'
+      yield 'c'
+    }
+
+    const generator = myGenerator()
+  
+    for(const iterator of generator) {
+      console.log(iterator);
+    }
+  </script>
+</body>
+
+</html>
