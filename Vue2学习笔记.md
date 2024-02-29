@@ -1,5 +1,7 @@
 # 初识Vue2
 
+![70917919234](Vue2学习笔记.assets/1709179192340.png)
+
 ## Vue快速上手
 
 ### Vue是什么
@@ -12,7 +14,7 @@
   - Vue核心包开发：用于局部模块的改造
   - Vue核心包&Vue插件 工程化开发：适用于整站开发
 
-![69503726889](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695037268893.png)
+![69503726889](Vue2学习笔记.assets/1695037268893.png)
 
 
 
@@ -57,11 +59,11 @@
 - 插值表达式是一种Vue的模板语法
 - 作用：利用表达式进行插值，渲染到页面中
   - 表达式：可以被求值的代码，JS引擎会得到结果
-- 语法：``{{表达式}}``![69503864406](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695038644066.png)
+- 语法：``{{表达式}}``![69503864406](Vue2学习笔记.assets/1695038644066.png)
 - 注意：
   - 使用的数据必须存在(即在配置项data中已经声明)
-  - 支持的是表达式而非语句![69503870597](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695038705975.png)
-  - 不能在标签属性中使用{{}}插值![69503872827](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695038728279.png)
+  - 支持的是表达式而非语句![69503870597](Vue2学习笔记.assets/1695038705975.png)
+  - 不能在标签属性中使用{{}}插值![69503872827](Vue2学习笔记.assets/1695038728279.png)
   - **Vue 模板语法是不会被解析的(即HTML语法不会被解析)**
 
 
@@ -80,7 +82,7 @@
 
 实际上底层的Vue自动为我们使用了Dom操作
 
-![69509234043](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695092340438.png)
+![69509234043](Vue2学习笔记.assets/1695092340438.png)
 
 ### Vue开发者工具
 
@@ -151,9 +153,9 @@
   2. ``v-on:事件名 = "methods中的函数名"``
 - **简写**：``@事件名 = "逻辑"``
 
-![69510639127](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695106391279.png)
+![69510639127](Vue2学习笔记.assets/1695106391279.png)
 
-![69510641210](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695106412104.png)
+![69510641210](Vue2学习笔记.assets/1695106412104.png)
 
 ```javascript
 <body>
@@ -243,8 +245,8 @@
 
 - 使用v-bind也可以操作样式，相当于之前原生js的DOM.classList.add操作
 - **语法**：``:class="对象/数组"``
-  - **对象**->键就是类名，值是布尔值，如果值为true则有这个类，反之没有(适用于一个类名来回切换的场景)![69529655757](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695296557570.png)
-  - **数组**->数组中包含的所有类，都会被添加到盒子上，本质就是一个class列表(适用于批量增删类的场景)![69529662721](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695296627213.png)
+  - **对象**->键就是类名，值是布尔值，如果值为true则有这个类，反之没有(适用于一个类名来回切换的场景)![69529655757](Vue2学习笔记.assets/1695296557570.png)
+  - **数组**->数组中包含的所有类，都会被添加到盒子上，本质就是一个class列表(适用于批量增删类的场景)![69529662721](Vue2学习笔记.assets/1695296627213.png)
 
 > 注意：==数组内的类名需要加上引号==
 
@@ -252,7 +254,7 @@
 
 #### v-bind 操作style
 
-- 语法：``:style="样式对象"![69529741793](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695297417930.png)
+- 语法：``:style="样式对象"![69529741793](Vue2学习笔记.assets/1695297417930.png)
 - 适用于对某个具体样式的动态设置
 
 > 注意：==对象中的CSS属性值需要加上引号==
@@ -385,7 +387,7 @@
   - 使用起来与**普通属性**一样使用即可``{{计算属性名}}``
 - 计算属性可以将一段求值的代码封装起来
 
-![69535206179](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695352061792.png)
+![69535206179](Vue2学习笔记.assets/1695352061792.png)
 
 
 
@@ -419,7 +421,7 @@
 - 计算属性**默认**的写法，只能读取访问，==不能修改==
 - 如果要修改，需要写计算属性的**完整写法**
 
-![69535429380](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695354293800.png)
+![69535429380](Vue2学习笔记.assets/1695354293800.png)
 
 示例代码
 
@@ -476,7 +478,7 @@
 - 应用场景：例如翻译软件需要监视用户输入实时更新翻译结果/数据更新后进行本地存储
 - 如下是简单写法的示例代码
 
-![69536704959](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695367049590.png)
+![69536704959](Vue2学习笔记.assets/1695367049590.png)
 
 
 
@@ -532,7 +534,7 @@
   3. 更新：数据修改，更新视图(这时会进入循环)
   4. 销毁：销毁实例
 
-  ![69552732473](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695527324733.png)
+  ![69552732473](Vue2学习笔记.assets/1695527324733.png)
 
 
 
@@ -541,7 +543,7 @@
 - Vue生命周期中，会自动运行**一些函数**，被称为**生命周期钩子**，它们可以让开发者在**特定阶段**执行自己的代码
 - 重点记忆 创建阶段 与 挂载阶段
 
-![69552771400](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695527714009.png)
+![69552771400](Vue2学习笔记.assets/1695527714009.png)
 
 ```javascript
 <!DOCTYPE html>
@@ -738,7 +740,7 @@
 1. 核心包传统开发模式：基于html/css/js文件，直接引入核心包，开发Vue
 2. **工程化开发模式**：基于构建工具(例如webpack)的环境下开发Vue
 
-![69561368191](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695613681919.png)
+![69561368191](Vue2学习笔记.assets/1695613681919.png)
 
 
 
@@ -770,11 +772,11 @@
 
 ### 脚手架目录文件介绍
 
-![69563990140](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695639901402.png)
+![69563990140](Vue2学习笔记.assets/1695639901402.png)
 
 这里项目目录中最重要的3个文件在上图中均已高亮显示，index.html即前面学习webpack中的html模板文件，main.js文件即入口文件，引入包的入口即该文件，并且最重要的是因为是工程化开发了，我们的模板代码不再直接写在html文件中，而是写在.vue文件中
 
-![69564037241](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695640372417.png)
+![69564037241](Vue2学习笔记.assets/1695640372417.png)
 
 
 
@@ -784,13 +786,13 @@
   - 好处：便于维护，利于复用，提升开发效率
   - **组件分类**：**普通组件、根组件**
 
-![69564243510](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695642435104.png)
+![69564243510](Vue2学习笔记.assets/1695642435104.png)
 
 #### 根组件
 
 - 即整个应用最上层的组件，包裹了所有普通小组件，**在脚手架目录中app.vue即根组件**
 
-![69564247832](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695642478328.png)
+![69564247832](Vue2学习笔记.assets/1695642478328.png)
 
 
 
@@ -800,7 +802,7 @@
 - script：JS逻辑
 - style：样式(可以支持less，需要下包)
 
-![69564261537](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695642615376.png)
+![69564261537](Vue2学习笔记.assets/1695642615376.png)
 
 
 
@@ -812,7 +814,7 @@
    1. 创建.vue文件(三个组成部分)
    2. 在**需要使用的组件**内导入并注册
 
-![69564400665](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695644006653.png)
+![69564400665](Vue2学习笔记.assets/1695644006653.png)
 
 2. **全局注册：所有组件内都能使用**
    1. 创建.vue组件
@@ -844,7 +846,7 @@
 >
 > 最终效果：必须是当前组件的元素才会有这个自定义属性，才会被样式作用到
 >
-> ![69571059852](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695710598524.png)
+> ![69571059852](Vue2学习笔记.assets/1695710598524.png)
 
 
 
@@ -854,7 +856,7 @@
 - ==**每次创建新的组件实例，都会新执行一次data函数**，得到一个新对象==
 
 
-![69578373142](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695783731423.png)
+![69578373142](Vue2学习笔记.assets/1695783731423.png)
 
 
 
@@ -869,7 +871,7 @@
 - 组件的数据是**独立的**，无法直接访问其他组件的数据
 - 想用其他组件的数据——组件通信
 
-![69578576098](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695785760987.png)
+![69578576098](Vue2学习笔记.assets/1695785760987.png)
 
 
 
@@ -880,7 +882,7 @@
 1. **父子关系**
 2. **非父子关系**
 
-![69578585129](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695785851291.png)![69578585595](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695785855952.png)
+![69578585129](Vue2学习笔记.assets/1695785851291.png)![69578585595](Vue2学习笔记.assets/1695785855952.png)
 
 #### 组件通信解决方案
 
@@ -893,25 +895,25 @@
 
 - 通用解决方案：Vuex(适合复杂业务场景)
 
-![69578602008](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695786020088.png)
+![69578602008](Vue2学习笔记.assets/1695786020088.png)
 
 
 
 ##### 父子通信
 
-![69578604959](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695786049597.png)
+![69578604959](Vue2学习笔记.assets/1695786049597.png)
 
 props具体语法``1.父中给子添加属性传值 2.子使用props接收 3.使用``
 
 如下图所示：
 
-![69578608978](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695786089785.png)
+![69578608978](Vue2学习笔记.assets/1695786089785.png)
 
 \$emit具体语法``1.子使用$emit发送消息 2.父添加事件监听 3.在父中实现处理函数``
 
 如下图所示：
 
-![69578616496](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695786164965.png)
+![69578616496](Vue2学习笔记.assets/1695786164965.png)
 
 
 
@@ -935,14 +937,14 @@ prop作用：**向子组件传递数据**
 - **作用**：为组件的prop指定验证要求，不符合要求，控制台就会有错误提示，可以帮助开发者快速定位错误
 
 - **语法**：
-  1. **类型校验**![69578807961](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695788079615.png)
+  1. **类型校验**![69578807961](Vue2学习笔记.assets/1695788079615.png)
   2. 非空校验
   3. 默认值
   4. 自定义校验
 
   > 这里如果想要添加非空校验和默认值和自定义校验，那么需要使用props的完整写法：
   >
-  > ![69579682586](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695796825865.png)
+  > ![69579682586](Vue2学习笔记.assets/1695796825865.png)
 
 
 
@@ -958,7 +960,7 @@ prop与data都可以为组件提供数据，那么二者有什么区别吗
 
 > 单向数据流：即**父级prop的数据更新，会自动向下流动，影响子组件，这个数据流动是单向的**
 >
-> ![69579787895](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695797878952.png)
+> ![69579787895](Vue2学习笔记.assets/1695797878952.png)
 
 
 
@@ -970,7 +972,7 @@ prop与data都可以为组件提供数据，那么二者有什么区别吗
   - 视图变，数据变 **@input实现**
 - **注意**：==``$event``用于模板中，获取事件的形参==
 
-![69581729982](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695817299829.png)
+![69581729982](Vue2学习笔记.assets/1695817299829.png)
 
 > 1. Vue3中v-model新的特性
 >
@@ -987,7 +989,7 @@ prop与data都可以为组件提供数据，那么二者有什么区别吗
 - 父传子：数据应该是从父组件props传递过来的，v-model拆解绑定数据
 - 字传父：监听输入，子传父传值给父组件修改
 
-![69581989070](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695819890707.png)
+![69581989070](Vue2学习笔记.assets/1695819890707.png)
 
 
 
@@ -996,8 +998,8 @@ prop与data都可以为组件提供数据，那么二者有什么区别吗
 本质上就是利用v-model的原理
 
 - 实现：
-  1. **子组件**：props使用**value**接收，事件触发命名为**input**(固定)![69607233147](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696072331472.png)
-  2. **父组件**：v-model给组件直接绑定数据![69607230947](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696072309478.png)
+  1. **子组件**：props使用**value**接收，事件触发命名为**input**(固定)![69607233147](Vue2学习笔记.assets/1696072331472.png)
+  2. **父组件**：v-model给组件直接绑定数据![69607230947](Vue2学习笔记.assets/1696072309478.png)
 
 
 
@@ -1007,7 +1009,7 @@ prop与data都可以为组件提供数据，那么二者有什么区别吗
 - 作用：**可以实现 子组件 和 父组件 的双向绑定，简化代码**
 - 特点：**prop属性名**不像使用v-model一样必须使用value，**可以自定义**
 - 本质：也是一个语法糖，就是``：属性名 和 @update:属性名``
-- 语法：![69607406132](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696074061322.png)
+- 语法：![69607406132](Vue2学习笔记.assets/1696074061322.png)
 
 
 
@@ -1019,21 +1021,21 @@ prop与data都可以为组件提供数据，那么二者有什么区别吗
 
 + 作用：**非父子组件**之间，进行简易消息传递(适用于简单场景，如果是复杂场景->Vuex)
 + 步骤：
-  1. 创建一个都能访问到的事件总线(实际就是一个Vue实例，一般我们将其放在项目src目录下的utils/EventBus.js中)![69581421164](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695814211647.png)
-  2. A组件(接收方)，监听Bus实例的事件![69581423562](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695814235628.png)
-  3. B组件(发送方)，触发Bus实例的事件![69581426045](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695814260453.png)
+  1. 创建一个都能访问到的事件总线(实际就是一个Vue实例，一般我们将其放在项目src目录下的utils/EventBus.js中)![69581421164](Vue2学习笔记.assets/1695814211647.png)
+  2. A组件(接收方)，监听Bus实例的事件![69581423562](Vue2学习笔记.assets/1695814235628.png)
+  3. B组件(发送方)，触发Bus实例的事件![69581426045](Vue2学习笔记.assets/1695814260453.png)
 
 > 实际上这种方式本质上类似与操作系统中进程通信的管道通信，不过是一对多的
 >
-> ![69581427289](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695814272892.png)
+> ![69581427289](Vue2学习笔记.assets/1695814272892.png)
 
 ###### provide & inject
 
 - provide & inject 作用：实现**跨层级**共享数据(即孙子辈可以得到爷爷辈组件的数据)
 - 语法：
 
-1. 父组件provide提供数据![69581628494](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695816284944.png)
-2. 子孙组件inject取值使用![69581631905](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1695816319059.png)
+1. 父组件provide提供数据![69581628494](Vue2学习笔记.assets/1695816284944.png)
+2. 子孙组件inject取值使用![69581631905](Vue2学习笔记.assets/1695816319059.png)
 
 > 推荐使用复杂数据类型进行传递数据(因为是响应式的)
 
@@ -1045,13 +1047,13 @@ prop与data都可以为组件提供数据，那么二者有什么区别吗
 
 - 作用：利用ref和$ref可以用于获取DOM元素
 - 特点：相比原先我们使用document.querySelector而言查找范围变为==当前组件内==(更加精确稳定)
-- 语法：![69607862060](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696078620602.png)
+- 语法：![69607862060](Vue2学习笔记.assets/1696078620602.png)
 
 
 
 ### 获取组件对象-ref和$refs
 
-- 语法：![69608014532](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696080145328.png)
+- 语法：![69608014532](Vue2学习笔记.assets/1696080145328.png)
 
 
 
@@ -1069,7 +1071,7 @@ prop与data都可以为组件提供数据，那么二者有什么区别吗
 
 该方法可以等到DOM更新后，才会触发执行此方法内的函数体
 
-- 语法：![69608211338](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696082113388.png)
+- 语法：![69608211338](Vue2学习笔记.assets/1696082113388.png)
 
 
 
@@ -1081,9 +1083,9 @@ prop与data都可以为组件提供数据，那么二者有什么区别吗
 自定义指令，即我们可以自己定义类型前面我们所学的v-for、v-if等类似的指令，可以封装一些DOM操作，扩展额外的需求
 
 - 语法：
-  - 全局注册：![69612857959](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696128607347.png)
-  - 局部注册：![69612864312](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696128643122.png)
-  - 使用：![69612867547](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696128675479.png)
+  - 全局注册：![69612857959](Vue2学习笔记.assets/1696128607347.png)
+  - 局部注册：![69612864312](Vue2学习笔记.assets/1696128643122.png)
+  - 使用：![69612867547](Vue2学习笔记.assets/1696128675479.png)
 
 > 这里的inserted实际上是一个钩子函数，类似Vue生命周期的mounted函数，**即在当前元素被添加进页面时触发**
 
@@ -1093,8 +1095,8 @@ prop与data都可以为组件提供数据，那么二者有什么区别吗
 
 - 在我们自定义的指令中，也可以通过等号的形式 **传递参数**
 - 语法：
-  - 绑定参数值![69612973768](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696129737689.png)
-  - 拿到参数值![69612975492](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696129754924.png)
+  - 绑定参数值![69612973768](Vue2学习笔记.assets/1696129737689.png)
+  - 拿到参数值![69612975492](Vue2学习笔记.assets/1696129754924.png)
 
 > 这里的update与前面的inserted一样也是一个钩子函数，他会**在数据更新时触发对应逻辑，而inserted则是当前元素被加载进页面时触发**
 
@@ -1113,7 +1115,7 @@ prop与data都可以为组件提供数据，那么二者有什么区别吗
   1. 组件内需要定制的结构部分，改用``<slot></slot>``占位
   2. 使用组件时，在组件标签内部传入结构即可
 
-![69621785170](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696217851704.png)
+![69621785170](Vue2学习笔记.assets/1696217851704.png)
 
 
 
@@ -1125,7 +1127,7 @@ prop与data都可以为组件提供数据，那么二者有什么区别吗
 
 - 语法：**在<slot>标签内，放置内容，作为默认显示内容，当组件未传值时则显示默认值，传值了则显示传递的内容**
 
-![69621814756](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696218147567.png)
+![69621814756](Vue2学习笔记.assets/1696218147567.png)
 
 
 
@@ -1136,8 +1138,8 @@ prop与data都可以为组件提供数据，那么二者有什么区别吗
 而默认插槽只能定制一个位置，因此需要具名插槽
 
 - 语法：
-  1. 在组件内结构的多处slot使用name属性区分名字![69621894671](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696218946714.png)
-  2. 使用template标签配合``v-slot:名字``来分发对应标签内容(可以使用``#名字``简写)![69621901203](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696219012038.png)
+  1. 在组件内结构的多处slot使用name属性区分名字![69621894671](Vue2学习笔记.assets/1696218946714.png)
+  2. 使用template标签配合``v-slot:名字``来分发对应标签内容(可以使用``#名字``简写)![69621901203](Vue2学习笔记.assets/1696219012038.png)
 
 > 注意：一旦插槽起了名字，就是具名插槽，它**只接受定向分发的内容**
 
@@ -1156,9 +1158,9 @@ prop与data都可以为组件提供数据，那么二者有什么区别吗
 **作用域插槽：定义slot插槽时，可以将插槽的值传递出去，为了将来使用组件时可以使用**
 
 - 语法：
-  1. 给slot标签 以 添加属性的方式传值![69622195417](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696221954178.png)
-  2. 所有的添加属性，都会被作为一个对象传递![69622198279](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696221982796.png)
-  3. 在组件中的**template**，通过``#插槽名="obj(不一定叫obj)"``，如果是默认插槽名则为==default==(其中引号内也可以进行对象解构)![69622207571](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696222075710.png)
+  1. 给slot标签 以 添加属性的方式传值![69622195417](Vue2学习笔记.assets/1696221954178.png)
+  2. 所有的添加属性，都会被作为一个对象传递![69622198279](Vue2学习笔记.assets/1696221982796.png)
+  3. 在组件中的**template**，通过``#插槽名="obj(不一定叫obj)"``，如果是默认插槽名则为==default==(其中引号内也可以进行对象解构)![69622207571](Vue2学习笔记.assets/1696222075710.png)
 
 > 参考:[插槽 Slots | Vue.js (vuejs.org)](https://cn.vuejs.org/guide/components/slots.html#scoped-slots)
 
@@ -1171,7 +1173,7 @@ prop与data都可以为组件提供数据，那么二者有什么区别吗
 
 ### 对比多页面应用程序
 
-![69631864424](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696318644244.png)
+![69631864424](Vue2学习笔记.assets/1696318644244.png)
 
 > SEO即搜索引擎优化，即在搜索引擎搜索时的优先级问题
 >
@@ -1189,13 +1191,13 @@ prop与data都可以为组件提供数据，那么二者有什么区别吗
 
 #### 生活中的路由
 
-- 即设备与IP的映射关系![69631912434](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696319124341.png)
+- 即设备与IP的映射关系![69631912434](Vue2学习笔记.assets/1696319124341.png)
 
 
 
 #### Vue中的路由
 
-- 即地址栏路径与组件之间的映射关系![69631917023](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696319170236.png)
+- 即地址栏路径与组件之间的映射关系![69631917023](Vue2学习笔记.assets/1696319170236.png)
 
 
 
@@ -1205,18 +1207,18 @@ prop与data都可以为组件提供数据，那么二者有什么区别吗
 
 - 5个基础步骤(固定)
 
-1. 下载VueRouter到当前项目中(Vue2中使用3.6.5版本较为稳定)![69639651145](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696396511453.png)
-2. 引入![69633185991](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696331859914.png)
-3. 安装注册![69633187044](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696331870441.png)
-4. 创建路由对象![69633187962](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696331879629.png)
-5. 将路由对象注入到Vue实例中![69633189592](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696331895920.png)
+1. 下载VueRouter到当前项目中(Vue2中使用3.6.5版本较为稳定)![69639651145](Vue2学习笔记.assets/1696396511453.png)
+2. 引入![69633185991](Vue2学习笔记.assets/1696331859914.png)
+3. 安装注册![69633187044](Vue2学习笔记.assets/1696331870441.png)
+4. 创建路由对象![69633187962](Vue2学习笔记.assets/1696331879629.png)
+5. 将路由对象注入到Vue实例中![69633189592](Vue2学习笔记.assets/1696331895920.png)
 
 
 
 - 2个核心步骤
 
-1. 创建需要的组件(一般在views目录下)，配置路由规则(注意地址栏规则即url中的资源路径定义)![69633299281](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696332992813.png)
-2. 配置导航，配置路由出口(路径匹配的组件显示的位置)![69633304539](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696333045396.png)
+1. 创建需要的组件(一般在views目录下)，配置路由规则(注意地址栏规则即url中的资源路径定义)![69633299281](Vue2学习笔记.assets/1696332992813.png)
+2. 配置导航，配置路由出口(路径匹配的组件显示的位置)![69633304539](Vue2学习笔记.assets/1696333045396.png)
 
 
 
@@ -1224,9 +1226,9 @@ prop与data都可以为组件提供数据，那么二者有什么区别吗
 
 #### 路由的封装
 
-- 为了拆分模块，利于维护，我们希望将路由模块抽离出来![69647519623](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696475196235.png)
+- 为了拆分模块，利于维护，我们希望将路由模块抽离出来![69647519623](Vue2学习笔记.assets/1696475196235.png)
 
-> ![69647570611](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696475706116.png)
+> ![69647570611](Vue2学习笔记.assets/1696475706116.png)
 >
 > tips:这里在路由模块中的导入我们通常使用绝对路径，避免在当前目录路径改变时的维护困难
 
@@ -1249,11 +1251,11 @@ vue-router提供了一个全局组件**router-link(取代a标签)**
   - **能跳转**，配置to属性指定路径(必须)，本质还是a标签，但是==to属性的路径无需#==
   - **能高亮**，即默认提供高亮类名，可以直接设置高亮样式
 
-![69647648798](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696476487989.png)
+![69647648798](Vue2学习笔记.assets/1696476487989.png)
 
 如上图所示，可以看到，router-link的本质就是a标签，且高亮类名有**router-link-active和router-link-exact-active**
 
-- router-link-active和router-link-exact-active区别：![69647680951](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696476809515.png)
+- router-link-active和router-link-exact-active区别：![69647680951](Vue2学习笔记.assets/1696476809515.png)
 
 **即模糊匹配可以在二级目录下同样保持高亮**
 
@@ -1261,7 +1263,7 @@ vue-router提供了一个全局组件**router-link(取代a标签)**
 
 #### 自定义router-link高亮类名
 
-- 只需在VueRouter配置项中进行配置即可![69647830400](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696478304009.png)
+- 只需在VueRouter配置项中进行配置即可![69647830400](Vue2学习笔记.assets/1696478304009.png)
 
 
 
@@ -1295,11 +1297,11 @@ vue-router提供了一个全局组件**router-link(取代a标签)**
 
 1. 查询参数传参(比较适合**传递多个参数**)
 
-![69668059810](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696680598103.png)
+![69668059810](Vue2学习笔记.assets/1696680598103.png)
 
 2. 动态路由传参(简洁，适合**传递单个参数**)
 
-![69668063258](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696680632583.png)
+![69668063258](Vue2学习笔记.assets/1696680632583.png)
 
 
 
@@ -1320,7 +1322,7 @@ vue-router提供了一个全局组件**router-link(取代a标签)**
 
 以上写法仅限Vue2，下图为Vue3写法
 
-![70019315536](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1700193155361.png)
+![70019315536](Vue2学习笔记.assets/1700193155361.png)
 
 
 
@@ -1328,7 +1330,7 @@ vue-router提供了一个全局组件**router-link(取代a标签)**
 #### 路由模式设置
 
 - hash路由(默认)：例如http://localhost:8080/#/home
-- history(常用)：例如http://localhost:8080/home(上线后需要服务器端支持)![69668216376](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696682163763.png)
+- history(常用)：例如http://localhost:8080/home(上线后需要服务器端支持)![69668216376](Vue2学习笔记.assets/1696682163763.png)
 
 
 
@@ -1337,8 +1339,8 @@ vue-router提供了一个全局组件**router-link(取代a标签)**
 编程式导航：即使用JS代码进行跳转(原生JS是使用location.href进行跳转)
 
 - 两种语法：
-  - path路径跳转(简易方便)![69668266195](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696682661957.png)
-  - name命名路由跳转(适用于path路径较长的情况)![69668274136](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696682741363.png)
+  - path路径跳转(简易方便)![69668266195](Vue2学习笔记.assets/1696682661957.png)
+  - name命名路由跳转(适用于path路径较长的情况)![69668274136](Vue2学习笔记.assets/1696682741363.png)
 
 
 
@@ -1346,11 +1348,11 @@ vue-router提供了一个全局组件**router-link(取代a标签)**
 
 - 对于前面所学的两种传参方式：查询参数 和 动态路由传参 编程式导航都适用
   - path路径跳转传参
-    - 查询参数传参![69668365240](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696683652408.png)(使用``$route.query.参数名``接收)
-    - 动态路由传参![69668375517](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696683755177.png)(使用``$route.params.参数名``接收)
+    - 查询参数传参![69668365240](Vue2学习笔记.assets/1696683652408.png)(使用``$route.query.参数名``接收)
+    - 动态路由传参![69668375517](Vue2学习笔记.assets/1696683755177.png)(使用``$route.params.参数名``接收)
   - name命名路由跳转传参
-    - query查询参数传参![69673415777](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696734157771.png)使用``$route.query.参数名``进行接收）
-    - 动态路由传参![69673424712](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696734247127.png)(使用``$route.params.参数名``进行接收，注意参数名要与配置动态路由时设置的参数名对应)
+    - query查询参数传参![69673415777](Vue2学习笔记.assets/1696734157771.png)使用``$route.query.参数名``进行接收）
+    - 动态路由传参![69673424712](Vue2学习笔记.assets/1696734247127.png)(使用``$route.params.参数名``进行接收，注意参数名要与配置动态路由时设置的参数名对应)
 
 
 
@@ -1370,17 +1372,17 @@ vue-router提供了一个全局组件**router-link(取代a标签)**
 
 1. **keep-alive是什么**
 
-![69674878086](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696748780869.png)
+![69674878086](Vue2学习笔记.assets/1696748780869.png)
 
 2. **keep-alive的优点**
 
-![69674880290](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696748802903.png)
+![69674880290](Vue2学习笔记.assets/1696748802903.png)
 
 > 注意：默认包裹了keep-alive的路由匹配的组件都会被缓存，但我们并不需要所有组件都缓存
 >
 > 因此keep-alive提供了**三个属性**
 >
-> ![69674890797](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696748907971.png)
+> ![69674890797](Vue2学习笔记.assets/1696748907971.png)
 >
 > 这里的**语法中的数组名默认匹配到组件中设置的name属性，如果没有设置name属性则会去找组件的文件名**
 >
@@ -1426,7 +1428,7 @@ router.beforeEach((to, from, next) => {
 - 需求：在前面学习了路由后，我们发现路由的配置也有些许的麻烦，能否自动创建路由配置的架子呢
 - 解决：使用VueCli进行自定义创建项目即可
 
-![69693664970](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696936649705.png)
+![69693664970](Vue2学习笔记.assets/1696936649705.png)
 
 
 
@@ -1434,17 +1436,17 @@ router.beforeEach((to, from, next) => {
 
 - 认识代码规范：例如“赋值符号的左右是否需要空格？一个语句的结束是否需要分号”
 - [JavaScript Standard Style (standardjs.com)](https://standardjs.com/rules-zhcn.html)
-- ![69693700998](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696937009988.png)
+- ![69693700998](Vue2学习笔记.assets/1696937009988.png)
 
 
 
 #### 解决代码规范错误
 
-![69693710662](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696937106622.png)
+![69693710662](Vue2学习笔记.assets/1696937106622.png)
 
 - 这个时候我们可以选择手动修正错误，也可以ESlint自动修正错误
 - 自动修复
-  - **基于vscode的插件ESLint高亮修复，并通过配置即可实现自动修复错误![69693813265](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696938132653.png)**
+  - **基于vscode的插件ESLint高亮修复，并通过配置即可实现自动修复错误![69693813265](Vue2学习笔记.assets/1696938132653.png)**
 
 
 
@@ -1462,7 +1464,7 @@ router.beforeEach((to, from, next) => {
   - 数据实现集中管理
   - ==响应式变化==
   - 操作简洁
-  - ![69699270029](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696992700299.png)
+  - ![69699270029](Vue2学习笔记.assets/1696992700299.png)
 
 
 
@@ -1471,8 +1473,8 @@ router.beforeEach((to, from, next) => {
 这里的步骤与路由router的使用类似，同样的，这里的步骤在后续可以通过自定义项目使用vuecli自动生成模板代码
 
 1. 安装``npm i vuex@3``(安装失败可以加入-f参数)
-2. 新建src/store/index.js存放vuex![69699536692](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696995366928.png)
-3. 创建仓库，在main.js中挂载到vue实例上![69699540403](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1696995404039.png)
+2. 新建src/store/index.js存放vuex![69699536692](Vue2学习笔记.assets/1696995366928.png)
+3. 创建仓库，在main.js中挂载到vue实例上![69699540403](Vue2学习笔记.assets/1696995404039.png)
 4. 使用``this.@store``得到实例
 
 
@@ -1486,14 +1488,14 @@ router.beforeEach((to, from, next) => {
 
 在store里的state对象中可以添加我们要共享的数据
 
-![69700098288](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697000982885.png)
+![69700098288](Vue2学习笔记.assets/1697000982885.png)
 
 2. **使用数据**
 
 使用数据可以通过**store直接访问** 或 通过**辅助函数**访问
 
-- 通过store直接访问![69700106681](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697001066811.png)
-- **通过辅助函数(底层原理是将this.$store.state.属性名封装为一个计算属性)mapState帮助我们将store的数据自动映射到组件的计算属性中**，这里使用展开运算符是为了后续可以继续添加我们自己的计算属性![69700167532](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697001675325.png)
+- 通过store直接访问![69700106681](Vue2学习笔记.assets/1697001066811.png)
+- **通过辅助函数(底层原理是将this.$store.state.属性名封装为一个计算属性)mapState帮助我们将store的数据自动映射到组件的计算属性中**，这里使用展开运算符是为了后续可以继续添加我们自己的计算属性![69700167532](Vue2学习笔记.assets/1697001675325.png)
 
 
 
@@ -1506,20 +1508,20 @@ router.beforeEach((to, from, next) => {
 
 - 基本语法：
 
-  - 定义mutations对象，存放修改state的方法![69700595273](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697005952738.png)
-  - 组件中提交调用mutations![69700597481](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697005974810.png)
+  - 定义mutations对象，存放修改state的方法![69700595273](Vue2学习笔记.assets/1697005952738.png)
+  - 组件中提交调用mutations![69700597481](Vue2学习笔记.assets/1697005974810.png)
 
 - 传参语法：
 
   - 提交mutation是可以传递参数的``this.$store.commit('xxx'，参数)``（这里的参数一般称为提交载荷）
   - ==注意：提交参数只能有一个，如果希望传递多个参数，那么可以包装为对象进行传递==
 
-  1. 提供mutation函数![69700634984](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697006349845.png)
-  2. 页面提交调用![69700636049](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697006360491.png)
+  1. 提供mutation函数![69700634984](Vue2学习笔记.assets/1697006349845.png)
+  2. 页面提交调用![69700636049](Vue2学习笔记.assets/1697006360491.png)
 
 
 - **辅助函数写法：**
-  - 与mapState类似的，也存在vuex也提供的辅助函数mapMutations，帮助我们将**mutations中的方法**提取出来，映射到**组件methods**中，方便调用![69700740161](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697007401612.png)
+  - 与mapState类似的，也存在vuex也提供的辅助函数mapMutations，帮助我们将**mutations中的方法**提取出来，映射到**组件methods**中，方便调用![69700740161](Vue2学习笔记.assets/1697007401612.png)
 
 
 
@@ -1529,15 +1531,15 @@ router.beforeEach((to, from, next) => {
 - actions是vuex专门提供用于处理**异步操作**的
 - 说明：这是因为**mutations必须是同步的**(便于检测数据变化，记录调试)，所以不能直接在mutations中使用异步代码
 - 语法：
-  1. 提供actions方法(参数context可以理解为仓库store，==注意这里即使在actions里面想要修改state数据也要通过mutations提交commit==)![69708085724](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697080857246.png)
-  2. 页面中dispatch调用![69708096398](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697080963980.png)
+  1. 提供actions方法(参数context可以理解为仓库store，==注意这里即使在actions里面想要修改state数据也要通过mutations提交commit==)![69708085724](Vue2学习笔记.assets/1697080857246.png)
+  2. 页面中dispatch调用![69708096398](Vue2学习笔记.assets/1697080963980.png)
 
 
 
 - 辅助函数mapActions
   - 本质上就是把actions里的方法提取出来，映射到组件methods中
 
-![69708117205](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697081172052.png)
+![69708117205](Vue2学习笔记.assets/1697081172052.png)
 
 
 
@@ -1546,7 +1548,7 @@ router.beforeEach((to, from, next) => {
 - getters是类似与vue的计算属性的vuex的概念(只是类似因为getters没有set函数)
 - 说明：除了state外，有时我们还需要从state中派生出一些状态，这些状态是依赖于state，这时会用到getters
 
-![69708237598](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697082375985.png)
+![69708237598](Vue2学习笔记.assets/1697082375985.png)
 
 
 
@@ -1556,23 +1558,23 @@ router.beforeEach((to, from, next) => {
 
 因此我们希望对Vuex进行划分模块，每个模块都有自己**独立的state、mutations、actions、getters**
 
-![69710818511](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697108185114.png)
+![69710818511](Vue2学习笔记.assets/1697108185114.png)
 
 - 语法：
-  1. 新建store/modules/模块名.js![69710828134](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697108281344.png)
-  2. 在store/index.js中引入并加入到modules下![69710831140](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697108311408.png)
+  1. 新建store/modules/模块名.js![69710828134](Vue2学习笔记.assets/1697108281344.png)
+  2. 在store/index.js中引入并加入到modules下![69710831140](Vue2学习笔记.assets/1697108311408.png)
 
 
 
 #### 获取子模块的state
 
-尽管已经分模块了，但是**其实子模块的状态state还是挂载到根级别的state上，属性名就是模块名**![69710926107](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697109261070.png)
+尽管已经分模块了，但是**其实子模块的状态state还是挂载到根级别的state上，属性名就是模块名**![69710926107](Vue2学习笔记.assets/1697109261070.png)
 
 - 语法：
   - **直接通过模块名访问**``$store.state.模块名.xxx``
   - **通过mapState映射**
     - 默认根级别的映射``mapState(['模块名'])``
-    - 子模块的映射``mapState('模块名'，['xxx'])``(该方法需要开启**命名空间**namespaced)![69710927223](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697109272237.png)
+    - 子模块的映射``mapState('模块名'，['xxx'])``(该方法需要开启**命名空间**namespaced)![69710927223](Vue2学习笔记.assets/1697109272237.png)
 
 
 
@@ -1617,10 +1619,10 @@ router.beforeEach((to, from, next) => {
 有时在同一个组件内有相同的代码，为实现复用，也为了代码看起来更加简洁，可以将复用的代码封装到一个methods函数内，但是有时不同组件内也有相同的代码，也想实现复用的话需要使用到Vue2提供的==mixins==
 
 - 语法
-  1. 新建目录与JS文件![69761238346](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697612383463.png)
-  2. 在JS文件内，可以按照原先组件JS内容的写法拥有data，methods![69761247171](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697612471719.png)
-  3. 导入到需要对应内容的组件内![69761249857](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697612498571.png)
-  4. 加入到JS代码内![69761251447](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697612514476.png)
+  1. 新建目录与JS文件![69761238346](Vue2学习笔记.assets/1697612383463.png)
+  2. 在JS文件内，可以按照原先组件JS内容的写法拥有data，methods![69761247171](Vue2学习笔记.assets/1697612471719.png)
+  3. 导入到需要对应内容的组件内![69761249857](Vue2学习笔记.assets/1697612498571.png)
+  4. 加入到JS代码内![69761251447](Vue2学习笔记.assets/1697612514476.png)
 
 
 
@@ -1633,11 +1635,11 @@ router.beforeEach((to, from, next) => {
 
 
 
-![69778992706](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697789927065.png)
+![69778992706](Vue2学习笔记.assets/1697789927065.png)
 
-![69778991924](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697789919241.png)
+![69778991924](Vue2学习笔记.assets/1697789919241.png)
 
-![69778997843](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697789978431.png)
+![69778997843](Vue2学习笔记.assets/1697789978431.png)
 
 
 
@@ -1707,7 +1709,7 @@ export default instance
 
 为了方便维护各个接口请求，我们也会**在目录中新建src/api目录，在其中对每个页面的接口请求进行封装导出，方便管理维护**
 
-![69779020506](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697790205069.png)
+![69779020506](Vue2学习笔记.assets/1697790205069.png)
 
 
 
@@ -1752,7 +1754,7 @@ export const delSelected = (cartIds) => {
 
 为进行本地存储，我们会**将与本地存储相关的函数封装存储到同一个文件中，这个文件一般位于utils/storage.js中**
 
-![69779032164](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697790321640.png)
+![69779032164](Vue2学习笔记.assets/1697790321640.png)
 
 ```javascript
 // 用户个人信息
@@ -1814,7 +1816,7 @@ export const setDefaultAddressId = (id) => {
 
 我们经常会有重置默认样式的代码，**一般将其封装在src/style目录下作为文件存储，并引入到main.js即可**
 
-![69779058393](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697790583934.png)![69779060468](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697790604682.png)
+![69779058393](Vue2学习笔记.assets/1697790583934.png)![69779060468](Vue2学习笔记.assets/1697790604682.png)
 
 
 
@@ -1822,13 +1824,13 @@ export const setDefaultAddressId = (id) => {
 
 不同的路由页面，通常在views中被分为多个目录，以区分不同的页面，分别维护管理
 
-![69779071295](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697790712953.png)
+![69779071295](Vue2学习笔记.assets/1697790712953.png)
 
 
 
 ### vuex仓库目录
 
-不同的页面通常使用不同的vuex仓库，因此**在store目录下，我们会新建modules存储不同模块的仓库文件**![69779078837](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697790840688.png)
+不同的页面通常使用不同的vuex仓库，因此**在store目录下，我们会新建modules存储不同模块的仓库文件**![69779078837](Vue2学习笔记.assets/1697790840688.png)
 
 
 
@@ -1844,7 +1846,7 @@ export const setDefaultAddressId = (id) => {
   - 等
 - 打包后可以生成浏览器能够直接运行的网页，即上线后的源码
 
-![69779958279](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697799582794.png)
+![69779958279](Vue2学习笔记.assets/1697799582794.png)
 
 ### 打包的命令和配置
 
@@ -1855,7 +1857,7 @@ export const setDefaultAddressId = (id) => {
 - **结果**：在项目的根目录会自动创建一个文件夹dist，dist中的文件即打包后的文件，只需放到服务器中即可
 - **配置**：默认情况下，需要放到服务器中的根目录打开，如果希望双击运行，需要配置publicPath配成相对路径
 
-![69780014622](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697800146228.png)
+![69780014622](Vue2学习笔记.assets/1697800146228.png)
 
 ### 打包优化：路由懒加载
 
@@ -1872,13 +1874,13 @@ export const setDefaultAddressId = (id) => {
 
 - 该工具可以在我们前端页面搭建完成后但是后端还未完成的情况下快速获取简易接口
 
-![69711474838](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697114748381.png)
+![69711474838](Vue2学习笔记.assets/1697114748381.png)
 
 
 
 ## 组件库
 
-![69718519942](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697185199422.png)
+![69718519942](Vue2学习笔记.assets/1697185199422.png)
 
 如上图所示，这些都是我们在开发中实际会高频次用到的组件，我们不可能每次开发一个项目都重新去写这些组件，因此第三方组件库封装好了很多很多组件，整合在一起成为组件库，分别我们开发
 
@@ -1897,5 +1899,5 @@ vant-ui提供的postcss插件可以帮助我们实现项目的vw适配
 
 [Vant 2 - 轻量、可靠的移动端组件库 (gitee.io)](https://vant-contrib.gitee.io/vant/v2/#/zh-CN/advanced-usage)
 
-![69718786026](D:\MyProject\HTMLCSSJavaScript\Vue\assets\1697187860260.png)
+![69718786026](Vue2学习笔记.assets/1697187860260.png)
 

@@ -4,11 +4,11 @@
 
 - **Typescript**简称Ts，是JavaScript的**超集**，即对JS的扩展
 
-![70599796434](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1705997964342.png)
+![70599796434](TypeScript.assets/1705997964342.png)
 
 - TS是微软开发的开源编程语言，可以在任何运行JS的地方运行
 
-![70599844015](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1705998440154.png)
+![70599844015](TypeScript.assets/1705998440154.png)
 
 > 补充知识：
 >
@@ -23,7 +23,7 @@
 > - 动态语言：在代码执行过程中可以动态添加对象的属性
 > - 静态语言：不允许在代码执行过程中随意添加属性
 >
-> ![70599876121](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1705998761217.png)
+> ![70599876121](TypeScript.assets/1705998761217.png)
 >
 > 结论：JS灵活高效但是没有提示易出错，Java则相反
 
@@ -66,11 +66,11 @@
 
 ## 安装编译TS的工具包
 
-![70600049574](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706000495749.png)
+![70600049574](TypeScript.assets/1706000495749.png)
 
 ## 编译并运行TS代码
 
-![70600059213](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706000592136.png)
+![70600059213](TypeScript.assets/1706000592136.png)
 
 
 
@@ -87,7 +87,7 @@
 TypeScript 类型系统的主要优势：可以显示标记出代码中的意外行为，从而降低了发生错误的可能
 性
 
-![70600405599](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706004055990.png)
+![70600405599](TypeScript.assets/1706004055990.png)
 
 当然，类型注解可以省略，此时TS会根据你赋予变量的值自动推断类型添加类型注解
 
@@ -121,19 +121,19 @@ TS中常用基础类型分为如下两类：
 
 ### 原始数据类型
 
-![70600537749](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706005377498.png)
+![70600537749](TypeScript.assets/1706005377498.png)
 
 
 
 ### 数组类型
 
-![70600539164](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706005391642.png)
+![70600539164](TypeScript.assets/1706005391642.png)
 
 
 
 ### 联合类型
 
-当数组中的内容需要既有数字又有字符串时，可以使用联合类型![70606591599](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706065915994.png)
+当数组中的内容需要既有数字又有字符串时，可以使用联合类型![70606591599](TypeScript.assets/1706065915994.png)
 
 
 
@@ -143,7 +143,7 @@ TS中常用基础类型分为如下两类：
 
 因为在编写类型注解时，可能很多变量都使用的同一个类型，我们希望进行封装复用
 
-![70606637791](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706066377917.png)
+![70606637791](TypeScript.assets/1706066377917.png)
 
 推荐命名为**大写字母开头**
 
@@ -173,7 +173,7 @@ TS中常用基础类型分为如下两类：
 
 这里也可以使用类型别名进行复用
 
-![70606728299](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706067282990.png)
+![70606728299](TypeScript.assets/1706067282990.png)
 
 注意：
 
@@ -187,7 +187,7 @@ TS中常用基础类型分为如下两类：
 
 在TS中，如果函数没有返回值，那么函数的返回值类型为void，而在JS中如果函数没有返回值，那么默认返回一个undefined
 
-![70606877228](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706068772288.png)
+![70606877228](TypeScript.assets/1706068772288.png)
 
 
 
@@ -196,7 +196,7 @@ TS中常用基础类型分为如下两类：
 - 函数的参数可以不传也可以传
 - 使用?即可
 
-![70606926538](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706069265382.png)
+![70606926538](TypeScript.assets/1706069265382.png)
 
 
 
@@ -210,7 +210,7 @@ TS中常用基础类型分为如下两类：
 
 TS的对象类型就是在描述对象的结构(拥有什么类型的属性与方法)
 
-![70608972746](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706089727466.png)
+![70608972746](TypeScript.assets/1706089727466.png)
 
 ```ts
 {
@@ -254,13 +254,13 @@ TS的对象类型就是在描述对象的结构(拥有什么类型的属性与�
 - 对象的属性/方法也可以是可选的
 - 可选属性的语法：在对应属性名后加上?
 
-![70615330503](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706153305035.png)
+![70615330503](TypeScript.assets/1706153305035.png)
 
 
 
 #### 对象类型别名
 
-![70615364884](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706153648840.png)
+![70615364884](TypeScript.assets/1706153648840.png)
 
 
 
@@ -275,7 +275,7 @@ TS的对象类型就是在描述对象的结构(拥有什么类型的属性与�
 - 要点
   - 接口名称推荐使用``I``开头
 
-![70615454653](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706154546538.png)
+![70615454653](TypeScript.assets/1706154546538.png)
 
 
 
@@ -312,7 +312,7 @@ type NumStr = number | string
 
 如果两个接口之间有相同的属性或方法，可以将公共的属性或方法抽离出来，通过继承来实现复用
 
-![70615599439](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706155994395.png)
+![70615599439](TypeScript.assets/1706155994395.png)
 
 > type实现继承
 >
@@ -337,7 +337,7 @@ type NumStr = number | string
 
 - 元组类型是另一种类型的数组，它确切地知道包含多少个元素，以及特定索引对应的类型(主要用于限制元素个数)
 
-![70615951103](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706159511038.png)
+![70615951103](TypeScript.assets/1706159511038.png)
 
 
 
@@ -350,7 +350,7 @@ type NumStr = number | string
   1. 声明变量并初始化时
   2. 决定函数返回值时
 
-![70615979072](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706159790728.png)
+![70615979072](TypeScript.assets/1706159790728.png)
 
 
 
@@ -360,7 +360,7 @@ type NumStr = number | string
 
 首先需要理解字面量的概念
 
-![70616188588](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706161885886.png)
+![70616188588](TypeScript.assets/1706161885886.png)
 
 诸如：10 20 'abc' [] {} /^$/ 都是字面量
 
@@ -388,7 +388,7 @@ type NumStr = number | string
 - 枚举的功能类似于字面量类型+联合类型组合的功能，也可以表示一组明确的可选值
 - 枚举：定义一组命名常量。它描述一个值，该值可以是这些命名常量中的一个
 
-![70616477670](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706164776704.png)
+![70616477670](TypeScript.assets/1706164776704.png)
 
 - 要点
   - 使用``enum``定义枚举
@@ -404,7 +404,7 @@ type NumStr = number | string
 
 默认枚举成员的值的从0往后递增
 
-![70616491754](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706164917549.png)
+![70616491754](TypeScript.assets/1706164917549.png)
 
 
 
@@ -415,7 +415,7 @@ type NumStr = number | string
 - 即枚举成员的值是字符串
 - 注意：字符串枚举没有自增长行为，因此，字符串枚举的每个成员必须有初始值
 
-![70616495800](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706164958004.png)
+![70616495800](TypeScript.assets/1706164958004.png)
 
 
 
@@ -427,7 +427,7 @@ type NumStr = number | string
 - 因为：其他类型仅仅被当做类型，而枚举不仅用作类型，还提供值(枚举成员都是有值的)
 - 也就是说，其他的类型会在编译为 JS 代码时自动移除。但是，**枚举类型会被编译为 JS 代码**
 
-![70616536998](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706165369986.png)
+![70616536998](TypeScript.assets/1706165369986.png)
 
 可以看出本质上，枚举就是一个对象
 
@@ -625,7 +625,7 @@ function id<Type>(value: Type[]): Type[] {
 
 #### 泛型约束
 
-![70624592357](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706245923571.png)
+![70624592357](TypeScript.assets/1706245923571.png)
 
 - Type extends ILength 添加泛型约束
 
@@ -701,7 +701,7 @@ function getProperty<Type extends object, Key extends keyof Type>(obj: Type, key
 >
 > 其实JS中的数组在TS中就是一个泛型接口
 >
-> ![70626937263](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706269372632.png)
+> ![70626937263](TypeScript.assets/1706269372632.png)
 
 
 
@@ -711,7 +711,7 @@ function getProperty<Type extends object, Key extends keyof Type>(obj: Type, key
 >
 > vue3配合ts中，还需要额外安装一个vscode插件：Typescript Vue Plugin
 
-![70627031115](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706270311157.png)
+![70627031115](TypeScript.assets/1706270311157.png)
 
 ## defineProps与Typescript
 
@@ -1101,7 +1101,7 @@ getChannelList()
   **如果要为 JS 库提供类型信息，要使用 .d.ts 文件**
 
 
-![70634343113](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706343431134.png)
+![70634343113](TypeScript.assets/1706343431134.png)
 
 
 
@@ -1154,9 +1154,9 @@ const strs = ['a', 'b', 'c']
 
 - 如果多个 .ts 文件中都用到同一个类型，此时可以创建 .d.ts 文件提供该类型，实现类型共享。
 - 操作步骤
-  - 创建自己的类型声明文件![70634753498](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706347534983.png)
+  - 创建自己的类型声明文件![70634753498](TypeScript.assets/1706347534983.png)
   - 创建需要共享的类型，并使用 export 导出(TS 中的类型也可以使用 import/export 实现模块化
-    功能)。![70634755059](D:\MyProject\HTMLCSSJavaScript\Typescript\assets\1706347550599.png)
+    功能)。![70634755059](TypeScript.assets/1706347550599.png)
   - 在需要使用共享类型的 .ts 文件中，通过 import 导入即可**(.d.ts 后缀导入时，直接省略)**。
 
 

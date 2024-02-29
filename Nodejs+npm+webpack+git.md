@@ -3,7 +3,7 @@
 - 概念：开发项目直到上线，过程中集成的所有**工具和技术**
 - Node.js是前端工程化的基础（因为Node.js可以主动读取前端代码内容）
 
-![69432289722](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694322897226.png)
+![69432289722](Nodejs+npm+webpack+git.assets/1694322897226.png)
 
 
 
@@ -25,7 +25,7 @@
 
 **区别：浏览器与Node.js都支持ECMAScript标准语法，但Node.js有自己独立的API，没有DOM和BOM等**
 
-![69432332724](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694323327248.png)
+![69432332724](Nodejs+npm+webpack+git.assets/1694323327248.png)
 
 
 
@@ -129,7 +129,7 @@ server.listen(3000, () => {
 
 ## 模块化
 
-![69443160953](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694431609539.png)
+![69443160953](Nodejs+npm+webpack+git.assets/1694431609539.png)
 
 - 概念：项目是由很多个模块文件组成的
 - 好处：提高代码复用性，按需加载，独立作用域
@@ -178,9 +178,9 @@ module.exports = {
 1. 导出：export 修饰定义语句
 2. 导入：import {同名变量} from '模块名或路径'
 
-![69443302035](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694433020354.png)
+![69443302035](Nodejs+npm+webpack+git.assets/1694433020354.png)
 
-![69443302781](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694433027814.png)
+![69443302781](Nodejs+npm+webpack+git.assets/1694433027814.png)
 
 > 这样可以选择某个模块的特定内容进行导入导出
 
@@ -188,7 +188,7 @@ module.exports = {
 
 ### 总结
 
-![69450493084](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694504930842.png)
+![69450493084](Nodejs+npm+webpack+git.assets/1694504930842.png)
 
 > 推荐：
 >
@@ -210,13 +210,13 @@ module.exports = {
   - 导入软件包的时候，引入的默认是index.js模块文件/配置json 文件中main属性指定的模块文件
   - 其中index.js文件就是该软件包的出口，因为它将所有模块内的方法工具导入到本模块再同时导出
 
-![69449091600](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694490916008.png)
+![69449091600](Nodejs+npm+webpack+git.assets/1694490916008.png)
 
 
 
 ## npm-软件包管理器
 
-![69450177621](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694501776217.png)
+![69450177621](Nodejs+npm+webpack+git.assets/1694501776217.png)
 
 ### npm的使用
 
@@ -224,7 +224,7 @@ module.exports = {
 2. 下载软件包： ``npm i 软件包名称``
 3. 使用软件包
 
-![69450257670](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694502576708.png)
+![69450257670](Nodejs+npm+webpack+git.assets/1694502576708.png)
 
 > 下载包之后，会自动生成package-lock.json这个文件作用是锁定当前包的版本，避免在项目过程中包的作者对包进行了更改导致项目错误
 >
@@ -271,7 +271,7 @@ module.exports = {
 
 - 定义
 
-![69450593731](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694505937319.png)
+![69450593731](Nodejs+npm+webpack+git.assets/1694505937319.png)
 
 - 静态模块：指的是编写代码过程中的，html，css，js，图片等固定内容的文件
 - **打包**：把静态模块内容，压缩、整合、转译等(前端工程化)
@@ -288,7 +288,7 @@ module.exports = {
 2. 下载webpack webpack-cli 到当前项目中(注意最好不要全局下载，可以实现版本独立)，并配置局部自定义命令
 3. 运行打包命令，自 动生成disk分发目录(压缩和优化后的代码，用于最终运行的代码)
 
-![69450826180](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694508261808.png)
+![69450826180](Nodejs+npm+webpack+git.assets/1694508261808.png)
 
 
 
@@ -406,7 +406,7 @@ module.exports = {
    - 占位符[ext]使用当前模块原本的占位符，例如：.png/.jpg等字符串
    - 占位符[query]保留引入文件时代码的查询参数(只有URL生效)
 
-![69466269463](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694662694630.png)
+![69466269463](Nodejs+npm+webpack+git.assets/1694662694630.png)
 
 > 注意：这里使用type:'asset'后webpack会自动判断文件的打包格式
 >
@@ -447,14 +447,14 @@ module.exports = {
 
 分类：
 
-![69476909646](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694769096469.png)
+![69476909646](Nodejs+npm+webpack+git.assets/1694769096469.png)
 
 设置方式：
 
 - 方式1：在webpack.config.js中配置文件设置mode选项
 - 方式2：在package.json命令行设置mode参数(一般设置build命令为生产模式，dev命令为开发模式)
 
-![69476917096](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694769170968.png)
+![69476917096](Nodejs+npm+webpack+git.assets/1694769170968.png)
 
 > 需要注意的是：如果两种方式同时使用，那么会优先使用命令行设置的参数	，因此推荐使用命令行设置
 
@@ -471,8 +471,8 @@ module.exports = {
 ​	使用步骤：
 
   		1. 下载cross-env包``npm i cross-env --save-dev``
-  		2. 配置自定义命令，传入参数和值(会绑定到**process.env对象**下)![69483256844](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694832568444.png)
-  		3. 在webpack.config.js区分不同环境使用不同配置![69483338804](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694833388046.png)
+  		2. 配置自定义命令，传入参数和值(会绑定到**process.env对象**下)![69483256844](Nodejs+npm+webpack+git.assets/1694832568444.png)
+  		3. 在webpack.config.js区分不同环境使用不同配置![69483338804](Nodejs+npm+webpack+git.assets/1694833388046.png)
   		4. 重新打包
 
 
@@ -488,8 +488,8 @@ module.exports = {
 方法步骤：
 
 1. 插入webpack内置插件[DefinePlugin](https://www.webpackjs.com/plugins/define-plugin/)
-2. 传入自己想要的环境变量![69483447606](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694834476068.png)
-3. 使用环境变量进行判断执行不同的代码即可![69483450282](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694834502820.png)
+2. 传入自己想要的环境变量![69483447606](Nodejs+npm+webpack+git.assets/1694834476068.png)
+3. 使用环境变量进行判断执行不同的代码即可![69483450282](Nodejs+npm+webpack+git.assets/1694834502820.png)
 
 
 
@@ -501,13 +501,13 @@ module.exports = {
 
 推荐设置：webpack.config.js配置devtool选项
 
-![69483531122](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694835311229.png)
+![69483531122](Nodejs+npm+webpack+git.assets/1694835311229.png)
 
 inline-source-map选项：把源码的位置信息一起打包在 js 文件内
 
 > 注意：source map 仅适用于开发环境，不要在生产环境使用（防止被轻易查看源码位置）
 >
-> ![69483535084](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694835350842.png)
+> ![69483535084](Nodejs+npm+webpack+git.assets/1694835350842.png)
 
 
 
@@ -517,9 +517,9 @@ inline-source-map选项：把源码的位置信息一起打包在 js 文件内
 
 解决：在webpack.config.js中配置解析别名@来代表绝对路径
 
-![69483604461](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694836044611.png)
+![69483604461](Nodejs+npm+webpack+git.assets/1694836044611.png)
 
-![69483611435](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694836114352.png)
+![69483611435](Nodejs+npm+webpack+git.assets/1694836114352.png)
 
 
 
@@ -533,14 +533,14 @@ CDN定义：内容分发网络，指的是一组分布在各个地区的服务�
 
 **好处：减轻自己服务器请求压力，且就近请求物理延迟低，配套缓存策略**
 
-![69483639342](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694836393423.png)
+![69483639342](Nodejs+npm+webpack+git.assets/1694836393423.png)
 
 **需求：开发模式中使用本地第三方库，生产模式下使用CDN加载**
 
 步骤：
 
-1. 在html中引入第三方库的CDN地址并且使用模板语法判断![69483680452](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694836804522.png)![69484180626](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694841806260.png)自定义属性useCdn用于判断是否使用cdn
-2. 配置webpack.config.js中external外部扩展选项(即避免某些import的包被打包)![69484175195](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694841751957.png)
+1. 在html中引入第三方库的CDN地址并且使用模板语法判断![69483680452](Nodejs+npm+webpack+git.assets/1694836804522.png)![69484180626](Nodejs+npm+webpack+git.assets/1694841806260.png)自定义属性useCdn用于判断是否使用cdn
+2. 配置webpack.config.js中external外部扩展选项(即避免某些import的包被打包)![69484175195](Nodejs+npm+webpack+git.assets/1694841751957.png)
 3. 重新打包即可
 
 
@@ -555,7 +555,7 @@ CDN定义：内容分发网络，指的是一组分布在各个地区的服务�
 步骤：
 
 1. 准备源码(html,css,js)放到src对应文件夹中，并改用模块化语法进行导入导出
-2. 配置webpack.config.js多入口和多页面设置![69484898287](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694848982871.png)![69484901672](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694849016727.png)![69484902826](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694849028266.png)![69484904039](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694849040396.png)涉及页面文件的参数都需要进行更改
+2. 配置webpack.config.js多入口和多页面设置![69484898287](Nodejs+npm+webpack+git.assets/1694848982871.png)![69484901672](Nodejs+npm+webpack+git.assets/1694849016727.png)![69484902826](Nodejs+npm+webpack+git.assets/1694849028266.png)![69484904039](Nodejs+npm+webpack+git.assets/1694849040396.png)涉及页面文件的参数都需要进行更改
 3. 重新打包
 
 > 注意最好配置打包出口dist的目录结构与src文件夹一致，这样方便页面跳转
@@ -616,9 +616,9 @@ Git使用时：
 - 暂存区：保存之前的准备区域(暂存改动过的文件)
   - 版本库：提交并保存暂存区中的内容，产生一个版本快照
 
-![69492356756](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694923567568.png)
+![69492356756](Nodejs+npm+webpack+git.assets/1694923567568.png)
 
-![69492357959](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694923579597.png)
+![69492357959](Nodejs+npm+webpack+git.assets/1694923579597.png)
 
 
 
@@ -629,7 +629,7 @@ Git使用时：
   - 已跟踪：Git已经知道和管理的文件
 - 使用：修改文件，暂存，提交保存记录，如此往复
 
-![69492394004](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694923940044.png)
+![69492394004](Nodejs+npm+webpack+git.assets/1694923940044.png)
 
 
 
@@ -641,7 +641,7 @@ Git使用时：
   - 暂存区覆盖工作区：``git restore 目标文件``(注意：完全确认覆盖时使用)
   - 从暂存区移除文件：``git rm --cached 目标文件``
 
-![69492940735](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694929407350.png)
+![69492940735](Nodejs+npm+webpack+git.assets/1694929407350.png)
 
 
 
@@ -658,7 +658,7 @@ Git使用时：
   - 只有记录在版本库的提交记录才能恢复
   - 回退后，继续修改->暂存->提交操作即可(还是在原先版本的后面新增新的版本)
 
-![69493019816](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694930198161.png)
+![69493019816](Nodejs+npm+webpack+git.assets/1694930198161.png)
 
 
 
@@ -689,7 +689,7 @@ Git使用时：
 
 > 注意：如果文件已经被暂存区跟踪过了，可以从暂存区中移除即可
 
-![69493147231](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694931472317.png)
+![69493147231](Nodejs+npm+webpack+git.assets/1694931472317.png)
 
 
 
@@ -698,7 +698,7 @@ Git使用时：
 - 概念：本质是指向提交结点的可变指针，默认名字是master/main
 - 注意：HEAD指针影响工作区/暂存区的代码状态 
 
-![69493172732](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694931727324.png)
+![69493172732](Nodejs+npm+webpack+git.assets/1694931727324.png)
 
 - 命令：
   - 创建分支：``git branch 分支名``
@@ -713,7 +713,7 @@ Git使用时：
   2. 合并其他分支过来：``git merge 其他分支名``
   3. 删除合并后的分支指针：``git branch -d 其他分支名``
 
-![69493266765](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694932667651.png)
+![69493266765](Nodejs+npm+webpack+git.assets/1694932667651.png)
 
 
 
@@ -725,7 +725,7 @@ Git使用时：
   2. 合并其他分支过来：``git merge 其他分支名``
   3. 删除合并后的分支：``git branch -d 其他分支名``
 
-![69493304450](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694933044501.png)
+![69493304450](Nodejs+npm+webpack+git.assets/1694933044501.png)
 
 > 注意：
 >
@@ -733,7 +733,7 @@ Git使用时：
 
 #### 应用
 
-![69493184995](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694931849955.png)
+![69493184995](Nodejs+npm+webpack+git.assets/1694931849955.png)
 
 #### 合并冲突
 
@@ -746,7 +746,7 @@ Git使用时：
 
 ### 常用命令总结
 
-![69493984412](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694939844122.png)![69493993340](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694939933403.png)
+![69493984412](Nodejs+npm+webpack+git.assets/1694939844122.png)![69493993340](Nodejs+npm+webpack+git.assets/1694939933403.png)
 
 
 
@@ -756,7 +756,7 @@ Git使用时：
 - 作用：保存版本库的历史记录，多人协作
 - 创建：公司自己的服务器/第三方托管平台(Gitee,GitLab,GitHub)
 
-![69494014001](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1694940140015.png)
+![69494014001](Nodejs+npm+webpack+git.assets/1694940140015.png)
 
 ### 使用Git远程仓库
 
@@ -793,7 +793,7 @@ Git使用时：
 
 ### 命令总结
 
-![69500788004](D:\MyProject\HTMLCSSJavaScript\Nodejs与Webpack\assets\1695007880046.png)
+![69500788004](Nodejs+npm+webpack+git.assets/1695007880046.png)
 
 
 
