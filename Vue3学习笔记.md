@@ -489,6 +489,35 @@ const AdminPage = defineAsyncComponent(() =>
 
 
 
+### 变更state的两种方式
+
+**注意**，这里是**在选项式api**的前提下
+
+除了用 `store.count++` 直接改变 store，你还可以调用 `$patch` 方法。它允许你用一个 `state` 的补丁对象在同一时间更改多个属性（这里的store即pinia实例，可以使用this替代）：
+
+```js
+store.$patch({
+  count: store.count + 1,
+  age: 120,
+  name: 'DIO',
+})
+```
+
+但是，这种语法本质上是重新创建变量再执行操作，因此，对于集合操作（例如，向数组中添加、移除一个元素或是做 `splice` 操作）都需要重新创建一个新的集合进行操作，导致变更真的很难实现或者很耗时
+
+但`$patch` 方法也允许接收函数来组合这种难以用补丁对象实现的变更
+
+```js
+store.$patch((state) => {
+  state.items.push({ name: 'shoes', quantity: 1 })
+  state.hasChanged = true
+})
+```
+
+> 两种变更 store 方法的主要区别是，`$patch()` 允许你将多个变更归入 devtools 的同一个条目中
+
+
+
 
 ### storeToRefs
 

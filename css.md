@@ -9,8 +9,6 @@ CSS书写规则
 }
 ```
 
-![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
-
 ------
 
 #  CSS引入方式
@@ -37,8 +35,6 @@ CSS书写规则
 </body>
 </html>
 ```
-
-![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
 ------
 
@@ -78,8 +74,6 @@ CSS书写规则
 </html>
 ```
 
-![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
-
 - id选择器	
   - 查找标签，差异化设置标签的显示效果
   - id选择器一般配合JS使用
@@ -104,8 +98,6 @@ CSS书写规则
 </body>
 </html>
 ```
-
-![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
 -  通配符选择器	
   - 查找页面所有标签，设置相同样式
@@ -141,11 +133,11 @@ a[class~="logo"] {
 }
 ```
 
-![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+
 
 # 文字控制属性
 
-![img](https://img-blog.csdnimg.cn/b528c50953a2412cae32db937f67c019.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/b528c50953a2412cae32db937f67c019.png)
 
 -  font-size属性	
   - 必须带单位px
@@ -185,8 +177,6 @@ a[class~="logo"] {
 </html>
 ```
 
-![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
-
 - font-family	
   - 属性值为想要的字体
   - 属性值可以填写多个字体名，各个字体名之间使用逗号隔开，执行顺序按照从左到右，找到哪个用哪个
@@ -207,7 +197,7 @@ a[class~="logo"] {
   - 属性值有none、underline、line-through、overline分别对应无、下划线、删除线、上划线
 - color
 
-![img](https://img-blog.csdnimg.cn/2cc633fa5b0648d0903ba5030c95c0be.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/2cc633fa5b0648d0903ba5030c95c0be.png)
 
 ------
 
@@ -246,7 +236,7 @@ a[class~="logo"] {
 
 超链接的伪类
 
-![img](https://img-blog.csdnimg.cn/0819c348780d46479adfc8cb950e4d37.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/0819c348780d46479adfc8cb950e4d37.png)
 
 ------
 
@@ -273,7 +263,7 @@ a[class~="logo"] {
 
 如果是一个标签被多个复合选择器选中，则需要权重叠加计算
 
-![img](https://img-blog.csdnimg.cn/2be28ea2ba644e10ac770088fe0173ca.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/2be28ea2ba644e10ac770088fe0173ca.png)
 
 ------
 
@@ -281,7 +271,7 @@ a[class~="logo"] {
 
 即代码的简写方法，输入缩写VSCode会自动生成对应代码
 
-![img](https://img-blog.csdnimg.cn/41a40f36376049a3b5050927fddd15a4.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/41a40f36376049a3b5050927fddd15a4.png)编
 
  以此类推，CSS属性也能这样写
 
@@ -380,7 +370,7 @@ a[class~="logo"] {
 
 - 作用是根据元素的结构关系来查找元素
 
-![img](https://img-blog.csdnimg.cn/a66545f3101c40ebb58e0b82068c2853.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/a66545f3101c40ebb58e0b82068c2853.png)
 
 ## 公式写法
 
@@ -388,7 +378,7 @@ a[class~="logo"] {
 
 写法：E:nth-child(公式) 
 
-![img](https://img-blog.csdnimg.cn/6725e565969541b8989afbb9dbd3f7d1.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/6725e565969541b8989afbb9dbd3f7d1.png)
 
 - 注意括号内直接是常数的话下标从1开始
 - 如果有n那么下标从0开始
@@ -399,7 +389,7 @@ a[class~="logo"] {
 
 - 用于创建虚拟元素（伪元素），用来摆放装饰性的内容
 
-![img](https://img-blog.csdnimg.cn/228f550d95754c3dbffab2ab36d20735.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/228f550d95754c3dbffab2ab36d20735.png)
 
 - 注意必须设置content:" "属性用于设置伪元素的内容，如果没有内容，则引号留空即可
 - 伪元素默认是行内显示模式
@@ -423,7 +413,7 @@ PxCook（像素大厨）是一款切图设计工具软件，支持PSD文件的�
 - 内容区域height&width
 	 内边距padding（出现在盒子边缘与内容之间）设置四个方向的内边距	
   - 此外可以也可以单独设置各个方向的内边距使用属性padding-top、padding-right、padding-bottom、padding-left
-  - 多值写法![img](https://img-blog.csdnimg.cn/1cc248f5694842a0b08a5a7bd1673e80.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+  - 多值写法![img](https://img-blog.csdnimg.cn/1cc248f5694842a0b08a5a7bd1673e80.png)
 	 边框线border	
   - 这是一个复合属性
   - 属性值有边框线粗细、线条样式、颜色（不区分顺序）
@@ -525,8 +515,6 @@ PxCook（像素大厨）是一款切图设计工具软件，支持PSD文件的�
     </style>
 ```
 
-![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
-
 ------
 
 # 标准流
@@ -562,7 +550,7 @@ PxCook（像素大厨）是一款切图设计工具软件，支持PSD文件的�
     - 属性clear属性值为both
 - 双伪元素法
 
-![img](https://img-blog.csdnimg.cn/898af65d45954c8f95c21db814a50dc9.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/898af65d45954c8f95c21db814a50dc9.png)
 
 - hidden法	
   - 给父级元素添加overflow:hidden属性，则浏览器会检查父级元素范围 
@@ -586,7 +574,7 @@ flex布局也叫弹性布局，是浏览器提倡的布局模型，非常适合�
 
 - **属性名：justify-content**
 
-![img](https://img-blog.csdnimg.cn/de55c02660864092af29cf226353c4de.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/de55c02660864092af29cf226353c4de.png)
 
 注意
 
@@ -639,7 +627,7 @@ flex布局也叫弹性布局，是浏览器提倡的布局模型，非常适合�
 
   - 注意该属性对单行盒子无效
 
-![img](https://img-blog.csdnimg.cn/5e015ff38b6d4f21aafa7ae33bdacb7a.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/5e015ff38b6d4f21aafa7ae33bdacb7a.png)
 
 ------
 
@@ -764,7 +752,7 @@ flex布局也叫弹性布局，是浏览器提倡的布局模型，非常适合�
 
 在浏览器中，默认会把行内块与行内元素都当作文字处理，并且将它们使用基线对齐排列
 
-![img](https://img-blog.csdnimg.cn/953594b645cc49ac90a551b6844a5a58.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/953594b645cc49ac90a551b6844a5a58.png)
 
  因为基线的存在，行内块与行内标签的底下会存在空白
 
@@ -827,7 +815,7 @@ SEO是搜索引擎优化的英文简写，即可以提升网站在搜索引擎�
 
 具体移动的方向可以参考下图
 
-![img](https://img-blog.csdnimg.cn/9f28aae809494ee0a5bf75fd53477373.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/9f28aae809494ee0a5bf75fd53477373.png)
 
 - ### 属性translate 
 
@@ -869,12 +857,12 @@ SEO是搜索引擎优化的英文简写，即可以提升网站在搜索引擎�
   - 渐变是多个颜色逐渐变化的效果，一般用于设置盒子背景
   	 分类		
     - 线性渐变：即从某个方向到某个方向颜色渐变			
-      - ![img](https://img-blog.csdnimg.cn/1368e6aa57ea4be48223cc9df647e5bd.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+      - ![img](https://img-blog.csdnimg.cn/1368e6aa57ea4be48223cc9df647e5bd.png)
     	 径向渐变：从中心点向四周渐变			
       - 作用：给按钮添加高光
-      - ![img](https://img-blog.csdnimg.cn/a20565db28b54fe38758a90c58c51c3f.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+      - ![img](https://img-blog.csdnimg.cn/a20565db28b54fe38758a90c58c51c3f.png)编辑
 
-![img](https://img-blog.csdnimg.cn/5395ff307b834ada9d02f0bc2c553817.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/5395ff307b834ada9d02f0bc2c553817.png)编辑
 
 ------
 
@@ -890,7 +878,7 @@ SEO是搜索引擎优化的英文简写，即可以提升网站在搜索引擎�
 
 ## 空间平移
 
-![img](https://img-blog.csdnimg.cn/b5350b9ce0a64e6aaeb5ffcd813cf0a8.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/b5350b9ce0a64e6aaeb5ffcd813cf0a8.png)编辑
 
 -  取值（正负均可）	
   - 像素单位数值
@@ -920,7 +908,7 @@ SEO是搜索引擎优化的英文简写，即可以提升网站在搜索引擎�
   - 用来设置自定义旋转轴的位置以及旋转的角度
   - x,y,z为取值为0~1之间的数字
 
-![img](https://img-blog.csdnimg.cn/6c2abdd94bdf443c9bcfcc59f54fdc6b.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/6c2abdd94bdf443c9bcfcc59f54fdc6b.png)
 
 ------
 
@@ -936,7 +924,7 @@ SEO是搜索引擎优化的英文简写，即可以提升网站在搜索引擎�
 
 ## 空间缩放
 
-![img](https://img-blog.csdnimg.cn/22476f76d99c4c26894baeafc1a78d29.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/22476f76d99c4c26894baeafc1a78d29.png)编辑
 
 ------
 
@@ -948,11 +936,11 @@ SEO是搜索引擎优化的英文简写，即可以提升网站在搜索引擎�
 
 那么如何实现动画呢？
 
-![img](https://img-blog.csdnimg.cn/35e22d538a7749c388b0e2c6e47de921.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/35e22d538a7749c388b0e2c6e47de921.png)编辑
 
 如上图所示，定义动画有两种方式，其中使用from和to的方式只有两个状态，且使用百分比的写法中百分比代表的是动画播放时长的百分比
 
-其中大括号内书写当前状态的CSS代码即可![img](https://img-blog.csdnimg.cn/f26972d1a20e4253a3e75c3c7194d304.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑 
+其中大括号内书写当前状态的CSS代码即可![img](https://img-blog.csdnimg.cn/f26972d1a20e4253a3e75c3c7194d304.png)编辑 
 
 ------
 
@@ -960,7 +948,7 @@ SEO是搜索引擎优化的英文简写，即可以提升网站在搜索引擎�
 
 作为复合属性时
 
-![img](https://img-blog.csdnimg.cn/44d8829f90e743c19eda964f5a9ccd4e.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/44d8829f90e743c19eda964f5a9ccd4e.png)编辑
 
 - 其中动画名称和动画时长必须赋值
 - 取值部分先后顺序
@@ -968,7 +956,7 @@ SEO是搜索引擎优化的英文简写，即可以提升网站在搜索引擎�
 
 当然animation属性也能作为拆分属性使用
 
-![img](https://img-blog.csdnimg.cn/9412dbfb19d8484f90c2e307ad6e16b3.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/9412dbfb19d8484f90c2e307ad6e16b3.png)编辑
 
 ------
 
@@ -990,7 +978,7 @@ SEO是搜索引擎优化的英文简写，即可以提升网站在搜索引擎�
 
 ### 多组动画
 
-![img](https://img-blog.csdnimg.cn/fead55f242ba400e8fd25bb7a1c054c7.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/fead55f242ba400e8fd25bb7a1c054c7.png)编辑
 
 - 当动画的开始状态样式 跟 盒子默认样式相同，可以省略动画开始状态的代码
 
@@ -1020,7 +1008,7 @@ SEO是搜索引擎优化的英文简写，即可以提升网站在搜索引擎�
 	 因此有了视口的概念	
   - 视口：显示HTML网页的区域，用来约束HTML尺寸（使得HTML宽度=逻辑分辨率宽度/设备的宽度）
 
-![img](https://img-blog.csdnimg.cn/18e1035d222742a1be681fd6e0de0108.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/18e1035d222742a1be681fd6e0de0108.png)编辑
 
  如上图所示
 
@@ -1075,7 +1063,7 @@ SEO是搜索引擎优化的英文简写，即可以提升网站在搜索引擎�
 
 例如
 
-![img](https://img-blog.csdnimg.cn/acfd27db77504eb2aa5ea0744aa924cb.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/acfd27db77504eb2aa5ea0744aa924cb.png)编辑
 
 上述代码的作用是当视口宽度为375.2px时，设置body标签的背景颜色为蓝色 
 
@@ -1087,7 +1075,7 @@ SEO是搜索引擎优化的英文简写，即可以提升网站在搜索引擎�
 - 设备宽度小，元素尺寸小
 - 目前rem布局方案中，习惯将网页等分为10份，**HTML标签的字号设置为视口宽度的1/10**
 
-![img](https://img-blog.csdnimg.cn/6275384f95e34ce6a751e8ef19ba2b65.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/6275384f95e34ce6a751e8ef19ba2b65.png)编辑
 
 当然市面上的手机型号那么多，视口宽度也那么多，我们不可能人工设置全部的HTML的字号大小，这个问题在学习了js后便可以解决
 
@@ -1099,7 +1087,7 @@ SEO是搜索引擎优化的英文简写，即可以提升网站在搜索引擎�
 - 核心原理就是根据不同的视口宽度给网页中的html根节点设置不同的font-size
 - 使用script标签将其引入到body标签内的最后一行即可
 
-![img](https://img-blog.csdnimg.cn/1d785699abd54c8689c550377e5b8114.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/1d785699abd54c8689c550377e5b8114.png)编辑
 
 ------
 
@@ -1156,11 +1144,11 @@ less注释语法与常用高级程序设计语言一样
 - 作用	
   - 快速生成后代选择器
 
-![img](https://img-blog.csdnimg.cn/a7516927798d45d59a0e5ffad4fe97e0.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/a7516927798d45d59a0e5ffad4fe97e0.png)编辑
 
 此外还有一种写法专门用于表示hover伪类或nth-child结构伪类使用
 
-![img](https://img-blog.csdnimg.cn/7b94820faeec4ab8ad5b56abd380408c.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/7b94820faeec4ab8ad5b56abd380408c.png)编辑
 
 ------
 
@@ -1236,7 +1224,7 @@ less注释语法与常用高级程序设计语言一样
 
 这里我们需要判断视口在某个区间内则改变CSS样式，这里介绍两个媒体特性
 
-![img](https://img-blog.csdnimg.cn/edc5f11ef2f1431eb3a9e328bc79da7e.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/edc5f11ef2f1431eb3a9e328bc79da7e.png)编辑
 
 - max-width：最大宽度（即视口宽度在<=max-width时生效）
 - min-width：最小宽度（即视口宽度在>=min-width时生效）
@@ -1245,15 +1233,15 @@ less注释语法与常用高级程序设计语言一样
   - max-width（从小到大书写）
   - min-width（从大到小书写）
 
-### ![img](https://img-blog.csdnimg.cn/d56d491fb02b437abaaf86cf096a8724.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+### ![img](https://img-blog.csdnimg.cn/d56d491fb02b437abaaf86cf096a8724.png)编辑
 
-![img](https://img-blog.csdnimg.cn/9f6c353c107449f4bc433ffdef41f585.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/9f6c353c107449f4bc433ffdef41f585.png)编辑
 
 ------
 
 ###  媒体查询的完整写法
 
-![img](https://img-blog.csdnimg.cn/88b24a1a0c784510ae98519b94780521.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/88b24a1a0c784510ae98519b94780521.png)编辑
 
 - 其中的关键字实际上就是逻辑操作符：	
   - and
@@ -1261,11 +1249,11 @@ less注释语法与常用高级程序设计语言一样
   - not 
 - 媒体类型是用来区分设备类型的，比如屏幕设备、打印设备，其中手机、电脑、平板都是屏幕设备
 
-![img](https://img-blog.csdnimg.cn/22f3fa9292fb43a18deb7db9395a884b.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/22f3fa9292fb43a18deb7db9395a884b.png)编辑
 
 - 媒体特性用来描述媒体类型的具体特征
 
-![img](https://img-blog.csdnimg.cn/dd379d3a0083447ea8c3d1a40db09c20.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/dd379d3a0083447ea8c3d1a40db09c20.png)编辑
 
 ------
 
@@ -1273,7 +1261,7 @@ less注释语法与常用高级程序设计语言一样
 
 实际上，一个媒体查询代码可能会有很多，我们不可能将其都放在body的style里，因此有了link写法，即将媒体查询的css代码放到一个文件中，使用link标签进行引入，新增media属性，即该属性值成立时进行css文件的引入
 
-![img](https://img-blog.csdnimg.cn/4fb33efb6ee1469aa60b48f1beca10fc.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/4fb33efb6ee1469aa60b48f1beca10fc.png)编辑
 
 注意媒体特性的小括号不能不加 
 
@@ -1297,9 +1285,9 @@ Bootstrap是一个前端UI框架，它提供了大量编写好的CSS样式，允
 
 例如：一行想要排4个元素则每个盒子占用3份即可（12/4）
 
-![img](https://img-blog.csdnimg.cn/ece2b355119542bea84ecfe5c8659891.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/ece2b355119542bea84ecfe5c8659891.png)编辑
 
-![img](https://img-blog.csdnimg.cn/4a775a3ebe1c486e9d390a7407ea853a.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑 例如我们想要在宽度为768的元素下一行排2个，那么则子元素都调用类名.col-md-6，这里的6即12/2得到的，同时还可以追加类名从而实现多区间的设置排列个数（注意父元素需要添加rol类名）
+![img](https://img-blog.csdnimg.cn/4a775a3ebe1c486e9d390a7407ea853a.png)编辑 例如我们想要在宽度为768的元素下一行排2个，那么则子元素都调用类名.col-md-6，这里的6即12/2得到的，同时还可以追加类名从而实现多区间的设置排列个数（注意父元素需要添加rol类名）
 
 ```
 <!DOCTYPE html>
@@ -1327,7 +1315,7 @@ Bootstrap是一个前端UI框架，它提供了大量编写好的CSS样式，允
 </html>
 ```
 
-![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+
 
 ------
 
@@ -1335,9 +1323,9 @@ Bootstrap是一个前端UI框架，它提供了大量编写好的CSS样式，允
 
 即Bootstrap为我们提供了一些类名供使用，可以美化网页元素，当我们想要使用时，直接到官方文档中寻找并使用即可，例如下图是我在官方文档的截图 ，文档中详细叙述了如何使用想要的样式类名
 
-![img](https://img-blog.csdnimg.cn/2a2fd7e415c04b7b9c2f9fc8a6493929.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/2a2fd7e415c04b7b9c2f9fc8a6493929.png)
 
-![img](https://img-blog.csdnimg.cn/b72f5914c1964e2ca7d94c19e50d395e.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/b72f5914c1964e2ca7d94c19e50d395e.png)
 
 ------
 
@@ -1349,7 +1337,7 @@ Bootstrap是一个前端UI框架，它提供了大量编写好的CSS样式，允
 2. 引入js文件（看是否有动态需求）
 3. 复制结构，修改内容  
 
-![img](https://img-blog.csdnimg.cn/2a83215b53f74d1098f716ebd71bcc1e.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://img-blog.csdnimg.cn/2a83215b53f74d1098f716ebd71bcc1e.png)
 
 ------
 
@@ -1376,3 +1364,64 @@ em是相对长度单位相对于当前对象内文本的字体尺寸。如当前
 - em会继承父级元素的字体大小
 
 > 任意浏览器的默认字体高都是16px，所有未经调整的浏览器都符合: 1em=16px
+
+
+
+## sass与scss
+
+Sass与Scss都是Sass语言的两种不同的语法格式
+
+**关系：**
+
+- SCSS 是 Sass 的一种语法形式，是在 Sass 3 版本中引入的新语法。因此，SCSS 是 Sass 的一个分支或者说是一种进化版本。
+
+**区别：**
+
+1. **语法风格：**
+
+   - **Sass（缩进语法）**：
+
+     - 使用严格的缩进来定义代码块结构，不使用大括号 `{}` 来包围属性块，也不需要分号 `;` 在每条样式声明末尾。
+
+     - 示例：
+
+       Code
+
+       ```css
+       1// .sass 文件
+       2.my-class
+       3  color: red
+       4  font-size: 16px
+       ```
+
+   - **SCSS（CSS-like 语法）**：
+
+     - 完全兼容 CSS 语法，采用与 CSS 相似的块状结构，包括大括号 `{}` 和分号 `;`。
+
+     - 示例：
+
+       Scss
+
+       ```scss
+       1// .scss 文件
+       2.my-class {
+       3  color: red;
+       4  font-size: 16px;
+       5}
+       ```
+
+
+
+2. **文件扩展名：**
+
+- `.sass` 文件使用的是 Sass 缩进语法。
+- `.scss` 文件使用的是 SCSS 语法，即与 CSS 类似的语法。
+
+> 虽然两者在语法上有显著的区别，但它们都是 Sass 预处理器的组成部分，都能提供变量、嵌套规则、混合宏、继承等高级功能，帮助开发者更高效地管理和组织复杂的 CSS 样式表。由于 SCSS 兼容 CSS 语法且更容易被 CSS 开发者接受，它成为了 Sass 社区中更为广泛使用的语法格式
+
+
+
+
+
+
+
