@@ -1709,6 +1709,126 @@ app.directive('color', (el, binding) => {
 
 
 
+#### 插件
+
+##### 基本介绍
+
+注意：这里的所谓的"插件"并非我们在vscode中那些可以安装的插件，而是在Vue中的一个**概念**
+
+**插件是一种能够为Vue添加全局功能的工具代码**
+
+下面将介绍插件的具体使用以及应用场景
+
+```js
+// main.js/main.ts文件
+import { createApp } from 'vue'
+import myPlugin from './plugins/myPlugin'
+
+const app = createApp({})
+
+// 一般而言，插件都会编写在一个独立的JS/TS文件中，再导入到main.js/ts文件中使用
+app.use(myPlugin, {
+  /* 可选的选项 */
+})
+```
+
+一个插件可以是一个拥有``install()``方法的对象，也可以直接是一个``install``函数。安装函数会接收到安装它的应用实例和传递给``app.use()``的额外选项作为参数：
+
+```js
+//myPlugin.js/ts
+
+const myPlugin = {
+  install(app, options) {
+    // 配置此应用
+  }
+}
+```
+
+插件的主要应用场景如下：
+
+1. 通过 [`app.component()`](https://cn.vuejs.org/api/application.html#app-component) 和 [`app.directive()`](https://cn.vuejs.org/api/application.html#app-directive) 注册一到多个全局组件或自定义指令。
+2. 通过 [`app.provide()`](https://cn.vuejs.org/api/application.html#app-provide) 使一个资源[可被注入](https://cn.vuejs.org/guide/components/provide-inject.html)进整个应用。
+3. 向 [`app.config.globalProperties`](https://cn.vuejs.org/api/application.html#app-config-globalproperties) 中添加一些全局实例属性或方法
+4. 一个可能上述三种都包含了的功能库 (例如 [vue-router](https://github.com/vuejs/vue-router-next))。
+
+
+
+##### 例子
+
+这里是一个``i18n``国际化插件的例子
+
+我们希望有一个翻译函数，这个函数接收一个以 `.` 作为分隔符的 `key` 字符串，用来在用户提供的翻译字典中查找对应语言的文本。期望的使用方式如下：
+
+```vue
+<h1>{{ $translate('greetings.hello') }}</h1>
+```
+
+这个函数应当能够在任意模板中被全局调用。这一点可以通过在插件中将它添加到 `app.config.globalProperties` 上来实现：
+
+```js
+// plugins/i18n.js
+export default {
+  install: (app, options) => {
+    // 注入一个全局可用的 $translate() 方法
+    app.config.globalProperties.$translate = (key) => {
+      // 获取 `options` 对象的深层属性
+      // 使用 `key` 作为索引
+      return key.split('.').reduce((o, i) => {
+        if (o) return o[i]
+      }, options)
+    }
+  }
+}
+//我们的 $translate 函数会接收一个例如 greetings.hello 的字符串，在用户提供的翻译字典中查找，并返回翻译得到的值。
+```
+
+用于查找的翻译字典对象则应当在插件被安装时作为 `app.use()` 的额外参数被传入：
+
+```js
+import i18nPlugin from './plugins/i18n'
+
+app.use(i18nPlugin, {
+  greetings: {
+    hello: 'Bonjour!'
+  }
+})
+```
+
+这样，我们一开始的表达式 `$translate('greetings.hello')` 就会在运行时被替换为 `Bonjour!` 了。
+
+
+
+##### 插件中的Provide/Inject
+
+在插件中我们可以使用Provide将接收到的``options``参数提供给整个应用，使得任何组件都可以使用该对象
+
+根据前面的例子
+
+```js
+// plugins/i18n.js
+export default {
+  install: (app, options) => {
+    app.provide('i18n', options)
+  }
+}
+```
+
+现在，插件用户就可以在他们的组件中以 `i18n` 为 key 注入并访问插件的选项对象了。
+
+```js
+<script setup>
+import { inject } from 'vue'
+
+const i18n = inject('i18n')
+
+console.log(i18n.greetings.hello)
+</script>
+```
+
+
+
+
+
 ## Pinia
 
 ### 什么是Pinia
@@ -1848,7 +1968,7 @@ const { increment } = store
 
 
 
-## 大事件管理系统
+## 项目
 
 ![69847678461](Vue3学习笔记.assets/1698476784612.png)
 
