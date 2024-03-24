@@ -1421,7 +1421,11 @@ Sass与Scss都是Sass语言的两种不同的语法格式
 
 
 
+## Element.closest()
 
+该方法用于匹配与当前元素符合选择器的最近祖先元素，匹配不到则返回null
+
+[Element.closest() - Web API 接口参考 | MDN (mozilla.org)](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/closest)
 
 
 
