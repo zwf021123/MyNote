@@ -10,26 +10,80 @@
 
 我们要知道，跨域的由来，即为什么会有跨域问题？？？这是因为"古时候"还没有前后端分离的概念，即前端和后端资源都是在一起的，而前后端分离之后，前后端资源就不放在一起了，那么由于浏览器的安全策略，不允许不同源的资源进行访问
 
-前后端资源都不在一起，那么必然就触发浏览器的该同源策略了呗
+前后端资源都不在一起，那么必然就触发浏览器的该**同源策略**了呗
+
+
+
+#### 什么是同源策略
+
+所谓**同源，是指两个地址的"协议"，"域名"，"端口"这三者都相同。**
+
+只有当两个地址同源时，浏览器才允许它们之间进行数据通信，这就是同源策略。
+
+同源策略（Same origin policy），最开始是由网景公司（Netscape）提出的安全策略并引入浏览器中，现在已经成为浏览器最基础的安全策略。它确保了应用的资源只能被应用自身访问。从而帮用户避免了大量来自第三方的恶意攻击，比如 XSS（跨站脚本攻击）、CSRF（跨站请求伪造） 等。
+
+所以，当你看到上面的`No 'Access-Control-Allow-Origin' header is present on the requested resource.`报错信息，其实是浏览器拦截了从后端返回的数据，不让当前的页面访问这些数据，从而一方面避免对本地数据造成污染，一方面也避免用户数据比如 cookie 信息、账号、密码等个人信息的泄漏风险。
+
+
+
+#### 解决办法-proxy代理
+
+**注意：这种方法只能用于开发环境下**
 
 那么前端要解决跨域问题，原理在于跨过浏览器
 
-以Vue3为例是使用proxy代理解决的
-
-我们知道项目启动时nodejs会启动一个端口，而这个地址就会变成我们与后端交互的"中间人"
+以Vue3为例是使用proxy代理解决的我们知道项目启动时nodejs会启动一个端口，而这个地址就会变成我们与后端交互的"中间人"
 
 那么，我们前端只需把请求发送到该地址(nodejs)，再让该地址把我们的请求发送到后端，后端返回结果给中间人，中间人再给我们前端就好了
 
-这其中，前端从直接向后端发请求，变成了向本地node代理服务器发请求(该服务器在本地因此是同源的)，这样就实现了绕过浏览器的同源策略了，也就解决了跨域问题
+这其中，**前端从直接向后端发请求，变成了向本地node代理服务器发请求(该服务器在本地因此是同源的)，这样就实现了绕过浏览器的同源策略了，也就解决了跨域问题**
 
+例子：
 
+在公司的这个项目中，开发环境下的跨域方案使用的就是proxy代理
+
+![71168043926](bug记录.assets/1711680439266.png)
+
+设置一个开发环境下的环境变量`/api/gw`（这里的环境变量值自行设置即可，这里设置为该值是为了与测试环境匹配，因为请求服务器的域名与测试环境下的域名一样，而`/api/gw`是前缀）
+
+设置axios变量的baseURL为对应环境下的该环境变量值
+
+![71168051375](bug记录.assets/1711680513755.png)
+
+补充说明：
+
+注意，这个 `baseURL` 是相对于网页 URL 的。如果你的网页 URL 是 `http://localhost:8080`，那么请求的 **baseURL** 就会是 `http://localhost:8080/api/gw`后面再拼接对应内容
+
+但是如果你的baseURL是一个完整地址
+
+如：
+
+```js
+const service = axios.create({
+    baseURL: 'http://api.example.com'
+});
+
+service.get('/users');
+```
+
+那么，axios 实际发送的请求的 URL 会是 `http://api.example.com/users`
+
+至此，我们再设置一下代理即可，即让vite服务器（启动我们项目的服务器）代理发送请求到接口服务器
+
+![71168092775](bug记录.assets/1711680927750.png)
+
+当你的应用在开发模式下运行时，如果它发送一个以 `/api` 或 `/map` 开头的请求，这个请求会被 Vite 的开发服务器接收，然后转发到指定的目标服务器。
+
+例如，如果你的应用发送一个请求到 `/api/users`，那么这个请求实际上会被发送到 `http://admin_test.nailcanvas.cn/api/users`。
+
+对于以 `/map` 开头的请求，你还设置了一个 `rewrite` 函数，这个函数会把请求的路径中的 `/map` 替换为空字符串。所以，如果你的应用发送一个请求到 `/map/someEndpoint`，那么这个请求实际上会被发送到 `https://apis.map.qq.com/someEndpoint`。
 
 
 
 ### Script标签引入所带来的顺序问题
 
 - 起因是项目需要接入腾讯地图的地图api，而经查询腾讯地图在Vue中只能通过script标签引入，这里就带来了一些代码执行顺序问题
-  - bug：我直接在setup的script标签中执行有关引入文件的代码，导致script标签引入的外部文件还没完全导入，因此代码报错找不到变量
+  - bug：我直接在setup的中执行有关script标签引入文件的代码，导致script标签引入的外部文件还没完全导入，因此代码报错找不到变量
   - 最后解决办法是：将有关引入内容的代码移到对应模块打开之后（即放到某个生命周期钩子里）
 
 > 引发思考（你知道 script 标签脚本在各种情况下的加载和执行顺序吗？）：
@@ -387,9 +441,109 @@ console.log(element.offsetHeight);
 
 这个例子就可以看出我们在没有进行异常处理时导致的后续代码无法正常执行
 
+**补充说明：**
+
+现在的前端项目中通常都会在axios中设置拦截器，例如：
+
+```JS
+import axios from 'axios';
+
+// 添加请求拦截器
+axios.interceptors.request.use(function (config) {
+    // 在发送请求之前做些什么
+    return config;
+}, function (error) {
+    // 对请求错误做些什么
+    return Promise.reject(error);
+});
+
+// 添加响应拦截器
+axios.interceptors.response.use(function (response) {
+    // 对响应数据做点什么
+    return response;
+}, function (error) {
+    // 对响应错误做点什么
+    // 显示一个错误提示
+    Notification.error({
+      id: 'menuNotice',
+      content: 'error',
+      closable: true,
+    });
+    return Promise.reject(error);
+});
+```
+
+我们在请求出现异常时，使用组件Notification显示一个提示消息，这个提示消息通常是通用的，此后``return Promise.reject(error);``是为了让我们可以在请求时进行额外处理异常的操作，例如跳转页面
+
+那么什么时候，我们需要进行额外处理异常的操作呢
+
+例子：
+
+今天遇到一个很好的例子，因此记录一下：
+
+这是一个图片上传组件：
+
+![71144667661](bug记录.assets/1711446676614.png)
+
+当我们点击上传时，会弹出文件选择框，立即创建一个promise，在外边会声明两个变量``globalResolve``、``globalReject``存储这个promise的resolve函数与reject函数，方便在外调用，这里的事件监听是监听用户取消/确认文件框后回到window后，会启用一个定时器，reject掉创建的promise并传出用户未选择文件
+
+```js
+    function upload() {
+        return new Promise((resolve, reject) => {
+            globalResolve.value = resolve;
+            globalReject.value = reject;
+            // 唤起文件选择对话框
+            uploadInputRef.value.click();
+            window.addEventListener('focus', windowFocusEvent);
+        });
+    }
+
+    function windowFocusEvent(e) {
+        // 如果用户打开了文件选择对话框，但是没有选择任何文件，或者选择了一个文件但是没有处理这个文件，那么在  秒后，就会拒绝 Promise，表示文件上传失败。
+        rejectTimeout.value = setTimeout(() => {
+            globalReject.value('未选择文件');
+            window.removeEventListener('focus', windowFocusEvent);
+        }, 300);
+    }
+```
+
+而如果用户选择了任意文件，则立刻clear掉设置的定时器，同时再次判断当前已选择的文件数量+之前选择的文件数量是否>limit，如果超出限制，也是reject掉之前创建的promise并传出最多上传limit个文件
+
+```js
+        if (props.fileList.length + files.length > props.limit) {
+            globalReject.value('最多上传' + props.limit + '个文件');
+            return;
+        }
+```
+
+除这些之外，后续逻辑判断都正确即可使用全局的resolve进行promise状态敲定即可，在这个文件上传组件外，我们只需使用``.then``和``.catch``即可获取到上传的文件数组/各种错误字符串，这时再进行Message提示即可
+
+```js
+        uploadRef.value
+            .upload()
+            .then((res) => {
+                // 上传成功res即为后台返回的图片URL
+                fileList.value = [...fileList.value, ...res];
+                emitList();
+            })
+            .catch((err) => {
+                Message.warning(err);
+            });
+```
+
 > 其他的异常捕获方法：
 >
 > 利用promise的.catch或者是.then的第二个参数
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -419,25 +573,282 @@ console.log(element.offsetHeight);
 
 
 
-tips显示
+## 第四周
+
+### arco受控与非受控
+
+今天在使用arco组件select的时候，突然就理解了arco组件库的``受控``与``非受控``的概念，原因是我发现在使用``v-model:input``绑定组件后，组件原先内部封装好的某些操作会被取消，即如果我们对组件使用双向绑定，那么arco认为我们需要自定义组件，则组件内原先已经封装好的内容将不再生效
+
+而非受控即我们无需使用双向绑定修改组件的值，组件的值将维护在组件内部，可以通过 `default-value` 来设置初始值。非受控模式下可以通过 `change` 事件来获取组件的值
 
 
 
-tab-select
+### 父元素flex:1子元素height:100%失效问题
+
+今天遇到该问题，看了蛮长时间，最后的解决方案是**子绝父相**
+
+首先，我们需要清楚的是，子元素``height:100%``生效的条件是什么？？？
+
+就是父元素的height必须是一个固定的值，而因为父元素是使用``flex:1``使得父元素的高度或宽度为**动态变化**的
+
+所以我们无法通过子元素``height:1``来使其计算得到自己的高度/宽度
+
+解决办法：
+
+1. 设置**子绝父相**
+
+这种方法之所以有效，是因为绝对定位的元素的宽度和高度是相对于其最近的定位祖先元素（即设置了 `position` 属性的元素）计算的，而不是其父元素。如果没有定位的祖先元素，那么就相对于初始包含块（通常是整个文档窗口）。
+
+在你的代码中，父 元素设置了 `position: relative`，这使得它成为了 子元素 的定位祖先元素。因此，当 子元素 设置了 `position: absolute` 和 `height: 100%` 时，它的高度就会等于 父元素 的高度。
+
+这种方法的优点是，即使父元素的高度是动态变化的，子元素也能始终占满父元素的高度。但是，需要注意的是，绝对定位的元素会脱离正常的文档流，这可能会影响到布局。例如，它可能会覆盖其他的元素，或者被其他元素覆盖。因此，在使用这种方法时，需要确保这是你想要的效果。
+
+2. 使用JS动态设置子元素的高度
 
 
 
-域名修改
+
+
+### tab-bar组件业务逻辑实现
+
+实习前想做的tab-bar组件即一个记录用户打开内容的tab栏，但是没有实现的，现在在arco中看到，特此记录学习
+
+在arco中整个功能由两个组件(tab-bar、tab-item)和一个store(pinia)实现
+
+其中：
+
+与tab-bar相关的内容都存储在一个pinia仓库中，数据结构如下
+
+```js
+  state: (): TabBarState => ({
+    cacheTabList: new Set([DEFAULT_ROUTE_NAME]),
+    tagList: [DEFAULT_ROUTE],
+  }),
+  getters: {
+    getTabList(): TagProps[] {
+      return this.tagList;
+    },
+    getCacheList(): string[] {
+      return Array.from(this.cacheTabList);
+    },
+  },
+// tagList用于存储所有标签
+// cacheTabList用于存储需要缓存的标签
+```
+
+相关操作：
+
+```js
+actions: {
+    updateTabList(route: RouteLocationNormalized) {
+      // 当前路由不在禁止列表内，则加入tagList，如果需要缓存则加入缓存set内
+      if (BAN_LIST.includes(route.name as string)) return;
+      this.tagList.push(formatTag(route));
+      if (!route.meta.ignoreCache) {
+        this.cacheTabList.add(route.name as string);
+      }
+    },
+    deleteTag(idx: number, tag: TagProps) {
+      // 删除某个tag（同时在缓存中删除）
+      this.tagList.splice(idx, 1);
+      this.cacheTabList.delete(tag.name);
+    },
+    addCache(name: string) {
+      // 加入缓存（路由非空）
+      if (isString(name) && name !== '') this.cacheTabList.add(name);
+    },
+    deleteCache(tag: TagProps) {
+      // 删除某个tag的缓存
+      this.cacheTabList.delete(tag.name);
+    },
+    freshTabList(tags: TagProps[]) {
+      // 更新列表
+      this.tagList = tags;
+   	  // 清空缓存
+      this.cacheTabList.clear();
+      // 要先判断ignoreCache
+      // 更新tagList后，同时更新缓存set
+      this.tagList
+        .filter((el) => !el.ignoreCache)
+        .map((el) => el.name)
+        .forEach((x) => this.cacheTabList.add(x));
+    },
+    resetTabList() {
+      // 重置两个state
+      this.tagList = [DEFAULT_ROUTE];
+      this.cacheTabList.clear();
+      this.cacheTabList.add(DEFAULT_ROUTE_NAME);
+    },
+  },
+```
+
+在tab-bar组件中我们监听路由变化，判断当前前往路由是否是`特殊`的/存储tag的`tagList`是否已经存在一个tag的路由与之相同，只有上述条件都不满足时我们才进行state变量的更新
+
+在tab-bar组件中获取仓库中的tagList数组进行渲染，`tag-item`组件
+
+在`tag-item`组件中，我们将tag的内容渲染出来，为保证有一个tag一直存在，我们使用css选定第一个tag的关闭按钮`display: none`，关闭的逻辑即调用仓库的`deleteTag`方法即可，但是我们要判断如果当前删除的是当前显示的tag，那么我们需要选择当前`tagList`的最后一个标签的路由作为下一个显示内容
+
+实际上，arco的`tag-item`组件还封装了对标签右键后的某些操作，但这里只为实现基本功能，因此不加以讲解
+
+我们想要实现刷新页面后还能够回到刷新前的那个页面这个功能：
+
+在arco中借助``发布订阅模式``监听路由变化实现了该功能
+
+`mitt` 是一个非常小巧的事件发射器库，它提供了 `on`、`off` 和 `emit` 三个方法，分别用来添加事件监听器、移除事件监听器和触发事件（`mitt`实际上是vue3对vue2中eventbus的替代）。
+
+```js
+/**
+ * Listening to routes alone would waste rendering performance. Use the publish-subscribe model for distribution management
+ * 单独监听路由会浪费渲染性能。使用发布订阅模式去进行分发管理。
+ */
+import mitt from 'mitt';
+
+const emitter = mitt();
+
+// 使用symbol避免事件名称冲突
+const key = Symbol('ROUTE_CHANGE');
+
+// 关键：存储最后的路由
+let latestRoute;
+
+export function setRouteEmitter(to) {
+  // 发布者发布“路由改变了”
+  emitter.emit(key, to);
+  // 同时更新上次路由是什么
+  latestRoute = to;
+}
+
+export function listenerRouteChange(handler, immediate = true) {
+  emitter.on(key, handler);
+  // 订阅某个事件
+  if (immediate && latestRoute) {
+    // 立即处理
+    handler(latestRoute);
+  }
+}
+
+export function removeRouteListener() {
+  // 取消订阅
+  emitter.off(key);
+}
+
+```
+
+在``tag-bar``组件中，有这样一段
+
+```js
+  listenerRouteChange((route) => {
+    if (
+      !route.meta.noAffix &&
+      !tagList.value.some((tag) => tag.fullPath === route.fullPath)
+    ) {
+      tabBarStore.updateTabList(route);
+    }
+  }, true);
+```
+
+相当于，满足条件的情况下，我们就会立刻订阅路由改变的事件，刷新时`latestRoute`会作为参数传递给回调函数因此可以更新当前`tabList`
+
+但是，有一个问题是`latestRoute`怎么得到？？？
+
+实际上，在arco中，只要在路由守卫中"发布者"进行"发布"就好了，同时更新latestRoute（这里需要注意的是在刷新页面刚进入时也会有路由守卫的效果+单页面应用刷新时不会导致路由刷新），因此每次进入页面我们都能够得到上一次最后的路由~~~
+
+
+
+### jsonp
+
+今天在完成一个地图组件的功能（腾讯地图），但是因为只在测试环境下没有做跨域，又遇到跨域问题了，腾讯官方文档说的是使用**jsonp**解决，但是我没有使用过jsonp，特此记录学习：
+
+前面经过学习已经明白了代理解决跨域的原理，jsonp也是一种方法去解决跨域
+
+对于 img、js 这种文件资源，当你使用`<img src="xxx" />`或者`<script src="xxx"></script>`的时候，似乎同源策略并没有发生作用。
+
+是的，html 元素的 src 属性是一个例外，**src 属性不受到同源策略的限制**，也正是基于此，才有了 jsonp，也因此，**jsonp 只能支持 get 请求**
+
+本质上，是设置一个`callback`字段在src属性中，然后后台只需要在回调函数的参数中给与我们接口返回的结果就好了
+
+```js
+function jsonp (url,data,fn){
+    if(!url)
+        throw new Error('url is necessary')
+    // src中的回调函数名，这里只是一个临时的名字，为了避免多个请求时window方法重名
+    const callback = 'CALLBACK' + Math.random().toString().substr(9,18)
+    const JSONP = document.createElement('script')
+          JSONP.setAttribute('type','text/javascript')
+
+    // 准备放在head标签中
+    const headEle = document.getElementsByTagName('head')[0]
+
+    let ret = '';
+    if(data){
+        // 其他参数的字符串拼接
+        if(typeof data === 'string')
+            ret = '&' + data;
+        else if(typeof data === 'object') {
+            for(let key in data)
+                ret += '&' + key + '=' + encodeURIComponent(data[key]);
+        }
+        ret += '&_time=' + Date.now();
+    }
+    JSONP.src = `${url}?callback=${callback}${ret}`;
+
+    // 注册对应的回调函数
+    window[callback] = function(r){
+      fn && fn(r)
+      // 得到返回值，清除标签+删除注册的window方法
+      headEle.removeChild(JSONP)
+      delete window[callback]
+    }
+	
+    headEle.appendChild(JSONP)
+}
+```
+
+> 实际上，在axios中也可以进行封装jsonp
+>
+> ```js
+> instance.jsonp = (url, data) => {
+>   if (!url)
+>     throw new Error('url is necessary')
+>   const callback = 'CALLBACK' + Math.random().toString().substr(9, 18)
+>   const JSONP = document.createElement('script')
+>   // JSONP.type = 'text/javascript';
+>   JSONP.setAttribute('type', 'text/javascript')
+>
+>   const headEle = document.getElementsByTagName('head')[0]
+>
+>   let ret = '';
+>   if (data && typeof data === 'object') {
+>     for (let key in data) {
+>       ret += '&' + key + '=' + encodeURIComponent(data[key]);
+>     }
+>   }
+>   JSONP.src = `${instance.defaults.baseURL + url}?callback=${callback}&output=jsonp${ret}`;
+> 	// 使用promise进行返回
+>     return new Promise((resolve, reject) => {
+>     window[callback] = r => {
+>       resolve(r)
+>       headEle.removeChild(JSONP)
+>       delete window[callback]
+>     }
+>     headEle.appendChild(JSONP)
+>   })
+>
+> }
+>
+> ```
+>
+> 
 
 
 
 
 
-### 路由arco
+### vue字段规范
 
-
-
-
+- 组件名：`MyComponent` 为名注册的组件，在模板中可以通过 `<MyComponent>` 或 `<my-component>` 引用（推荐使用`<MyComponent>`）
+- 事件名：推荐在父组件中使用`` kebab-case ``的形式来监听
+- 组件prop名：组件内定义时推荐使用`camelCase`，组件外传递时推荐使用`kebab-case`
 
 
 

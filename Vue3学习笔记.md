@@ -1827,6 +1827,14 @@ console.log(i18n.greetings.hello)
 
 
 
+### vue字段规范
+
+- 组件名：`MyComponent` 为名注册的组件，在模板中可以通过 `<MyComponent>` 或 `<my-component>` 引用（推荐使用`<MyComponent>`）
+- 事件名：推荐在父组件中使用`` kebab-case ``的形式来监听
+- 组件prop名：组件内定义时推荐使用`camelCase`，组件外传递时推荐使用`kebab-case`
+
+
+
 
 
 ## Pinia
