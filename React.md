@@ -1175,7 +1175,7 @@ return <ul>{listItems}</ul>;
 
 用作 key 的值应该在数据中提前就准备好，而不是在运行时才随手生成：
 
-> 注意：
+> **注意**：
 >
 > 直接放在`map`方法内的JSX元素一般都需要指定key值
 
@@ -1353,13 +1353,15 @@ export default function TeaGathering() {
 
 ```
 
+这里不会有影响，因为每次渲染时，你都是在函数内部创建的它们，在函数之外的代码并不会知道发生了什么，这就被称为 **“局部 mutation”** — 如同藏在组件里的小秘密。
+
 
 
 
 
 ### 事件处理函数与纯函数
 
-函数式编程在很大程度上依赖于纯函数，但 **某些事物** 在特定情况下不得不发生改变。这是编程的要义！这些变动包括更新屏幕、启动动画、更改数据等，它们被称为 **副作用**。它们是 **“额外”** 发生的事情，与渲染过程无关。
+函数式编程在很大程度上依赖于纯函数，但 **某些事物** 在特定情况下不得不发生改变。这是编程的要义！这些变动包括更新屏幕、启动动画、更改数据、操作DOM、发送请求等，它们被称为 **副作用**。它们是 **“额外”** 发生的事情，与渲染过程无关。
 
 在 React 中，**副作用通常属于 事件处理程序**。事件处理程序是 React 在你执行某些操作（如单击按钮）时运行的函数。即使事件处理程序是在你的组件 **内部** 定义的，它们也不会在渲染期间运行！ **因此事件处理程序无需是纯函数**。
 
@@ -1389,8 +1391,8 @@ export default function TeaGathering() {
 
 编写纯函数需要遵循一些习惯和规程。但它开启了绝妙的机遇：
 
-- 你的组件可以在不同的环境下运行 — 例如，在服务器上！由于它们针对相同的输入，总是返回相同的结果，因此一个组件可以满足多个用户请求。
-- 你可以为那些输入未更改的组件来 [跳过渲染](https://zh-hans.react.dev/reference/react/memo)，以提高性能。这是安全的做法，因为纯函数总是返回相同的结果，所以可以安全地缓存它们。
+- **你的组件可以在不同的环境下运行** — 例如，在服务器上！由于它们针对相同的输入，总是返回相同的结果，因此一个组件可以满足多个用户请求。
+- 你可以为那些输入未更改的组件来 [跳过渲染](https://zh-hans.react.dev/reference/react/memo)，以**提高性能**。这是安全的做法，因为纯函数总是返回相同的结果，所以可以安全地缓存它们。
 - 如果在渲染深层组件树的过程中，某些数据发生了变化，React 可以重新开始渲染，而不会浪费时间完成过时的渲染。纯粹性使得它随时可以安全地停止计算。
 
 我们正在构建的每个 React 新特性都利用到了纯函数。从数据获取到动画再到性能，保持组件的纯粹可以充分释放 React 范式的能力。
@@ -1437,6 +1439,1593 @@ React 创建的 UI 树是由渲染过的组件构成的，被称为**渲染树**
 
 
 
+
+
+
+
+# 添加交互
+
+界面上的组件会随着用户的输入而更新，在React中，随着事件变化的数据就被称为**状态state**
+
+
+
+## 响应事件
+
+### 添加事件处理函数
+
+最简单的做法是在组件中进行事件添加与绑定
+
+下面演示一个简单的`click`事件
+
+```jsx
+export default function Button({mes,children}) {
+    function handleClick() {
+        alert('点击了~',mes)
+    }
+    
+  return (
+    <button onClick={handleClick}>
+      {children}
+    </button>
+  );
+}
+
+```
+
+事件处理函数有如下两个特点：
+
+- 通常在一个组件的**内部**定义，因此事件处理函数通常可以直接访问组件的props
+- 名称以`handle`开头，后面跟上一个事件名称，例如`handleClick`
+
+如果说事件的处理逻辑比较简单，我们可以直接定义一个内联的事件处理函数
+
+```jsx
+<button onClick={function handleClick() {
+
+  alert('你点击了我！');
+
+}}>
+```
+
+或者，直接使用更为简洁箭头函数：
+
+```jsx
+<button onClick={() => {
+
+  alert('你点击了我！');
+
+}}>
+```
+
+> **陷阱**：
+>
+> **传递给事件处理函数的函数应直接传递，而非调用**。例如：
+>
+> | 传递一个函数（正确）             | 调用一个函数（错误）               |
+> | -------------------------------- | ---------------------------------- |
+> | `<button onClick={handleClick}>` | `<button onClick={handleClick()}>` |
+>
+> 区别很微妙。在第一个示例中，`handleClick` 函数作为 `onClick` 事件处理函数传递。这会让 React 记住它，并且只在用户点击按钮时调用你的函数。
+>
+> 在第二个示例中，`handleClick()` 中最后的 `()` 会在 [渲染](https://react.docschina.org/learn/render-and-commit) 过程中 **立即** 触发函数，即使没有任何点击。这是因为在 [JSX `{` 和 `}`](https://react.docschina.org/learn/javascript-in-jsx-with-curly-braces) 之间的 JavaScript 会立即执行。
+>
+> 当你编写内联代码时，同样的陷阱可能会以不同的方式出现：
+>
+> | 传递一个函数（正确）                    | 调用一个函数（错误）              |
+> | --------------------------------------- | --------------------------------- |
+> | `<button onClick={() => alert('...')}>` | `<button onClick={alert('...')}>` |
+>
+> 如果按如下方式传递内联代码，并不会在点击时触发，而是**会在每次组件渲染时触发**：
+>
+> ```jsx
+> // 这个 alert 在组件渲染时触发，而不是点击时触发！
+>
+> <button onClick={alert('你点击了我！')}>
+> ```
+>
+> 如果你想要定义内联事件处理函数，请将其包装在匿名函数中，如下所示：
+>
+> ```jsx
+> <button onClick={() => alert('你点击了我！')}>
+> ```
+>
+> 这里创建了一个稍后调用的函数，而不会在每次渲染时执行其内部代码。
+>
+> 在这两种情况下，你都应该传递一个函数：
+>
+> - `<button onClick={handleClick}>` 传递了 `handleClick` 函数。
+> - `<button onClick={() => alert('...')}>` 传递了 `() => alert('...')` 函数。
+
+
+
+#### 将事件处理函数作为props传递
+
+有时候，我们会在父组件中定义子组件的事件处理函数
+
+```jsx
+function Button({ onClick, children }) {
+  return (
+    <button onClick={onClick}>
+      {children}
+    </button>
+  );
+}
+
+function PlayButton({ movieName }) {
+  function handlePlayClick() {
+    alert(`正在播放 ${movieName}！`);
+  }
+
+  return (
+    <Button onClick={handlePlayClick}>
+      播放 "{movieName}"
+    </Button>
+  );
+}
+
+function UploadButton() {
+  return (
+    <Button onClick={() => alert('正在上传！')}>
+      上传图片
+    </Button>
+  );
+}
+
+export default function Toolbar() {
+  return (
+    <div>
+      <PlayButton movieName="魔女宅急便" />
+      <UploadButton />
+    </div>
+  );
+}
+```
+
+如上面的例子所示，`Button`组件接受一个名为`onClick`的prop，它直接将这个prop以`onClick={onClick}`的方式传递给原生button， 那么点击按钮时则会调用传入的函数
+
+
+
+#### 命名事件处理函数prop
+
+我们也可以自定义事件处理函数的prop
+
+- 按照react的规范，事件处理函数props应该以`on`开头，后面是以大写开头的事件名
+
+```jsx
+function Button({ onSmash, children }) {
+  return (
+    <button onClick={onSmash}>
+      {children}
+    </button>
+  );
+}
+
+export default function App() {
+  return (
+    <div>
+      <Button onSmash={() => alert('正在播放！')}>
+        播放电影
+      </Button>
+      <Button onSmash={() => alert('正在上传！')}>
+        上传图片
+      </Button>
+    </div>
+  );
+}
+
+```
+
+> 在React官方文档中提到：
+>
+> 我们需要为事件处理函数使用合适的HTML标签，例如如果要绑定一个点击事件，就直接绑定在`button`标签上即可，而不是说使用诸如`<div>`标签来变成一个按钮再绑定点击事件
+>
+> 这其实是MDN中对*无障碍标签*  的描述
+>
+> 优点：
+>
+> 1. **更便于开发** — 如上所述，你可以使 HTML 更易于理解，并且可以毫不费力的获得一些功能。
+> 2. **更适配移动端** — 语义化的 HTML 文件比非语义化的 HTML 文件更加轻便，并且更易于响应式开发。
+> 3. **更便于 SEO 优化** — 比起使用非语义化的<div>标签，搜索引擎更加重视在“标题、链接等”里面的关键字，使用语义化可使网页更容易被用户搜索到。
+>
+> [HTML：无障碍的良好基础 - 学习 Web 开发 | MDN (mozilla.org)](https://developer.mozilla.org/zh-CN/docs/Learn/Accessibility/HTML#html_%E5%92%8C%E6%97%A0%E9%9A%9C%E7%A2%8D)
+
+
+
+
+
+### 事件传播
+
+事件处理函数还将捕获任何来自子组件的事件。通常，我们会说事件会沿着树向上“冒泡”或“传播”：它从事件发生的地方开始，然后沿着树向上传播。
+
+```jsx
+export default function Toolbar() {
+  return (
+    <div className="Toolbar" onClick={() => {
+      alert('你点击了 toolbar ！');
+    }}>
+      <button onClick={() => alert('正在播放！')}>
+        播放电影
+      </button>
+      <button onClick={() => alert('正在上传！')}>
+        上传图片
+      </button>
+    </div>
+  );
+}
+
+```
+
+例如这个例子中，我们在子元素和父元素中都绑定了点击事件，结果就是，如果你点击了任意一个按钮，它本身绑定的click事件会先触发然后触发父组件的点击事件
+
+但如果你点击的是父元素，那么只有父元素的绑定事件会被触发
+
+> 陷阱：
+>
+> 在React中所有事件都会传播，除了`onScroll`事件，
+
+
+
+#### 阻止传播
+
+还是与原生html一样，我们可以通过**事件对象.stopPropagation()**来阻止事件的传播
+
+```jsx
+function Button({ onClick, children }) {
+
+  // 这样的写法更好，它让子组件处理事件，同时也让父组件指定一些额外的行为
+  // 如果你依赖于事件传播，而且很难追踪哪些处理程序在执行，及其执行的原因，可以尝试这种方法。
+  return (
+    <button onClick={e => {
+      e.stopPropagation();
+      onClick();
+    }}>
+      {children}
+    </button>
+  );
+}
+
+export default function Toolbar() {
+  return (
+    <div className="Toolbar" onClick={() => {
+      alert('你点击了 toolbar ！');
+    }}>
+      <Button onClick={() => alert('正在播放！')}>
+        播放电影
+      </Button>
+      <Button onClick={() => alert('正在上传！')}>
+        上传图片
+      </Button>
+    </div>
+  );
+}
+
+```
+
+> 捕获阶段事件
+>
+> 极少数情况下，你可能需要捕获子元素上的所有事件，**即便它们被阻止了传播**
+>
+> 那么你可以通过在事件名称末尾添加 `Capture` 来实现这一点：
+>
+> ```jsx
+> <div onClickCapture={() => { /* 这会首先执行 */ }}>
+>
+>   <button onClick={e => e.stopPropagation()} />
+>
+>   <button onClick={e => e.stopPropagation()} />
+>
+> </div>
+> ```
+>
+> 每个事件分三个阶段传播：
+>
+> 1. 它向下传播，调用所有的 `onClickCapture` 处理函数。
+> 2. 它执行被点击元素的 `onClick` 处理函数。
+> 3. 它向上传播，调用所有的 `onClick` 处理函数。
+>
+> 捕获事件对于路由或数据分析之类的代码很有用，但你可能不会在应用程序代码中使用它们。
+
+
+
+
+
+#### 阻止默认行为
+
+某些浏览器事件具有与事件相关联的默认行为。例如，点击 `<form>` 表单内部的按钮会触发表单提交事件，默认情况下将重新加载整个页面：
+
+那么我们可以使用`事件对象.preventDefault()`来阻止默认行为
+
+```jsx
+export default function Signup() {
+  return (
+    <form onSubmit={e => {
+      e.preventDefault();
+      alert('提交表单！');
+    }}>
+      <input />
+      <button>发送</button>
+    </form>
+  );
+}
+
+```
+
+> 不要混淆 `e.stopPropagation()` 和 `e.preventDefault()`。它们都很有用，但二者并不相关：
+>
+> - [`e.stopPropagation()`](https://developer.mozilla.org/docs/Web/API/Event/stopPropagation) 阻止触发绑定在外层标签上的事件处理函数。
+> - [`e.preventDefault()`](https://developer.mozilla.org/docs/Web/API/Event/preventDefault) 阻止少数事件的默认浏览器行为。
+
+
+
+### 事件处理函数与副作用
+
+事件处理函数是执行副作用的最佳位置
+
+与渲染函数不同，事件处理函数不需要是 [纯函数](https://react.docschina.org/learn/keeping-components-pure)，因此它是用来 *更改* 某些值的绝佳位置。例如，更改输入框的值以响应键入，或者更改列表以响应按钮的触发。
+
+
+
+
+
+
+
+## 组件的记忆state
+
+组件通常需要根据交互更改屏幕上显示的内容。输入表单应该更新输入字段，单击轮播图上的“下一个”应该更改显示的图片，单击“购买”应该将商品放入购物车。组件需要“记住”某些东西：当前输入值、当前图片、购物车。在 React 中，这种组件特有的记忆被称为 **state**
+
+**理解：**只有在需要重新渲染时保存某些内容我们才使用state
+
+
+
+### 普通变量的问题
+
+```jsx
+import { sculptureList } from './data.js';
+
+export default function Gallery() {
+  let index = 0;
+
+  function handleClick() {
+    index = index + 1;
+  }
+
+  let sculpture = sculptureList[index];
+  return (
+    <>
+      <button onClick={handleClick}>
+        Next
+      </button>
+      <h2>
+        <i>{sculpture.name} </i> 
+        by {sculpture.artist}
+      </h2>
+      <h3>  
+        ({index + 1} of {sculptureList.length})
+      </h3>
+      <img 
+        src={sculpture.url} 
+        alt={sculpture.alt}
+      />
+      <p>
+        {sculpture.description}
+      </p>
+    </>
+  );
+}
+
+```
+
+在这个组件中，我们定义了一个局部变量希望它能够存储当前展示数据的下标
+
+但是这样的代码并不能按预期般运行，原因：
+
+1. **更改局部变量不会触发渲染。** React 没有意识到它需要使用新数据再次渲染组件。
+2. **局部变量无法在多次渲染中持久保存。** 当 React 再次渲染这个组件时，它会从头开始渲染——不会考虑之前对局部变量的任何更改。
+
+要使用新数据更新组件，需要做两件事：
+
+1. **保留** 渲染之间的数据。
+2. **触发** React 使用新数据渲染组件（重新渲染）。
+
+`usestate`这个Hook提供了这个功能：
+
+1. **State 变量** 用于保存渲染间的数据。
+2. **State setter 函数** 更新变量并触发 React 再次渲染组件。
+
+
+
+### 添加一个state变量
+
+要添加 state 变量，先从文件顶部的 React 中导入 `useState`：
+
+```js
+import { useState } from 'react';
+```
+
+然后，替换这一行：
+
+```jsx
+let index = 0;
+```
+
+将其修改为
+
+```jsx
+// 同时将useState返回的数组进行解构
+const [index, setIndex] = useState(0);
+```
+
+`index` 是一个 **state** 变量，`setIndex` 是对应的 **setter** 函数。
+
+
+
+#### 认识的第一个Hook
+
+在React中，`useState`以及任何其他以`use`开头的函数都被称为**Hook**
+
+Hook是特殊的函数，只在React渲染时有效
+
+> **陷阱：**
+>
+> **Hooks ——以 use 开头的函数——只能在组件或自定义 Hook 的最顶层调用。**
+>
+> **不能**在条件语句、循环语句或者其他嵌套函数内调用Hook
+>
+> 应该在组件顶部 “use” React 特性，类似于在文件顶部“导入”模块。
+
+
+
+
+
+#### 剖析useState
+
+当你调用`useState`，你是想让这个组件记住一些东西
+
+```jsx
+const [index, setIndex] = useState(0);
+```
+
+在这个例子里，你希望 React 记住 `index`。
+
+- 规范：
+  - 惯例是将这对返回值命名为 `const [thing, setThing]`。你也可以将其命名为任何你喜欢的名称，但遵照约定俗成能使跨项目合作更易理解。
+
+`useState` 的唯一参数是 state 变量的**初始值**。在这个例子中，`index` 的初始值被`useState(0)`设置为 `0`。
+
+每次你的组件渲染时，`useState` 都会给你一个包含两个值的数组：
+
+1. **state 变量** (`index`) 会保存上次渲染的值。
+2. **state setter 函数** (`setIndex`) 可以更新 state 变量并触发 React **重新渲染**组件。
+
+
+
+以下是React的渲染过程(使用`useState`)：
+
+1. **组件进行第一次渲染。** 因为你将 `0` 作为 `index` 的初始值传递给 `useState`，它将返回 `[0, setIndex]`。 React 记住 `0` 是最新的 state 值。
+2. **你更新了 state**。当用户点击按钮时，它会调用 `setIndex(index + 1)`。 `index` 是 `0`，所以它是 `setIndex(1)`。这告诉 React 现在记住 `index` 是 `1` 并触发下一次渲染。
+3. **因此组件进行第二次渲染**。React **仍然**看到 `useState(0)`，但是因为 React *记住* 了你将 `index` 设置为了 `1`，它将返回 `[1, setIndex]`。
+4. 以此类推！
+
+
+
+
+
+### 赋予组件多个state
+
+你可以在一个组件中拥有任意多种类型的 state 变量。该组件有两个 state 变量，一个数字 `index` 和一个布尔值 `showMore`，点击 “Show Details” 会改变 `showMore` 的值：
+
+```jsx
+import { useState } from 'react';
+import { sculptureList } from './data.js';
+
+export default function Gallery() {
+  const [index, setIndex] = useState(0);
+  const [showMore, setShowMore] = useState(false);
+
+  function handleNextClick() {
+    setIndex(index + 1);
+  }
+
+  function handleMoreClick() {
+    setShowMore(!showMore);
+  }
+
+  let sculpture = sculptureList[index];
+  return (
+    <>
+      <button onClick={handleNextClick}>
+        Next
+      </button>
+      <h2>
+        <i>{sculpture.name} </i> 
+        by {sculpture.artist}
+      </h2>
+      <h3>  
+        ({index + 1} of {sculptureList.length})
+      </h3>
+      <button onClick={handleMoreClick}>
+        {showMore ? 'Hide' : 'Show'} details
+      </button>
+      {showMore && <p>{sculpture.description}</p>}
+      <img 
+        src={sculpture.url} 
+        alt={sculpture.alt}
+      />
+    </>
+  );
+}
+
+```
+
+但是需要注意的是：
+
+如果你发现经常同时更改两个 state 变量，那么最好将它们合并为一个
+
+例如，如果你有一个包含多个字段的表单，那么有一个值为对象的 state 变量比每个字段对应一个 state 变量更方便
+
+[选择 state 结构](https://react.docschina.org/learn/choosing-the-state-structure)在这方面有更多提示。
+
+> **React如何知道要返回哪个state：**
+>
+> 我们在前面React的渲染过程中发现，`useState`在调用时没有任何关于它引用的是哪个`state`变量的信息(只有初始值)，那么它是如何知道要返回哪个state变量的呢
+>
+> 实际上，在同一个组件的每一次渲染中，Hooks都依赖于应该确定的调用顺序，因为如果你遵循上面的规则（“只在顶层调用 Hooks”），Hooks 将始终以相同的顺序被调用。此外，[linter 插件](https://www.npmjs.com/package/eslint-plugin-react-hooks)也可以捕获大多数错误。
+>
+> 在React内部，为每个组件设置并保存了一个数组，其中的每一项都是一个state对，它维护了当前state对的索引值
+>
+> 下面这个例子可以帮助理解：
+>
+> ```js
+> let componentHooks = [];
+> let currentHookIndex = 0;
+>
+> // useState 在 React 中是如何工作的（简化版）
+> function useState(initialState) {
+>   let pair = componentHooks[currentHookIndex];
+>   if (pair) {
+>     // 这不是第一次渲染
+>     // 所以 state pair 已经存在
+>     // 将其返回并为下一次 hook 的调用做准备
+>     currentHookIndex++;
+>     return pair;
+>   }
+>
+>   // 这是我们第一次进行渲染
+>   // 所以新建一个 state pair 然后存储它
+>   pair = [initialState, setState];
+>
+>   function setState(nextState) {
+>     // 当用户发起 state 的变更，
+>     // 把新的值放入 pair 中
+>     pair[0] = nextState;
+>     updateDOM();
+>   }
+>
+>   // 存储这个 pair 用于将来的渲染
+>   // 并且为下一次 hook 的调用做准备
+>   componentHooks[currentHookIndex] = pair;
+>   currentHookIndex++;
+>   return pair;
+> }
+>
+> function Gallery() {
+>   // 每次调用 useState() 都会得到新的 pair
+>   const [index, setIndex] = useState(0);
+>   const [showMore, setShowMore] = useState(false);
+>
+>   function handleNextClick() {
+>     setIndex(index + 1);
+>   }
+>
+>   function handleMoreClick() {
+>     setShowMore(!showMore);
+>   }
+>
+>   let sculpture = sculptureList[index];
+>   // 这个例子没有使用 React，所以
+>   // 返回一个对象而不是 JSX
+>   return {
+>     onNextClick: handleNextClick,
+>     onMoreClick: handleMoreClick,
+>     header: `${sculpture.name} by ${sculpture.artist}`,
+>     counter: `${index + 1} of ${sculptureList.length}`,
+>     more: `${showMore ? 'Hide' : 'Show'} details`,
+>     description: showMore ? sculpture.description : null,
+>     imageSrc: sculpture.url,
+>     imageAlt: sculpture.alt
+>   };
+> }
+>
+> function updateDOM() {
+>   // 在渲染组件之前
+>   // 重置当前 Hook 的下标
+>   currentHookIndex = 0;
+>   let output = Gallery();
+>
+>   // 更新 DOM 以匹配输出结果
+>   // 这部分工作由 React 为你完成
+>   nextButton.onclick = output.onNextClick;
+>   header.textContent = output.header;
+>   moreButton.onclick = output.onMoreClick;
+>   moreButton.textContent = output.more;
+>   image.src = output.imageSrc;
+>   image.alt = output.imageAlt;
+>   if (output.description !== null) {
+>     description.textContent = output.description;
+>     description.style.display = '';
+>   } else {
+>     description.style.display = 'none';
+>   }
+> }
+>
+> let nextButton = document.getElementById('nextButton');
+> let header = document.getElementById('header');
+> let moreButton = document.getElementById('moreButton');
+> let description = document.getElementById('description');
+> let image = document.getElementById('image');
+> let sculptureList = [{
+>   name: 'Homenaje a la Neurocirugía',
+>   artist: 'Marta Colvin Andrade',
+>   description: 'Although Colvin is predominantly known for abstract themes that allude to pre-Hispanic symbols, this gigantic sculpture, an homage to neurosurgery, is one of her most recognizable public art pieces.',
+>   url: 'https://i.imgur.com/Mx7dA2Y.jpg',
+>   alt: 'A bronze statue of two crossed hands delicately holding a human brain in their fingertips.'  
+> }];
+>
+> // 使 UI 匹配当前 state
+> updateDOM();
+>
+> ```
+
+
+
+
+
+### state是隔离且私有的
+
+State 是屏幕上组件实例内部的状态。换句话说，**如果你渲染同一个组件两次，每个副本都会有完全隔离的 state**！改变其中一个不会影响另一个。
+
+```jsx
+import Gallery from './Gallery.js';
+
+export default function Page() {
+  return (
+    <div className="Page">
+      <Gallery />
+      <Gallery />
+    </div>
+  );
+}
+```
+
+例如我们渲染了两个组件，它们内部各自的state都是相互独立互不影响的
+
+这就是 state 与声明在模块顶部的普通变量不同的原因。 State 不依赖于特定的函数调用或在代码中的位置，它的作用域“只限于”屏幕上的某块特定区域。你渲染了两个 `<Gallery />` 组件，所以它们的 state 是分别存储的。
+
+还要注意 `Page` 组件“不知道”关于 `Gallery` state 的任何信息，甚至不知道它是否有任何 state。与 props 不同，**state 完全私有于声明它的组件**。父组件无法更改它。这使你可以向任何组件添加或删除 state，而不会影响其他组件。
+
+
+
+## 渲染和提交
+
+组件显示到屏幕之前，其必须被 React 渲染。理解这些处理步骤将帮助你思考代码的执行过程并能解释其行为。
+
+想象一下，你的组件是厨房里的厨师，把食材烹制成美味的菜肴。在这种场景下，React 就是一名服务员，他会帮客户们下单并为他们送来所点的菜品。这种请求和提供 UI 的过程总共包括三个步骤：
+
+1. **触发** 一次渲染（把客人的点单分发到厨房）
+2. **渲染** 组件（在厨房准备订单）
+3. **提交** 到 DOM（将菜品放在桌子上）
+
+
+![71247020551](React.assets/1712470205513.png)
+
+
+
+### 步骤一：触发一次渲染
+
+有两种原因会导致组件的渲染:
+
+1. 组件的 **初次渲染。**
+2. 组件（或者其祖先之一）的 **状态发生了改变。**
+
+
+
+#### 初次渲染
+
+当应用启动时，会触发初次渲染。
+
+它是通过调用目标 DOM 节点的 [`createRoot`](https://react.docschina.org/reference/react-dom/client/createRoot)，然后用你的组件调用 `render` 函数完成的：
+
+```jsx
+import Image from './Image.js';
+import { createRoot } from 'react-dom/client';
+
+const root = createRoot(document.getElementById('root'))
+root.render(<Image />);
+
+```
+
+
+
+#### 状态更新时重新渲染
+
+一旦组件被初次渲染，你就可以通过使用 [`set` 函数](https://react.docschina.org/reference/react/useState#setstate) 更新其状态来触发之后的渲染。更新组件的状态会自动将一次渲染送入队列。（你可以把这种情况想象成餐厅客人在第一次下单之后又点了茶、点心和各种东西，具体取决于他们的胃口。）
+
+
+
+
+
+### 步骤二：React渲染你的组件
+
+在你触发渲染后，React 会调用你的组件来确定要在屏幕上显示的内容。**“渲染中” 即 React 在调用你的组件。**
+
+- **在进行初次渲染时,** React 会调用根组件。
+- **对于后续的渲染,** React 会调用内部状态更新触发了渲染的函数组件。
+
+这个过程是递归的：如果更新后的组件会返回某个另外的组件，那么 React 接下来就会渲染 *那个* 组件，而如果那个组件又返回了某个组件，那么 React 接下来就会渲染 *那个* 组件，以此类推。这个过程会持续下去，直到没有更多的嵌套组件并且 React 确切知道哪些东西应该显示到屏幕上为止。
+
+```jsx
+export default function Gallery() {
+  return (
+    <section>
+      <h1>鼓舞人心的雕塑</h1>
+      <Image />
+      <Image />
+      <Image />
+    </section>
+  );
+}
+
+function Image() {
+  return (
+    <img
+      src="https://i.imgur.com/ZF6s192.jpg"
+      alt="'Floralis Genérica' by Eduardo Catalano: a gigantic metallic flower sculpture with reflective petals"
+    />
+  );
+}
+
+```
+
+- **在初次渲染中，** React 将会为`<section>`、`<h1>` 和三个 `<img>` 标签 [创建 DOM 节点](https://developer.mozilla.org/docs/Web/API/Document/createElement)。
+- **在一次重渲染过程中,** React 将计算它们的哪些属性（如果有的话）自上次渲染以来已更改。在下一步（提交阶段）之前，它不会对这些信息执行任何操作。
+
+> **陷阱：**
+>
+> 渲染必须始终是一次 [纯计算](https://react.docschina.org/learn/keeping-components-pure):
+>
+> - **输入相同，输出相同。** 给定相同的输入，组件应始终返回相同的 JSX。（当有人点了西红柿沙拉时，他们不应该收到洋葱沙拉！）
+> - **只做它自己的事情。** 它不应更改任何存在于渲染之前的对象或变量。（一个订单不应更改其他任何人的订单。）
+>
+> 否则，随着代码库复杂性的增加，你可能会遇到令人困惑的错误和不可预测的行为。在 “严格模式” 下开发时，React 会调用每个组件的函数两次，这可以帮助发现由不纯函数引起的错误。
+
+> 性能优化：
+>
+> 如果更新的组件在树中的位置非常高，渲染更新后的组件内部所有嵌套组件的默认行为将不会获得最佳性能。如果你遇到了性能问题，[性能](https://reactjs.org/docs/optimizing-performance.html) 章节描述了几种可选的解决方案 。
+>
+> **不要过早进行优化！**
+
+
+
+
+
+### 步骤三：React将更改提交到DOM上
+
+在渲染（调用）你的组件之后，React 将会修改 DOM。
+
+- **对于初次渲染，** React 会使用 [`appendChild()`](https://developer.mozilla.org/docs/Web/API/Node/appendChild) DOM API 将其创建的所有 DOM 节点放在屏幕上。
+- **对于重渲染，** React 将应用最少的必要操作（在渲染时计算！），以使得 DOM 与最新的渲染输出相互匹配。
+
+**React 仅在渲染之间存在差异时才会更改 DOM 节点。** 
+
+```jsx
+export default function Clock({ time }) {
+  return (
+    <>
+      <h1>{time}</h1>
+      <input />
+    </>
+  );
+}
+```
+
+如上，该组件每秒使用从父组件传递下来的不同prop进行重新渲染，但是input框的文本不会在重新渲染时消失，因为React 只会使用最新的 `time` 更新 `<h1>` 标签的内容，它看到 `<input>` 标签出现在 JSX 中与上次相同的位置，因此 React 不会修改 `<input>` 标签或它的 `value`！
+
+
+
+### 尾声：浏览器绘制
+
+在渲染完成并且 React 更新 DOM 之后，浏览器就会重新绘制屏幕。尽管这个过程被称为“浏览器渲染”（“browser rendering”），但我们还是将它称为“绘制”（“painting”），以避免在这些文档的其余部分中出现混淆。
+
+![71247112954](React.assets/1712471129542.png)
+
+
+
+
+
+
+
+## state如图一张快照
+
+### 设置state会触发渲染
+
+如下一个例子：
+
+```jsx
+import { useState } from 'react';
+
+export default function Form() {
+  const [isSent, setIsSent] = useState(false);
+  const [message, setMessage] = useState('Hi!');
+  if (isSent) {
+    return <h1>Your message is on its way!</h1>
+  }
+  return (
+    <form onSubmit={(e) => {
+      e.preventDefault();
+      setIsSent(true);
+      sendMessage(message);
+    }}>
+      <textarea
+        placeholder="Message"
+        value={message}
+        onChange={e => setMessage(e.target.value)}
+      />
+      <button type="submit">Send</button>
+    </form>
+  );
+}
+
+function sendMessage(message) {
+  // ...
+}
+
+```
+
+当你单击按钮时会发生以下情况：
+
+1. 执行 `onSubmit` 事件处理函数。
+2. `setIsSent(true)` 将 `isSent` 设置为 `true` 并排列一个新的渲染。
+3. React 根据新的 `isSent` 值重新渲染组件。
+
+
+
+### 渲染会及时生成一张快照
+
+React中的**渲染**概念相当于**React正在调用你的组件——一个函数**
+
+你从该函数所返回的JSX就像是UI的一张照片，它的所有**props、事件处理函数和内部变量**都是 **根据当前渲染时的state** 被计算出来的
+
+当 React 重新渲染一个组件时：
+
+1. React 会再次调用你的函数
+2. 函数会返回新的 JSX 快照
+3. React 会更新界面以匹配返回的快照
+
+![71247187685](React.assets/1712471876851.png)
+
+![71247191742](React.assets/1712471917426.png)
+
+**原理：**
+
+```jsx
+import { useState } from 'react';
+
+export default function Counter() {
+  const [number, setNumber] = useState(0);
+
+  return (
+    <>
+      <h1>{number}</h1>
+      <button onClick={() => {
+        setNumber(number + 1);
+        setNumber(number + 1);
+        setNumber(number + 1);
+      }}>+3</button>
+    </>
+  )
+}
+
+```
+
+请注意，每次点击只会让 `number` 递增一次！
+
+这是因为：**设置state只会为下一次渲染变更state的值**
+
+以下是这个按钮的点击事件处理函数通知 React 要做的事情：
+
+1. `setNumber(number+1)`：此次快照中的state即number时0，所以`setNumber(0+1)`
+   - React会准备在下一次渲染中将number更改为1
+2. `setNumber(number+1)`：此次快照中的state即number时0，所以`setNumber(0+1)`
+   - React会准备在下一次渲染中将number更改为1
+3.  `setNumber(number+1)`：此次快照中的state即number时0，所以`setNumber(0+1)`
+   - React会准备在下一次渲染中将number更改为1
+
+尽管你调用了三次`setNumber()`，但是在这次渲染的快照中的state一直是0，因此你会三次都将state设置为1，这就是为什么点击一次按钮，只会让`number`递增一次
+
+本质就是：
+
+```jsx
+<button onClick={() => {
+  setNumber(0 + 1);
+  setNumber(0 + 1);
+  setNumber(0 + 1);
+}}>+3</button>
+```
+
+下次渲染则变成
+
+```jsx
+<button onClick={() => {
+  setNumber(1 + 1);
+  setNumber(1 + 1);
+  setNumber(1 + 1);
+}}>+3</button>
+```
+
+
+
+
+
+### 随时间变化的state
+
+举个例子：
+
+```jsx
+import { useState } from 'react';
+
+export default function Counter() {
+  const [number, setNumber] = useState(0);
+
+  return (
+    <>
+      <h1>{number}</h1>
+      <button onClick={() => {
+        setNumber(number + 5);
+        setTimeout(() => {
+          alert(number);
+        }, 3000);
+      }}>+5</button>
+    </>
+  )
+}
+
+```
+
+执行这段代码，我们惊讶地发现打印的值是0
+
+到提示框运行时，React中存储的state可能已经发生了改变，但它**仍然会使用用户与之交互时状态的快照进行调度，也就是用户与之交互时的那张快照的state**
+
+**一个 state 变量的值永远不会在一次渲染的内部发生变化，** 即使其事件处理函数的代码是异步的。在 **那次渲染的** `onClick` 内部，`number` 的值即使在调用 `setNumber(number + 5)` 之后也还是 `0`。它的值在 React 通过调用你的组件“获取 UI 的快照”时就被“固定”了。
+
+但如果你希望在重新渲染之前能够读取最新的state怎么办？？
+
+你应该使用 [状态更新函数](https://react.docschina.org/learn/queueing-a-series-of-state-updates)，下一页将会介绍！
+
+
+
+## 将一系列state更新加入队列
+
+### React会对state更新进行批处理
+
+前面的例子我们知道了即使我们在一次事件处理中，修改多次state，那么结果也不会改变多次
+
+```jsx
+import { useState } from 'react';
+
+export default function Counter() {
+  const [number, setNumber] = useState(0);
+
+  return (
+    <>
+      <h1>{number}</h1>
+      <button onClick={() => {
+        setNumber(number + 1);
+        setNumber(number + 1);
+        setNumber(number + 1);
+      }}>+3</button>
+    </>
+  )
+}
+
+```
+
+但是这里还有另外一个影响因素需要讨论。**React 会等到事件处理函数中的** 所有 **代码都运行完毕再处理你的 state 更新。** 
+
+这就是为什么重新渲染只会发生在所有这些 `setNumber()` 调用 **之后** 的原因。
+
+这可能会让你想起餐厅里帮你点菜的服务员。服务员不会在你说第一道菜的时候就跑到厨房！相反，他们会让你把菜点完，让你修改菜品，甚至会帮桌上的其他人点菜。
+
+![71247386517](React.assets/1712473865170.png)
+
+这让你可以更新多个 state 变量——甚至来自多个组件的 state 变量——而不会触发太多的 [重新渲染](https://react.docschina.org/learn/render-and-commit#re-renders-when-state-updates)。但这也意味着只有在你的事件处理函数及其中任何代码执行完成 **之后**，UI 才会更新。这种特性也就是 **批处理**，它会使你的 React 应用运行得更快。它还会帮你避免处理只更新了一部分 state 变量的令人困惑的“半成品”渲染。
+
+
+
+
+
+### 在下次渲染前多次更新同一个state
+
+```jsx
+import { useState } from 'react';
+
+export default function Counter() {
+  const [number, setNumber] = useState(0);
+
+  return (
+    <>
+      <h1>{number}</h1>
+      <button onClick={() => {
+        setNumber(n => n + 1);
+        setNumber(n => n + 1);
+        setNumber(n => n + 1);
+      }}>+3</button>
+    </>
+  )
+}
+
+```
+
+如上，这里我们为`setNumber()`函数传入一个函数`n => n + 1`被称为**更新函数**，当你将它传递给一个 state 设置函数时：
+
+1. React 会将此函数**加入队列**，以便在事件处理函数中的所有其他代码运行后进行处理。
+2. **在下一次渲染期间**，React 会**遍历队列**并给你更新之后的**最终 state**。
+
+下面是 React 在执行事件处理函数时处理这几行代码的过程：
+
+1. `setNumber(n => n + 1)`：`n => n + 1` 是一个函数。React 将它加入队列。
+2. `setNumber(n => n + 1)`：`n => n + 1` 是一个函数。React 将它加入队列。
+3. `setNumber(n => n + 1)`：`n => n + 1` 是一个函数。React 将它加入队列。
+
+**当你在下次渲染期间调用 `useState` 时，React 会遍历队列**。之前的 `number` state 的值是 `0`，所以这就是 React 作为参数 `n` 传递给第一个更新函数的值。然后 React 会获取你上一个更新函数的返回值，并将其作为 `n` 传递给下一个更新函数，以此类推：
+
+| 更新队列     | `n`  | 返回值      |
+| ------------ | ---- | ----------- |
+| `n => n + 1` | `0`  | `0 + 1 = 1` |
+| `n => n + 1` | `1`  | `1 + 1 = 2` |
+| `n => n + 1` | `2`  | `2 + 1 = 3` |
+
+React 会保存 `3` 为最终结果并从 `useState` 中返回。
+
+因此，上面的例子中会正确地增加3
+
+
+
+下面是两个例子：
+
+- 在替换state后更新state
+
+```jsx
+import { useState } from 'react';
+
+export default function Counter() {
+  const [number, setNumber] = useState(0);
+
+  return (
+    <>
+      <h1>{number}</h1>
+      <button onClick={() => {
+        setNumber(number + 5);
+        setNumber(n => n + 1);
+      }}>增加数字</button>
+    </>
+  )
+}
+
+```
+
+在点击事件触发后：
+
+1. `setNumber(number + 5)`：`number` 为 `0`，所以 `setNumber(0 + 5)`。React 将 *“替换为 5”* 添加到其队列中。
+2. `setNumber(n => n + 1)`：`n => n + 1` 是一个更新函数。 React 将 **该函数** 添加到其队列中。
+
+在下次渲染遇到`useState`时，React会遍历state队列
+
+| 更新队列     | `n`           | 返回值      |
+| ------------ | ------------- | ----------- |
+| “替换为 `5`” | `0`（未使用） | `5`         |
+| `n => n + 1` | `5`           | `5 + 1 = 6` |
+
+React 会保存 `6` 为最终结果并从 `useState` 中返回。
+
+
+
+- 在更新state后替换state
+
+```jsx
+import { useState } from 'react';
+
+export default function Counter() {
+  const [number, setNumber] = useState(0);
+
+  return (
+    <>
+      <h1>{number}</h1>
+      <button onClick={() => {
+        setNumber(number + 5);
+        setNumber(n => n + 1);
+        setNumber(42);
+      }}>增加数字</button>
+    </>
+  )
+}
+
+```
+
+以下是 React 在执行事件处理函数时处理这几行代码的过程：
+
+1. `setNumber(number + 5)`：`number` 为 `0`，所以 `setNumber(0 + 5)`。React 将 *“替换为 5”* 添加到其队列中。
+2. `setNumber(n => n + 1)`：`n => n + 1` 是一个更新函数。React 将该函数添加到其队列中。
+3. `setNumber(42)`：React 将 *“替换为 42”* 添加到其队列中。
+
+在下一次渲染遇到`useState`，React会遍历state队列
+
+| 更新队列      | `n`           | 返回值      |
+| ------------- | ------------- | ----------- |
+| “替换为 `5`”  | `0`（未使用） | `5`         |
+| `n => n + 1`  | `5`           | `5 + 1 = 6` |
+| “替换为 `42`” | `6`（未使用） | `42`        |
+
+然后 React 会保存 `42` 为最终结果并从 `useState` 中返回。
+
+> 总结：
+>
+> 实际上，`setNumber(5)`也会像**更新函数**`setNumber(n=>5)`一样执行，只不过我们不这样写！
+>
+> 
+>
+> 需要注意的是：
+>
+> 因为**更新函数**会在渲染期间执行，因此**更新函数必须是 纯函数 并且只返回结果**
+>
+> **不要**尝试从它们内部设置 state 或者执行其他副作用！
+>
+> 在严格模式下，React 会执行每个更新函数两次（但是丢弃第二个结果）以便帮助你发现错误。
+
+
+
+#### 命名规范
+
+通常可以通过相应 state 变量的第一个字母来命名更新函数的参数：
+
+```jsx
+setEnabled(e => !e);// enable的e
+setLastName(ln => ln.reverse());// lastname的ln
+setFriendCount(fc => fc * 2);// friendcount的fc
+```
+
+如果你喜欢更冗长的代码，另一个常见的惯例是重复使用完整的 state 变量名称，如 `setEnabled(enabled => !enabled)`，或使用前缀，如 `setEnabled(prevEnabled => !prevEnabled)`。
+
+
+
+
+
+## 更新state中的对象
+
+state 中可以保存任意类型的 JavaScript 值，包括对象。但是，你不应该直接修改存放在 React state 中的对象。相反，当你想要更新一个对象时，你需要创建一个新的对象（或者将其拷贝一份），然后将 state 更新为此对象。
+
+
+
+### 什么是mutation
+
+你可以在 state 中存放任意类型的 JavaScript 值。
+
+```jsx
+const [x, setX] = useState(0);
+
+setX(5);
+```
+
+到目前为止，我们已经尝试过在 state 中存放数字、字符串和布尔值，这些类型的值在 JavaScript 中是**不可变**（immutable）的，这意味着它们不能被改变或是只读的。
+
+不可变即state `x` 从 `0` 变为 `5`，但是数字 `0` 本身并没有发生改变。
+
+你可以通过替换它们的值以触发一次重新渲染。
+
+现在考虑 state 中存放对象的情况：
+
+```jsx
+const [position, setPosition] = useState({ x: 0, y: 0 });
+```
+
+从技术上来讲，可以改变对象自身的内容。**当你这样做时，就制造了一个 mutation**：
+
+```jsx
+position.x = 5;
+```
+
+然而，虽然严格来说 React state 中存放的对象是可变的，但**你应该像处理数字、布尔值、字符串一样将它们视为不可变的。因此你应该替换它们的值，而不是对它们进行修改。**
+
+
+
+### 将state看作只读的
+
+换句话说，你应该 **把所有存放在 state 中的 JavaScript 对象都视为只读的**。
+
+看下面这个例子：
+
+```jsx
+import { useState } from 'react';
+export default function MovingDot() {
+  const [position, setPosition] = useState({
+    x: 0,
+    y: 0
+  });
+  return (
+    <div
+      onPointerMove={e => {
+        position.x = e.clientX;
+        position.y = e.clientY;
+      }}
+      style={{
+        position: 'relative',
+        width: '100vw',
+        height: '100vh',
+      }}>
+      <div style={{
+        position: 'absolute',
+        backgroundColor: 'red',
+        borderRadius: '50%',
+        transform: `translate(${position.x}px, ${position.y}px)`,
+        left: -10,
+        top: -10,
+        width: 20,
+        height: 20,
+      }} />
+    </div>
+  );
+}
+```
+
+这个组件渲染了一个看板，其中我们设置了一个红点让它跟随鼠标移动，但是这里并没有生效
+
+问题出现在这里：
+
+```jsx
+onPointerMove={e => {
+  position.x = e.clientX;
+  position.y = e.clientY;
+}}
+```
+
+我们直接修改了**上一次渲染中**的快照state对象，但是没有使用state的设置函数，React不知道对象已经更改，因此没有效果，这就像在吃完饭之后才尝试去改变要点的菜一样
+
+虽然在一些情况下，直接修改 state 可能是有效的，但我们并不推荐这么做。你应该把在渲染过程中可以访问到的 state 视为只读的。
+
+因此，我们需要重新创建一个对象并且使用到state的设置函数
+
+```jsx
+onPointerMove={e => {
+  setPosition({
+    x: e.clientX,
+    y: e.clientY
+  });
+}}
+```
+
+> 局部mutation是可以接受的：
+>
+> 像这样的代码是有问题的，因为它改变了 state 中现有的对象：
+>
+> ```jsx
+> position.x = e.clientX;
+>
+> position.y = e.clientY;
+> ```
+>
+> 但是像这样的代码就 **没有任何问题**，因为你改变的是你刚刚创建的一个新的对象：
+>
+> ```jsx
+> const nextPosition = {};
+>
+> nextPosition.x = e.clientX;
+>
+> nextPosition.y = e.clientY;
+>
+> setPosition(nextPosition);
+> ```
+>
+> 事实上，它完全等同于下面这种写法：
+>
+> ```jsx
+> setPosition({
+>
+>   x: e.clientX,
+>
+>   y: e.clientY
+>
+> });
+> ```
+>
+> 只有当你改变已经处于 state 中的 **现有** 对象时，mutation 才会成为问题。而修改一个你刚刚创建的对象就不会出现任何问题，因为 **还没有其他的代码引用它**。改变它并不会意外地影响到依赖它的东西。这叫做“局部 mutation”。你甚至可以 [在渲染的过程中](https://react.docschina.org/learn/keeping-components-pure#local-mutation-your-components-little-secret) 进行“局部 mutation”的操作。这种操作既便捷又没有任何问题！
+
+
+
+### 使用展开语法复制对象
+
+有时候我们需要更新一个对象中的一个字段，保留其余数据
+
+你可以使用 `...` [对象展开](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/Spread_syntax#spread_in_object_literals) 语法，这样你就不需要单独复制每个属性。
+
+```jsx
+setPerson({
+  ...person, // 复制上一个 person 中的所有字段
+  firstName: e.target.value // 但是覆盖 firstName 字段 
+});
+```
+
+请注意 `...` 展开语法本质是是“**浅拷贝**”——它只会复制一层。这使得它的执行速度很快，但是也意味着当你想要更新一个**嵌套属性**时，你必须得多次使用展开语法。
+
+> **使用一个事件处理函数来更新多个字段：**
+>
+> 这一点可以通过在对象的定义中使用 `[` 和 `]` 括号来实现属性的动态命名
+>
+> ```jsx
+> import { useState } from 'react';
+>
+> export default function Form() {
+>   const [person, setPerson] = useState({
+>     firstName: 'Barbara',
+>     lastName: 'Hepworth',
+>     email: 'bhepworth@sculpture.com'
+>   });
+>
+>   function handleChange(e) {
+>     setPerson({
+>       ...person,
+>       [e.target.name]: e.target.value
+>     });
+>   }
+>
+>   return (
+>     <>
+>       <label>
+>         First name:
+>         <input
+>           name="firstName"
+>           value={person.firstName}
+>           onChange={handleChange}
+>         />
+>       </label>
+>       <label>
+>         Last name:
+>         <input
+>           name="lastName"
+>           value={person.lastName}
+>           onChange={handleChange}
+>         />
+>       </label>
+>       <label>
+>         Email:
+>         <input
+>           name="email"
+>           value={person.email}
+>           onChange={handleChange}
+>         />
+>       </label>
+>       <p>
+>         {person.firstName}{' '}
+>         {person.lastName}{' '}
+>         ({person.email})
+>       </p>
+>     </>
+>   );
+> }
+>
+> ```
+>
+> 在这里，`e.target.name` 引用了 `<input>` 这个 DOM 元素的 `name` 属性。
+
+
+
+### 更新一个嵌套对象
+
+考虑下面这种结构的嵌套对象：
+
+```jsx
+const [person, setPerson] = useState({
+  name: 'Niki de Saint Phalle',
+  artwork: {
+    title: 'Blue Nana',
+    city: 'Hamburg',
+    image: 'https://i.imgur.com/Sd1AgUOm.jpg',
+  }
+});
+```
+
+如果你想要更新 `person.artwork.city` 的值：
+
+了修改 `city` 的值，你首先需要创建一个新的 `artwork` 对象（其中预先填充了上一个 `artwork` 对象中的数据），然后创建一个新的 `person` 对象，并使得其中的 `artwork` 属性指向新创建的 `artwork` 对象：
+
+```jsx
+const nextArtwork = { ...person.artwork, city: 'New Delhi' };
+const nextPerson = { ...person, artwork: nextArtwork };
+setPerson(nextPerson);
+```
+
+或者，写成一个函数调用：
+
+```jsx
+setPerson({
+  ...person, // 复制其它字段的数据 
+  artwork: { // 替换 artwork 字段 
+    ...person.artwork, // 复制之前 person.artwork 中的数据
+    city: 'New Delhi' // 但是将 city 的值替换为 New Delhi！
+  }
+});
+```
+
+> 对象并非嵌套：
+>
+> 下面这个对象从代码上来看是“嵌套”的：
+>
+> ```jsx
+> let obj = {
+>   name: 'Niki de Saint Phalle',
+>   artwork: {
+>     title: 'Blue Nana',
+>     city: 'Hamburg',
+>     image: 'https://i.imgur.com/Sd1AgUOm.jpg',
+>   }
+> };
+> ```
+>
+> 然而，当我们思考对象的特性时，“嵌套”并不是一个非常准确的方式。当这段代码运行的时候，不存在“嵌套”的对象。你实际上看到的是两个不同的对象：
+>
+> ```jsx
+> let obj1 = {
+>   title: 'Blue Nana',
+>   city: 'Hamburg',
+>   image: 'https://i.imgur.com/Sd1AgUOm.jpg',
+> };
+>
+> let obj2 = {
+>   name: 'Niki de Saint Phalle',
+>   artwork: obj1
+> };
+> ```
+>
+> 对象 `obj1` 并不处于 `obj2` 的“内部”。例如，下面的代码中，`obj3` 中的属性也可以指向 `obj1`：
+>
+> ```jsx
+> let obj1 = {
+>   title: 'Blue Nana',
+>   city: 'Hamburg',
+>   image: 'https://i.imgur.com/Sd1AgUOm.jpg',
+> };
+>
+> let obj2 = {
+>   name: 'Niki de Saint Phalle',
+>   artwork: obj1
+> };
+>
+> let obj3 = {
+>   name: 'Copycat',
+>   artwork: obj1
+> };
+> ```
+>
+> 如果你直接修改 `obj3.artwork.city`，就会同时影响 `obj2.artwork.city` 和 `obj1.city`。这是因为 `obj3.artwork`、`obj2.artwork` 和 `obj1` 都指向同一个对象。当你用“嵌套”的方式看待对象时，很难看出这一点。相反，**它们是相互独立的对象，只不过是用属性“指向”彼此而已**。
+
+
+
+### 使用Immer编写简洁的嵌套对象更新
+
+如果你的 state 有多层的嵌套，你或许应该考虑 [将其扁平化](https://react.docschina.org/learn/choosing-the-state-structure#avoid-deeply-nested-state)。但是，如果你不想改变 state 的数据结构，你可能更喜欢用一种更便捷的方式来实现嵌套展开的效果。[Immer](https://github.com/immerjs/use-immer) 是一个非常流行的库，它可以让你使用简便但可以直接修改的语法编写代码，并会帮你处理好复制的过程。通过使用 Immer，你写出的代码看起来就像是你“打破了规则”而直接修改了对象：
+
+```jsx
+updatePerson(draft => {
+  draft.artwork.city = 'Lagos';
+});
+```
+
+但是不同于一般的 mutation，它并不会覆盖之前的 state！
+
+尝试使用 Immer:
+
+1. 运行 `npm install use-immer` 添加 Immer 依赖
+2. 用 `import { useImmer } from 'use-immer'` 替换掉 `import { useState } from 'react'`
+
+例子：
+
+```jsx
+import { useImmer } from 'use-immer';
+
+export default function Form() {
+  const [person, updatePerson] = useImmer({
+    name: 'Niki de Saint Phalle',
+    artwork: {
+      title: 'Blue Nana',
+      city: 'Hamburg',
+      image: 'https://i.imgur.com/Sd1AgUOm.jpg',
+    }
+  });
+
+  function handleNameChange(e) {
+    updatePerson(draft => {
+      draft.name = e.target.value;
+    });
+  }
+
+  function handleTitleChange(e) {
+    updatePerson(draft => {
+      draft.artwork.title = e.target.value;
+    });
+  }
+
+  function handleCityChange(e) {
+    updatePerson(draft => {
+      draft.artwork.city = e.target.value;
+    });
+  }
+
+  function handleImageChange(e) {
+    updatePerson(draft => {
+      draft.artwork.image = e.target.value;
+    });
+  }
+
+  return (
+    <>
+      <label>
+        Name:
+        <input
+          value={person.name}
+          onChange={handleNameChange}
+        />
+      </label>
+      <label>
+        Title:
+        <input
+          value={person.artwork.title}
+          onChange={handleTitleChange}
+        />
+      </label>
+      <label>
+        City:
+        <input
+          value={person.artwork.city}
+          onChange={handleCityChange}
+        />
+      </label>
+      <label>
+        Image:
+        <input
+          value={person.artwork.image}
+          onChange={handleImageChange}
+        />
+      </label>
+      <p>
+        <i>{person.artwork.title}</i>
+        {' by '}
+        {person.name}
+        <br />
+        (located in {person.artwork.city})
+      </p>
+      <img 
+        src={person.artwork.image} 
+        alt={person.artwork.title}
+      />
+    </>
+  );
+}
+
+```
+
+> Immer是如何运行的
+>
+> 由 Immer 提供的 `draft` 是一种特殊类型的对象，被称为 [Proxy](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy)，它会记录你用它所进行的操作。这就是你能够随心所欲地直接修改对象的原因所在！从原理上说，Immer 会弄清楚 `draft` 对象的哪些部分被改变了，并会依照你的修改创建出一个全新的对象。
+
+
+
+> 为什么在React中不推荐直接修改state
+>
+> 有以下几个原因：
+>
+> - **调试**：如果你使用 `console.log` 并且不直接修改 state，你之前日志中的 state 的值就不会被新的 state 变化所影响。这样你就可以清楚地看到两次渲染之间 state 的值发生了什么变化
+> - **优化**：React 常见的 [优化策略](https://react.docschina.org/reference/react/memo) 依赖于如果之前的 props 或者 state 的值和下一次相同就跳过渲染。如果你从未直接修改 state ，那么你就可以很快看到 state 是否发生了变化。如果 `prevObj === obj`，那么你就可以肯定这个对象内部并没有发生改变。
+> - **新功能**：我们正在构建的 React 的新功能依赖于 state 被 [像快照一样看待](https://react.docschina.org/learn/state-as-a-snapshot) 的理念。如果你直接修改 state 的历史版本，可能会影响你使用这些新功能。
+> - **需求变更**：有些应用功能在不出现任何修改的情况下会更容易实现，比如实现撤销/恢复、展示修改历史，或是允许用户把表单重置成某个之前的值。这是因为你可以把 state 之前的拷贝保存到内存中，并适时对其进行再次使用。如果一开始就用了直接修改 state 的方式，那么后面要实现这样的功能就会变得非常困难。
+> - **更简单的实现**：React 并不依赖于 mutation ，所以你不需要对对象进行任何特殊操作。它不需要像很多“响应式”的解决方案一样去劫持对象的属性、总是用代理把对象包裹起来，或者在初始化时做其他工作。这也是为什么 React 允许你把任何对象存放在 state 中——不管对象有多大——而不会造成有任何额外的性能或正确性问题的原因。
 
 
 
