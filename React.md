@@ -1129,6 +1129,34 @@ function Item({ name, isPacked }) {
 
 
 
+### 记录一下遇到的写法
+
+```jsx
+  return (
+    <form onSubmit={e => {
+      e.preventDefault();
+      setIsEditing(!isEditing);
+    }}>
+      <label>
+        First name:{' '}
+        // 直接在jsx里的大括号内条件判断返回jsx
+        {isEditing ? (
+          <input
+            value={firstName}
+            onChange={e => {
+              setFirstName(e.target.value)
+            }}
+          />
+        ) : (
+          <b>{firstName}</b>
+        )}
+      </label>
+    </form>
+  );
+```
+
+
+
 
 
 
@@ -3026,6 +3054,1290 @@ export default function Form() {
 > - **新功能**：我们正在构建的 React 的新功能依赖于 state 被 [像快照一样看待](https://react.docschina.org/learn/state-as-a-snapshot) 的理念。如果你直接修改 state 的历史版本，可能会影响你使用这些新功能。
 > - **需求变更**：有些应用功能在不出现任何修改的情况下会更容易实现，比如实现撤销/恢复、展示修改历史，或是允许用户把表单重置成某个之前的值。这是因为你可以把 state 之前的拷贝保存到内存中，并适时对其进行再次使用。如果一开始就用了直接修改 state 的方式，那么后面要实现这样的功能就会变得非常困难。
 > - **更简单的实现**：React 并不依赖于 mutation ，所以你不需要对对象进行任何特殊操作。它不需要像很多“响应式”的解决方案一样去劫持对象的属性、总是用代理把对象包裹起来，或者在初始化时做其他工作。这也是为什么 React 允许你把任何对象存放在 state 中——不管对象有多大——而不会造成有任何额外的性能或正确性问题的原因。
+
+
+
+## 更新state中的数组
+
+数组是另外一种可以存储在 state 中的 JavaScript 对象，它虽然是可变的，但是却应该被视为不可变。同对象一样，当你想要更新存储于 state 中的数组时，你需要创建一个新的数组（或者创建一份已有数组的拷贝值），并使用新数组设置 state。
+
+[同对象一样](https://zh-hans.react.dev/learn/updating-objects-in-state)，**你需要将 React state 中的数组视为只读的**。这意味着你不应该使用类似于 `arr[0] = 'bird'` 这样的方式来重新分配数组中的元素，也不应该使用会直接修改原始数组的方法，例如 `push()` 和 `pop()`。
+
+相反，每次要更新一个数组时，你需要把一个**新**的数组传入 state 的 setting 方法中。为此，你可以通过使用像 `filter()` 和 `map()` 这样不会直接修改原始值的方法，从原始数组生成一个新的数组。然后你就可以将 state 设置为这个新生成的数组。
+
+下面是一些数组的常用方法，当你操作 React state 中的数组时，你需要避免使用左列的方法，而首选右列的方法：
+
+| 避免使用 (会改变原始数组) | 推荐使用 (会返回一个新数组）  |                                                              |
+| ------------------------- | ----------------------------- | ------------------------------------------------------------ |
+| 添加元素                  | `push`，`unshift`             | `concat`，`[...arr]` 展开语法（[例子](https://zh-hans.react.dev/learn/updating-arrays-in-state#adding-to-an-array)） |
+| 删除元素                  | `pop`，`shift`，`splice`      | `filter`，`slice`（[例子](https://zh-hans.react.dev/learn/updating-arrays-in-state#removing-from-an-array)） |
+| 替换元素                  | `splice`，`arr[i] = ...` 赋值 | `map`（[例子](https://zh-hans.react.dev/learn/updating-arrays-in-state#replacing-items-in-an-array)） |
+| 排序                      | `reverse`，`sort`             | 先将数组复制一份（[例子](https://zh-hans.react.dev/learn/updating-arrays-in-state#making-other-changes-to-an-array)） |
+
+或者，你可以[使用 Immer](https://zh-hans.react.dev/learn/updating-arrays-in-state#write-concise-update-logic-with-immer) ，这样你便可以使用表格中的所有方法了。
+
+> 坑点：
+>
+> - `slice`可以拷贝数组或数组的一部分
+> - `splice`会直接修改原始数组（插入或者删除元素）
+
+
+
+### 添加元素
+
+其包含了原始数组的所有元素 **以及** 一个在末尾的新元素。这可以通过很多种方法实现，最简单的一种就是使用 `...` [数组展开](https://zh-hans.react.dev/a-javascript-refresher#array-spread) 语法：
+
+```jsx
+setArtists( // 替换 state
+  [ // 是通过传入一个新数组实现的
+    ...artists, // 新数组包含原数组的所有元素
+    { id: nextId++, name: name } // 并在末尾添加了一个新的元素
+  ]
+);
+```
+
+数组展开运算符还允许你把新添加的元素放在原始的 `...artists` 之前：
+
+```jsx
+setArtists([
+  { id: nextId++, name: name },
+  ...artists // 将原数组中的元素放在末尾
+]);
+```
+
+
+
+### 删除元素
+
+从数组中删除一个元素最简单的方法就是将它**过滤出去**。换句话说，你需要生成一个不包含该元素的新数组。这可以通过 `filter` 方法实现，例如：
+
+```jsx
+setArtists(
+  artists.filter(a => a.id !== artist.id)
+);
+```
+
+这里，`artists.filter(s => s.id !== artist.id)` 表示“创建一个新的数组，该数组由那些 ID 与 `artists.id` 不同的 `artists` 组成”。换句话说，每个 artist 的“删除”按钮会把 *那一个* artist 从原始数组中过滤掉，并使用过滤后的数组再次进行渲染。注意，`filter` 并不会改变原始数组。
+
+
+
+
+
+### 修改元素
+
+如果你想改变数组中的某些或全部元素，你可以用 `map()` 创建一个**新**数组。你传入 `map` 的函数决定了要根据每个元素的值或索引（或二者都要）对元素做何处理。
+
+在下面的例子中，一个数组记录了两个圆形和一个正方形的坐标。当你点击按钮时，仅有两个圆形会向下移动 100 像素。这是通过使用 `map()` 生成一个新数组实现的。
+
+```jsx
+import { useState } from 'react';
+
+let initialShapes = [
+  { id: 0, type: 'circle', x: 50, y: 100 },
+  { id: 1, type: 'square', x: 150, y: 100 },
+  { id: 2, type: 'circle', x: 250, y: 100 },
+];
+
+export default function ShapeEditor() {
+  const [shapes, setShapes] = useState(
+    initialShapes
+  );
+
+  function handleClick() {
+    const nextShapes = shapes.map(shape => {
+      if (shape.type === 'square') {
+        // 不作改变
+        return shape;
+      } else {
+        // 返回一个新的圆形，位置在下方 50px 处
+        return {
+          ...shape,
+          y: shape.y + 50,
+        };
+      }
+    });
+    // 使用新的数组进行重渲染
+    setShapes(nextShapes);
+  }
+
+  return (
+    <>
+      <button onClick={handleClick}>
+        所有圆形向下移动！
+      </button>
+      {shapes.map(shape => (
+        <div
+          key={shape.id}
+          style={{
+          background: 'purple',
+          position: 'absolute',
+          left: shape.x,
+          top: shape.y,
+          borderRadius:
+            shape.type === 'circle'
+              ? '50%' : '',
+          width: 20,
+          height: 20,
+        }} />
+      ))}
+    </>
+  );
+}
+
+```
+
+
+
+### 替换元素
+
+想要替换数组中一个或多个元素是非常常见的。但类似 `arr[0] = 'bird'` 这样的赋值语句会直接修改原始数组，所以在这种情况下，你也应该使用 `map`。通常利用索引来判断元素
+
+```jsx
+import { useState } from 'react';
+
+let initialCounters = [
+  0, 0, 0
+];
+
+export default function CounterList() {
+  const [counters, setCounters] = useState(
+    initialCounters
+  );
+
+  function handleIncrementClick(index) {
+    const nextCounters = counters.map((c, i) => {
+      if (i === index) {
+        // 递增被点击的计数器数值
+        return c + 1;
+      } else {
+        // 其余部分不发生变化
+        return c;
+      }
+    });
+    setCounters(nextCounters);
+  }
+
+  return (
+    <ul>
+      {counters.map((counter, i) => (
+        <li key={i}>
+          {counter}
+          <button onClick={() => {
+            handleIncrementClick(i);
+          }}>+1</button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+```
+
+
+
+
+
+### 插入元素
+
+有时候我们需要在数组的某个特定位置插入一个元素，但是这个位置既不在开头也不在结尾
+
+此时我们可以利用展开运算符 `...` 和 `slice()` 方法一起使用
+
+`slice()` 方法让你从数组中切出“一片”。为了将元素插入数组，你需要先展开原数组在插入点之前的切片，然后插入新元素，最后展开原数组中剩下的部分。
+
+```jsx
+import { useState } from 'react';
+
+let nextId = 3;
+const initialArtists = [
+  { id: 0, name: 'Marta Colvin Andrade' },
+  { id: 1, name: 'Lamidi Olonade Fakeye'},
+  { id: 2, name: 'Louise Nevelson'},
+];
+
+export default function List() {
+  const [name, setName] = useState('');
+  const [artists, setArtists] = useState(
+    initialArtists
+  );
+
+  function handleClick() {
+    const insertAt = 1; // 可能是任何索引
+    // 注意这里的artists访问到的都是当前同一个state的快照  
+    const nextArtists = [
+      // 插入点之前的元素：
+      ...artists.slice(0, insertAt),
+      // 新的元素：
+      { id: nextId++, name: name },
+      // 插入点之后的元素：
+      ...artists.slice(insertAt)
+    ];
+    setArtists(nextArtists);
+    setName('');
+  }
+
+  return (
+    <>
+      <h1>振奋人心的雕塑家们：</h1>
+      <input
+        value={name}
+        onChange={e => setName(e.target.value)}
+      />
+      <button onClick={handleClick}>
+        插入
+      </button>
+      <ul>
+        {artists.map(artist => (
+          <li key={artist.id}>{artist.name}</li>
+        ))}
+      </ul>
+    </>
+  );
+}
+
+```
+
+
+
+### 其他情况
+
+总会有一些事，是你仅仅依靠展开运算符和 `map()` 或者 `filter()` 等不会直接修改原值的方法所无法做到的。例如，你可能想翻转数组，或是对数组排序。而 JavaScript 中的 `reverse()` 和 `sort()` 方法会改变原数组，所以你无法直接使用它们。
+
+**然而，你可以先拷贝这个数组，再改变这个拷贝后的值。**(当然了，你也可以直接对拷贝数组进行其他操作诸如`nextList[0] = "something"`等增删改后在进行`setState`)
+
+注意！！！！
+
+虽然这样说了，但是如果数组内 存在 **对象元素** ，我们还是不能直接修改拷贝后的内部元素，因为使用的拷贝方法可能 是 **浅拷贝**（展开运算符和slice方法都是）
+
+举个例子，像下面的代码就会带来问题。
+
+```jsx
+const nextList = [...list];
+nextList[0].seen = true; // 问题：直接修改了 list[0] 的值
+setList(nextList);
+// 虽然 nextList 和 list 是两个不同的数组，nextList[0] 和 list[0] 却指向了同一个对象。
+// 因此这是一种mutation操作
+```
+
+```jsx
+import { useState } from 'react';
+
+const initialList = [
+  { id: 0, title: 'Big Bellies' },
+  { id: 1, title: 'Lunar Landscape' },
+  { id: 2, title: 'Terracotta Army' },
+];
+
+export default function List() {
+  const [list, setList] = useState(initialList);
+
+  function handleClick() {
+    const nextList = [...list];
+    nextList.reverse();
+    setList(nextList);
+  }
+
+  return (
+    <>
+      <button onClick={handleClick}>
+        翻转
+      </button>
+      <ul>
+        {list.map(artwork => (
+          <li key={artwork.id}>{artwork.title}</li>
+        ))}
+      </ul>
+    </>
+  );
+}
+
+```
+
+
+
+
+
+### 更新数组内部的对象
+
+对象并不是 *真的* 位于数组“内部”。可能他们在代码中看起来像是在数组“内部”，但其实数组中的每个对象都是这个数组“指向”的一个存储于其它位置的值。
+
+**当你更新一个嵌套的 state 时，你需要从想要更新的地方创建拷贝值，一直这样，直到顶层。** 让我们看一下这该怎么做。
+
+```jsx
+import { useState } from 'react';
+
+let nextId = 3;
+const initialList = [
+  { id: 0, title: 'Big Bellies', seen: false },
+  { id: 1, title: 'Lunar Landscape', seen: false },
+  { id: 2, title: 'Terracotta Army', seen: true },
+];
+
+export default function BucketList() {
+  const [myList, setMyList] = useState(initialList);
+  const [yourList, setYourList] = useState(
+    initialList
+  );
+
+  function handleToggleMyList(artworkId, nextSeen) {
+    const myNextList = [...myList];
+    const artwork = myNextList.find(
+      a => a.id === artworkId
+    );
+    artwork.seen = nextSeen;
+    setMyList(myNextList);
+  }
+
+  function handleToggleYourList(artworkId, nextSeen) {
+    const yourNextList = [...yourList];
+    const artwork = yourNextList.find(
+      a => a.id === artworkId
+    );
+    artwork.seen = nextSeen;
+    setYourList(yourNextList);
+  }
+
+  return (
+    <>
+      <h1>艺术愿望清单</h1>
+      <h2>我想看的艺术清单：</h2>
+      <ItemList
+        artworks={myList}
+        onToggle={handleToggleMyList} />
+      <h2>你想看的艺术清单：</h2>
+      <ItemList
+        artworks={yourList}
+        onToggle={handleToggleYourList} />
+    </>
+  );
+}
+
+function ItemList({ artworks, onToggle }) {
+  return (
+    <ul>
+      {artworks.map(artwork => (
+        <li key={artwork.id}>
+          <label>
+            <input
+              type="checkbox"
+              checked={artwork.seen}
+              onChange={e => {
+                onToggle(
+                  artwork.id,
+                  e.target.checked
+                );
+              }}
+            />
+            {artwork.title}
+          </label>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+```
+
+问题出现在这里：
+
+```jsx
+const myNextList = [...myList];
+const artwork = myNextList.find(a => a.id === artworkId);
+artwork.seen = nextSeen; // 问题：直接修改了已有的元素
+setMyList(myNextList);
+```
+
+虽然我们拷贝出了一个新的数组，但是内部的元素是对象类型，与原数组的引用是相同的，因此修改了拷贝数组的对象的某个字段，其实是在修改**原始的** artwork 对象
+
+如果这个对象同时也被其他的state使用，这样就带来了bug
+
+**你可以使用 map 在没有 mutation 的前提下将一个旧的元素替换成更新的版本。**
+
+```jsx
+setMyList(myList.map(artwork => {
+  if (artwork.id === artworkId) {
+    // 创建包含变更的*新*对象
+    return { ...artwork, seen: nextSeen };
+  } else {
+    // 没有变更
+    return artwork;
+  }
+}));
+```
+
+
+
+
+
+
+
+### 使用Immer使得语法更简洁
+
+在没有 mutation 的前提下更新嵌套数组可能会变得有点重复。[就像对对象一样](https://zh-hans.react.dev/learn/updating-objects-in-state#write-concise-update-logic-with-immer):
+
+- 通常情况下，你应该不需要更新处于非常深层级的 state 。如果你有此类需求，你或许需要[调整一下数据的结构](https://zh-hans.react.dev/learn/choosing-the-state-structure#avoid-deeply-nested-state)，让数据变得扁平一些。
+- 如果你不想改变 state 的数据结构，你也许会更喜欢使用 [Immer](https://github.com/immerjs/use-immer) ，它让你可以继续使用方便的，但会直接修改原值的语法，并负责为你生成拷贝值。
+
+下面是我们用 Immer 来重写的艺术愿望清单的例子：
+
+```jsx
+updateMyTodos(draft => {
+  const artwork = draft.find(a => a.id === artworkId);
+  artwork.seen = nextSeen;
+});
+```
+
+请注意当使用 Immer 时，**类似 artwork.seen = nextSeen 这种会产生 mutation 的语法不会再有任何问题了：**
+
+这是因为你并不是在直接修改原始的 state，而是在修改 Immer 提供的一个特殊的 `draft` 对象。同理，你也可以为 `draft` 的内容使用 `push()` 和 `pop()` 这些会直接修改原值的方法。
+
+在幕后，Immer 总是会根据你对 `draft` 的修改来从头开始构建下一个 state。这使得你的事件处理程序非常的简洁，同时也不会直接修改 state。
+
+
+
+
+
+# 状态管理
+
+随着你的应用不断变大，更有意识的去关注应用状态如何组织，以及数据如何在组件之间流动会对你很有帮助。冗余或重复的状态往往是缺陷的根源。在本节中，你将学习如何组织好状态，如何保持状态更新逻辑的可维护性，以及如何跨组件共享状态。
+
+
+
+
+
+## 用state响应输入
+
+React 控制 UI 的方式是声明式的。你不必直接控制 UI 的各个部分，只需要声明组件可以处于的不同状态，并根据用户的输入在它们之间切换。这与设计师对 UI 的思考方式很相似。
+
+### 声明式UI与命令式UI的比较
+
+当你设计 UI 交互时，可能会去思考 UI 如何根据用户的操作而响应**变化**。想象一个让用户提交答案的表单：
+
+- 当你向表单输入数据时，“提交”按钮会随之变成**可用状态**
+- 当你点击“提交”后，表单和提交按钮都会随之变成**不可用状态**，并且会加载动画会随之**出现**
+- 如果网络请求成功，表单会随之**隐藏**，同时“提交成功”的信息会随之**出现**
+- 如果网络请求失败，错误信息会随之**出现**，同时表单又变为**可用状态**
+
+在 **命令式编程** 中，以上的过程直接告诉你如何去实现交互。你必须去根据要发生的事情写一些明确的命令去操作 UI。对此有另一种理解方式，想象一下，当你坐在车里的某个人旁边，然后一步一步地告诉他该去哪。
+
+![71254761882](React.assets/1712547618829.png)
+
+他并不知道你想去哪，只想跟着命令行动。（并且如果你发出了错误的命令，那么你就会到达错误的地方）正因为你必须从加载动画到按钮地“命令”每个元素，所以这种告诉计算机**如何**去更新 UI 的编程方式被称为**命令式编程**
+
+在这个命令式 UI 编程的例子中，表单**没有使用** React 生成，而是使用原生的 [DOM](https://developer.mozilla.org/zh-CN/docs/Web/API/Document_Object_Model):
+
+```jsx
+async function handleFormSubmit(e) {
+  e.preventDefault();
+  disable(textarea);
+  disable(button);
+  show(loadingMessage);
+  hide(errorMessage);
+  try {
+    await submitForm(textarea.value);
+    show(successMessage);
+    hide(form);
+  } catch (err) {
+    show(errorMessage);
+    errorMessage.textContent = err.message;
+  } finally {
+    hide(loadingMessage);
+    enable(textarea);
+    enable(button);
+  }
+}
+
+function handleTextareaChange() {
+  if (textarea.value.length === 0) {
+    disable(button);
+  } else {
+    enable(button);
+  }
+}
+
+function hide(el) {
+  el.style.display = 'none';
+}
+
+function show(el) {
+  el.style.display = '';
+}
+
+function enable(el) {
+  el.disabled = false;
+}
+
+function disable(el) {
+  el.disabled = true;
+}
+
+function submitForm(answer) {
+  // Pretend it's hitting the network.
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (answer.toLowerCase() === 'istanbul') {
+        resolve();
+      } else {
+        reject(new Error('Good guess but a wrong answer. Try again!'));
+      }
+    }, 1500);
+  });
+}
+
+let form = document.getElementById('form');
+let textarea = document.getElementById('textarea');
+let button = document.getElementById('button');
+let loadingMessage = document.getElementById('loading');
+let errorMessage = document.getElementById('error');
+let successMessage = document.getElementById('success');
+form.onsubmit = handleFormSubmit;
+textarea.oninput = handleTextareaChange;
+```
+
+在这个示例中，想象一下，当你需要去更新一个这样包含着不同表单的页面时，你想要添加一个新的元素/交互时，每次都需要小心地检查已经写好的内容
+
+在 React 中，你不必直接去操作 UI —— 你不必直接启用、关闭、显示或隐藏组件。相反，你只需要 **声明你想要显示的内容，** React 就会通过计算得出该如何去更新 UI。想象一下，当你上了一辆出租车并且告诉司机你想去哪，而不是事无巨细地告诉他该如何走。将你带到目的地是司机的工作，他们甚至可能知道一些你没有想过并且不知道的捷径！
+
+![71255609688](React.assets/1712556096888.png)
+
+
+
+
+
+### 声明式地考虑UI
+
+#### 确定组件中不同的视图状态
+
+首先，你需要去可视化 UI 界面中用户可能看到的所有不同的“状态”：
+
+- **无数据**：表单有一个不可用状态的“提交”按钮。
+- **输入中**：表单有一个可用状态的“提交”按钮。
+- **提交中**：表单完全处于不可用状态，加载动画出现。
+- **成功时**：显示“成功”的消息而非表单。
+- **错误时**：与输入状态类似，但会多错误的消息。
+
+下面的例子，这是一个对表单可视部分的模拟。这个模拟被一个 `status` 的属性控制，并且这个属性的默认值为 `empty`。
+
+```jsx
+export default function Form({
+  // Try 'submitting', 'error', 'success':
+  status = 'empty'
+}) {
+  if (status === 'success') {
+    return <h1>That's right!</h1>
+  }
+  return (
+    <>
+      <h2>City quiz</h2>
+      <p>
+        In which city is there a billboard that turns air into drinkable water?
+      </p>
+      <form>
+        <textarea disabled={
+          status === 'submitting'
+        } />
+        <br />
+        <button disabled={
+          status === 'empty' ||
+          status === 'submitting'
+        }>
+          Submit
+        </button>
+        {status === 'error' &&
+          <p className="Error">
+            Good guess but a wrong answer. Try again!
+          </p>
+        }
+      </form>
+      </>
+  );
+}
+
+```
+
+
+
+#### 确定是什么触发了这些状态的改变
+
+你可以触发 state 的更新来响应两种输入：
+
+- **人为**输入：比如点击按钮、在表单中输入内容，或导航到链接（通常需要利用 **事件处理函数**）。
+- **计算机**输入：比如网络请求得到反馈、定时器被触发，或加载一张图片。
+
+以上两种情况中，**你必须设置 state 变量 去更新 UI**。对于正在开发中的表单来说，你需要改变 state 以响应几个不同的输入：
+
+- **改变输入框中的文本时**（人为）应该根据输入框的内容是否是**空值**，从而决定将表单的状态从空值状态切换到**输入中**或切换回原状态。
+- **点击提交按钮时**（人为）应该将表单的状态切换到**提交中**的状态。
+- **网络请求成功后**（计算机）应该将表单的状态切换到**成功**的状态。
+- **网络请求失败后**（计算机）应该将表单的状态切换到**失败**的状态，与此同时，显示错误信息。
+
+![71255638234](React.assets/1712556382348.png)
+
+#### 列出可能的state
+
+接下来你会需要在内存中通过 [`useState`](https://zh-hans.react.dev/reference/react/useState) 表示组件中的视图状态。诀窍很简单：state 的每个部分都是“处于变化中的”，并且**你需要让“变化的部分”尽可能的少**。更复杂的程序会产生更多 bug！
+
+先从**绝对必须**存在的状态开始。例如，你需要存储输入的 `answer` 以及用于存储最后一个错误的 `error` （如果存在的话）：
+
+```jsx
+const [answer, setAnswer] = useState('');
+const [error, setError] = useState(null);
+```
+
+接下来，你需要一个状态变量来代表你想要显示的那个可视状态。通常有多种方式在内存中表示它
+
+
+
+#### 删除不必要的state
+
+你会想要避免 state 内容中的重复，从而只需要关注那些必要的部分。花一点时间来重构你的 state 结构，会让你的组件更容易被理解，减少重复并且避免歧义。
+
+
+
+#### 在事件处理函数中设置state
+
+```jsx
+import { useState } from 'react';
+
+export default function Form() {
+  const [answer, setAnswer] = useState('');
+  const [error, setError] = useState(null);
+  const [status, setStatus] = useState('typing');
+
+  if (status === 'success') {
+    return <h1>That's right!</h1>
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setStatus('submitting');
+    try {
+      await submitForm(answer);
+      setStatus('success');
+    } catch (err) {
+      setStatus('typing');
+      setError(err);
+    }
+  }
+
+  function handleTextareaChange(e) {
+    setAnswer(e.target.value);
+  }
+
+  return (
+    <>
+      <h2>City quiz</h2>
+      <p>
+        In which city is there a billboard that turns air into drinkable water?
+      </p>
+      <form onSubmit={handleSubmit}>
+        <textarea
+          value={answer}
+          onChange={handleTextareaChange}
+          disabled={status === 'submitting'}
+        />
+        <br />
+        <button disabled={
+          answer.length === 0 ||
+          status === 'submitting'
+        }>
+          Submit
+        </button>
+        {error !== null &&
+          <p className="Error">
+            {error.message}
+          </p>
+        }
+      </form>
+    </>
+  );
+}
+
+function submitForm(answer) {
+  // Pretend it's hitting the network.
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      let shouldError = answer.toLowerCase() !== 'lima'
+      if (shouldError) {
+        reject(new Error('Good guess but a wrong answer. Try again!'));
+      } else {
+        resolve();
+      }
+    }, 1500);
+  });
+}
+
+```
+
+
+
+
+
+## 选择state结构
+
+构建良好的 state 可以让组件变得易于修改和调试，而不会经常出错
+
+
+
+### 构建state的原则
+
+当你编写一个存有 state 的组件时，你需要选择使用多少个 state 变量以及它们都是怎样的数据格式
+
+以下是一些指导性的原则：
+
+1. **合并关联的 state**。如果你总是同时更新两个或更多的 state 变量，请考虑将它们合并为一个单独的 state 变量。
+2. **避免互相矛盾的 state**。当 state 结构中存在多个相互矛盾或“不一致”的 state 时，你就可能为此会留下隐患。应尽量避免这种情况。
+3. **避免冗余的 state**。如果你能在渲染期间从组件的 props 或其现有的 state 变量中计算出一些信息，则不应将这些信息放入该组件的 state 中。
+4. **避免重复的 state**。当同一数据在多个 state 变量之间或在多个嵌套对象中重复时，这会很难保持它们同步。应尽可能减少重复。
+5. **避免深度嵌套的 state**。深度分层的 state 更新起来不是很方便。如果可能的话，最好以扁平化方式构建 state。
+
+
+
+### 合并关联的state
+
+- 有时候你可能会不确定是使用单个 state 变量还是多个 state 变量。
+
+你会像下面这样做吗？
+
+```jsx
+const [x, setX] = useState(0);
+
+const [y, setY] = useState(0);
+```
+
+或这样？
+
+```jsx
+const [position, setPosition] = useState({ x: 0, y: 0 });
+```
+
+从技术上讲，你可以使用其中任何一种方法。但是，**如果某两个 state 变量总是一起变化，则将它们统一成一个 state 变量可能更好**。
+
+- 另一种情况是，你将数据整合到一个对象或一个数组中时，你不知道需要多少个 state 片段，例如，当你有一个用户可以添加自定义字段的表单时，这将会很有帮助。
+
+
+
+### 避免矛盾的state
+
+下面是带有 `isSending` 和 `isSent` 两个 state 变量的酒店反馈表单：
+
+```jsx
+import { useState } from 'react';
+
+export default function FeedbackForm() {
+  const [text, setText] = useState('');
+  const [isSending, setIsSending] = useState(false);
+  const [isSent, setIsSent] = useState(false);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setIsSending(true);
+    await sendMessage(text);
+    setIsSending(false);
+    setIsSent(true);
+  }
+
+  if (isSent) {
+    return <h1>Thanks for feedback!</h1>
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <p>How was your stay at The Prancing Pony?</p>
+      <textarea
+        disabled={isSending}
+        value={text}
+        onChange={e => setText(e.target.value)}
+      />
+      <br />
+      <button
+        disabled={isSending}
+        type="submit"
+      >
+        Send
+      </button>
+      {isSending && <p>Sending...</p>}
+    </form>
+  );
+}
+
+// 假装发送一条消息。
+function sendMessage(text) {
+  return new Promise(resolve => {
+    setTimeout(resolve, 2000);
+  });
+}
+
+```
+
+这样的写法尽管在逻辑上是可以跑通的，但是如果你忘记同时修改两个state，那么可能出现`isSending`和`isSent`同时为true的情况
+
+因此，我们最好直接使用一个`status`变量来代替它们，**这个 state 变量可以采取三种有效状态其中之一**：`'typing'` (初始), `'sending'`, 和 `'sent'`:
+
+
+
+### 避免冗余的state
+
+如果你能在渲染期间从组件的 props 或其现有的 state 变量中计算出一些信息，则不应该把这些信息放到该组件的 state 中
+
+例如
+
+```jsx
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [fullName, setFullName] = useState('');
+```
+
+我们完全没有必要为`fullName`这个变量设置为一个state，因为这个变量可以由`firstName`和`lastName`计算出来
+
+因此：
+
+```jsx
+const [firstName, setFirstName] = useState('');
+const [lastName, setLastName] = useState('');
+const fullName = firstName + ' ' + lastName;
+```
+
+更为合理
+
+> **不要在state中镜像props：**
+>
+> 以下代码是体现 state 冗余的一个常见例子：
+>
+> ```jsx
+> function Message({ messageColor }) {
+>
+>   const [color, setColor] = useState(messageColor);
+> ```
+>
+> 这里，一个 `color` state 变量被初始化为 `messageColor` 的 prop 值。这段代码的问题在于，**如果父组件稍后传递不同的 messageColor 值（例如，将其从 'blue' 更改为 'red'），则 color** state 变量**将不会更新！** state 仅在**第一次渲染**期间初始化。
+>
+> 这就是为什么在 state 变量中，“镜像”一些 prop 属性会导致混淆的原因。相反，你要在代码中直接使用 `messageColor` 属性。如果你想给它起一个更短的名称，请使用常量：
+>
+> ```jsx
+> function Message({ messageColor }) {
+>
+>   const color = messageColor;
+> ```
+>
+> 这种写法就不会与从父组件传递的属性失去同步。
+>
+> 只有当你 **想要** 忽略特定 props 属性的所有更新时，将 props “镜像”到 state 才有意义。按照惯例，prop 名称以 `initial` 或 `default` 开头，以阐明该 prop 的新值将被**忽略**：
+>
+> ```jsx
+> function Message({ initialColor }) {
+>   // 这个 `color` state 变量用于保存 `initialColor` 的 **初始值**。
+>   // 对于 `initialColor` 属性的进一步更改将被忽略。
+>
+>   const [color, setColor] = useState(initialColor);
+> ```
+
+
+
+### 避免重复的state
+
+看下面的例子：
+
+```jsx
+import { useState } from 'react';
+
+const initialItems = [
+  { title: 'pretzels', id: 0 },
+  { title: 'crispy seaweed', id: 1 },
+  { title: 'granola bar', id: 2 },
+];
+
+export default function Menu() {
+  const [items, setItems] = useState(initialItems);
+  const [selectedItem, setSelectedItem] = useState(
+    items[0]
+  );
+
+  function handleItemChange(id, e) {
+    setItems(items.map(item => {
+      if (item.id === id) {
+        return {
+          ...item,
+          title: e.target.value,
+        };
+      } else {
+        return item;
+      }
+    }));
+  }
+
+  return (
+    <>
+      <h2>What's your travel snack?</h2> 
+      <ul>
+        {items.map((item, index) => (
+          <li key={item.id}>
+            <input
+              value={item.title}
+              onChange={e => {
+                handleItemChange(item.id, e)
+              }}
+            />
+            {' '}
+            <button onClick={() => {
+              setSelectedItem(item);
+            }}>Choose</button>
+          </li>
+        ))}
+      </ul>
+      <p>You picked {selectedItem.title}.</p>
+    </>
+  );
+}
+
+```
+
+这里将所选元素作为对象存储在 `selectedItem` state 变量中。然而，这并不好：**selectedItem 的内容与 items 列表中的某个项是同一个对象。** 这意味着关于该项本身的信息在两个地方产生了重复。
+
+这样会导致当我们更新`items`数据时触发渲染，但是`selectedItem` 却不能及时得到更新，而是需要点击才能更新
+
+据此，我们最好只存储`selectedId` ，而不是 `selectedItem` 对象（它创建了一个与 `items` 内重复的对象）
+
+**然后** 通过搜索 `items` 数组中具有该 ID 的项，以此获取 `selectedItem`
+
+这样使得`selectedItem`与`items`得到关联，因此能够在`items`更新时及时更新`selectedItem`
+
+
+
+
+
+### 避免深度嵌套的state
+
+看这个例子：
+
+```jsx
+// 这是一个由行星、大陆、国家组成的嵌套对象数据
+export const initialTravelPlan = {
+  id: 0,
+  title: '(Root)',
+  childPlaces: [
+   {
+    id: 1,
+    title: 'Earth',
+    childPlaces: [
+     {
+      id: 2,
+      title: 'Africa',
+      childPlaces: [
+       {
+        id: 3,
+        title: 'Botswana',
+        childPlaces: []
+       }
+      ]
+    }
+   ]
+  }
+ ]
+};
+
+```
+
+如果将这些数据展现出来
+
+```jsx
+import { useState } from 'react';
+import { initialTravelPlan } from './places.js';
+
+function PlaceTree({ place }) {
+  // 递归地展现
+  const childPlaces = place.childPlaces;
+  return (
+    <li>
+      {place.title}
+      {childPlaces.length > 0 && (
+        <ol>
+          {childPlaces.map(place => (
+            <PlaceTree key={place.id} place={place} />
+          ))}
+        </ol>
+      )}
+    </li>
+  );
+}
+
+export default function TravelPlan() {
+  const [plan, setPlan] = useState(initialTravelPlan);
+  const planets = plan.childPlaces;
+  return (
+    <>
+      <h2>Places to visit</h2>
+      <ol>
+        {planets.map(place => (
+          <PlaceTree key={place.id} place={place} />
+        ))}
+      </ol>
+    </>
+  );
+}
+
+```
+
+现在假设我们需要添加一个按钮来删除某个地方，更新嵌套的对象数据需要从更改部分一直向上复制对象，删除一个深度嵌套的地点将涉及复制其整个父级地点链。这样的代码可能非常冗长
+
+**如果 state 嵌套太深，难以轻松更新，可以考虑将其“扁平化”。**
+
+考虑每个节点的`child`字段使用数组结构存储每个地方的id，然后只存储一个节点ID与相应节点的映射关系
+
+类似下面的结构（简化版
+
+```jsx
+export const initialTravelPlan = {
+  0: {
+    id: 0,
+    title: '(Root)',
+    childIds: [1, 42, 46],
+  },
+  1: {
+    id: 1,
+    title: 'Earth',
+    childIds: [2, 10, 19, 26, 34]
+  },
+  2: {
+    id: 2,
+    title: 'Africa',
+    childIds: [3, 4, 5, 6 , 7, 8, 9]
+  }, 
+  3: {
+    id: 3,
+    title: 'Botswana',
+    childIds: []
+  },
+  4: {
+    id: 4,
+    title: 'Egypt',
+    childIds: []
+  },
+  5: {
+    id: 5,
+    title: 'Kenya',
+    childIds: []
+  }
+};
+
+```
+
+```jsx
+import { useState } from 'react';
+import { initialTravelPlan } from './places.js';
+
+// 需要每次都将整个“数据库表”都作为prop传递进行查询
+function PlaceTree({ id, placesById }) {
+  const place = placesById[id];
+  const childIds = place.childIds;
+  return (
+    <li>
+      {place.title}
+      {childIds.length > 0 && (
+        <ol>
+          {childIds.map(childId => (
+            <PlaceTree
+              key={childId}
+              id={childId}
+              placesById={placesById}
+            />
+          ))}
+        </ol>
+      )}
+    </li>
+  );
+}
+
+export default function TravelPlan() {
+  const [plan, setPlan] = useState(initialTravelPlan);
+  const root = plan[0];
+  const planetIds = root.childIds;
+  return (
+    <>
+      <h2>Places to visit</h2>
+      <ol>
+        {planetIds.map(id => (
+          <PlaceTree
+            key={id}
+            id={id}
+            placesById={plan}
+          />
+        ))}
+      </ol>
+    </>
+  );
+}
+
+```
+
+现在，如果要删除一个地点，只需更新两个state级别（因为现在的数据嵌套只有两层）：
+
+- 在父级地点的`childIds`数组中`filter`不要的ID
+- 在根节点中更新父级地点
+
+```jsx
+import { useState } from 'react';
+import { initialTravelPlan } from './places.js';
+
+export default function TravelPlan() {
+  const [plan, setPlan] = useState(initialTravelPlan);
+
+  function handleComplete(parentId, childId) {
+    const parent = plan[parentId];
+    // 创建一个其父级地点的新版本
+    // 但不包括子级 ID。
+    const nextParent = {
+      ...parent,
+      childIds: parent.childIds
+        .filter(id => id !== childId)
+    };
+    // 更新根 state 对象...
+    setPlan({
+      ...plan,
+      // ...以便它拥有更新的父级。
+      [parentId]: nextParent
+    });
+  }
+
+  const root = plan[0];
+  const planetIds = root.childIds;
+  return (
+    <>
+      <h2>Places to visit</h2>
+      <ol>
+        {planetIds.map(id => (
+          <PlaceTree
+            key={id}
+            id={id}
+            parentId={0}
+            placesById={plan}
+            onComplete={handleComplete}
+          />
+        ))}
+      </ol>
+    </>
+  );
+}
+
+function PlaceTree({ id, parentId, placesById, onComplete }) {
+  const place = placesById[id];
+  const childIds = place.childIds;
+  return (
+    <li>
+      {place.title}
+      <button onClick={() => {
+        onComplete(parentId, id);
+      }}>
+        Complete
+      </button>
+      {childIds.length > 0 &&
+        <ol>
+          {childIds.map(childId => (
+            <PlaceTree
+              key={childId}
+              id={childId}
+              parentId={id}
+              placesById={placesById}
+              onComplete={onComplete}
+            />
+          ))}
+        </ol>
+      }
+    </li>
+  );
+}
+
+```
+
+这里为了删除指定的内容，因此需要在组件中传递父与子的id
+
+需要注意的是，这里代码并没有同时将数据中的 **子项** 删除，只是没有渲染出来（~~一开始没看出来~~
+
+> 理想情况下，我们还应该删除这些已删除的项目（以及它们的**子项**！）这样可以改善内存使用，下面是使用`Immer`的版本
+>
+> ```jsx
+> import { useImmer } from 'use-immer';
+> import { initialTravelPlan } from './places.js';
+>
+> export default function TravelPlan() {
+>   const [plan, updatePlan] = useImmer(initialTravelPlan);
+>
+>   function handleComplete(parentId, childId) {
+>     updatePlan(draft => {
+>       // 从父级地点的子 ID 中移除。
+>       const parent = draft[parentId];
+>       parent.childIds = parent.childIds
+>         .filter(id => id !== childId);
+>
+>       // 删除这个地点和它的所有子目录。
+>       deleteAllChildren(childId);
+>       function deleteAllChildren(id) {
+>         const place = draft[id];
+>         place.childIds.forEach(deleteAllChildren);
+>         delete draft[id];
+>       }
+>     });
+>   }
+>
+>   const root = plan[0];
+>   const planetIds = root.childIds;
+>   return (
+>     <>
+>       <h2>Places to visit</h2>
+>       <ol>
+>         {planetIds.map(id => (
+>           <PlaceTree
+>             key={id}
+>             id={id}
+>             parentId={0}
+>             placesById={plan}
+>             onComplete={handleComplete}
+>           />
+>         ))}
+>       </ol>
+>     </>
+>   );
+> }
+>
+> function PlaceTree({ id, parentId, placesById, onComplete }) {
+>   const place = placesById[id];
+>   const childIds = place.childIds;
+>   return (
+>     <li>
+>       {place.title}
+>       <button onClick={() => {
+>         onComplete(parentId, id);
+>       }}>
+>         Complete
+>       </button>
+>       {childIds.length > 0 &&
+>         <ol>
+>           {childIds.map(childId => (
+>             <PlaceTree
+>               key={childId}
+>               id={childId}
+>               parentId={id}
+>               placesById={placesById}
+>               onComplete={onComplete}
+>             />
+>           ))}
+>         </ol>
+>       }
+>     </li>
+>   );
+> }
+>
+> ```
+>
+> 
+
+
+
+
+
+
+
+
 
 
 
