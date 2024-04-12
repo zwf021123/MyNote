@@ -852,3 +852,101 @@ function jsonp (url,data,fn){
 
 
 
+
+
+
+## 第五周
+
+### for循环结合component与ref带来的问题
+
+今天遇到一个需求，需要在一个多个tab下渲染不同的组件，同时还要拿到对应的组件实例ref
+
+最后的模板这样写：
+
+```vue
+               <a-tab-pane v-for="tab of tabs" :title="tab.title" :key="tab.key">
+                    <component
+                        :is="tab.component"
+                        :ref="
+                            (el) => {
+                              	tabRefs.push({el,key:tab.key})
+                                setRef(tab.key, el);
+                            }
+                        "
+                        :form-data="getFormData(tab.key)"
+                    ></component>
+                </a-tab-pane>
+```
+
+但是，这样是存在问题的
+
+在vue官网中，明确说明了如果使用**函数模板引用**会使得在**每次组件更新时**都被调用
+
+导致的问题，就是在tab栏切换时会导致tabRefs新增已经存在的组件实例Ref
+
+最后可能导致无限循环地push冗余内容到数组中
+
+解决办法：
+
+使用一个变量存储对应函数的调用次数， 如果次数超过我们设定的tab栏数量则不执行该函数
+
+```vue
+<template>
+	<a-tab-pane v-for="tab of tabs" :title="tab.title" :key="tab.key">
+    		<component
+               :is="tab.component"
+               :ref="
+                     (el) => {
+                     setRef(tab.key, el);
+                     }
+                     "
+               :form-data="getFormData(tab.key)"
+               ></component>
+    </a-tab-pane>
+</template>
+
+<script>
+    // 记录setRef函数调用次数、
+    // 为了避免因为组件更新而循环调用
+    let setRefFnCallCount = 0;
+    const setRef = (key, itemRef) => {
+        if (setRefFnCallCount >= tabs.length) return;
+        let isIn = tabRefs.value.some((item) => item.key === key);
+        if (!isIn) {
+            tabRefs.value.push({ key, ref: itemRef });
+        }
+        setRefFnCallCount++;
+    };
+</script>
+```
+
+
+
+### 必须在before-close才能成功resetScoll？？
+
+需求：在用户重新打开一个dialog后需要重置一个dialog下的组件的滚动条
+
+问题：尝试在dialog的visiable设置为true后进行重置，或者在dialog的钩子`before-close`中进行重置
+
+实际：只有在dialog的钩子`before-close`中进行重置才能生效
+
+但是为什么在dialog的visiable设置为true后进行重置没有办法生效呢？？？
+
+猜测是在dialog的visable设置为true后，组件还没有被渲染并挂载到DOM中
+
+
+
+
+
+视频封面问题
+
+table-query的时间选择无法清除
+
+样式高度
+
+
+
+
+
+
+

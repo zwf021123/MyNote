@@ -3936,6 +3936,8 @@ const fullName = firstName + ' ' + lastName;
 
 ### 避免重复的state
 
+该点比较难以理解：
+
 看下面的例子：
 
 ```jsx
@@ -4001,6 +4003,66 @@ export default function Menu() {
 **然后** 通过搜索 `items` 数组中具有该 ID 的项，以此获取 `selectedItem`
 
 这样使得`selectedItem`与`items`得到关联，因此能够在`items`更新时及时更新`selectedItem`
+
+本质上就是使得`selectedItem`这个变量由标志当前`item`的`id`来计算出来
+
+请仔细比对下面的代码与之前代码的区别
+
+```jsx
+import { useState } from 'react';
+
+const initialItems = [
+  { title: 'pretzels', id: 0 },
+  { title: 'crispy seaweed', id: 1 },
+  { title: 'granola bar', id: 2 },
+];
+
+export default function Menu() {
+  const [items, setItems] = useState(initialItems);
+  const [selectedId, setSelectedId] = useState(0);
+
+  const selectedItem = items.find(item =>
+    item.id === selectedId
+  );
+
+  function handleItemChange(id, e) {
+    setItems(items.map(item => {
+      if (item.id === id) {
+        return {
+          ...item,
+          title: e.target.value,
+        };
+      } else {
+        return item;
+      }
+    }));
+  }
+
+  return (
+    <>
+      <h2>What's your travel snack?</h2>
+      <ul>
+        {items.map((item, index) => (
+          <li key={item.id}>
+            <input
+              value={item.title}
+              onChange={e => {
+                handleItemChange(item.id, e)
+              }}
+            />
+            {' '}
+            <button onClick={() => {
+              setSelectedId(item.id);
+            }}>Choose</button>
+          </li>
+        ))}
+      </ul>
+      <p>You picked {selectedItem.title}.</p>
+    </>
+  );
+}
+
+```
 
 
 
@@ -4335,9 +4397,686 @@ function PlaceTree({ id, parentId, placesById, onComplete }) {
 
 
 
+## 在组件间共享状态
+
+有时候，你希望两个组件的状态始终同步更改。要实现这一点，可以将相关 state 从这两个组件上**移除**，并把 state 放到它们的**公共父级**，再通过 **props** 将 state 传递给这两个组件。这被称为“**状态提升**”，这是编写 React 代码时常做的事。
 
 
 
+### 举例说明状态提升
+
+在这个例子中，父组件 `Accordion` 渲染了 2 个独立的 `Panel` 组件。
+
+- `Accordion`
+  - `Panel`
+  - `Panel`
+
+每个 `Panel` 组件都有一个布尔值 `isActive`，用于控制其内容是否可见。
+
+```jsx
+import { useState } from 'react';
+
+function Panel({ title, children }) {
+  const [isActive, setIsActive] = useState(false);
+  return (
+    <section className="panel">
+      <h3>{title}</h3>
+      {isActive ? (
+        <p>{children}</p>
+      ) : (
+        <button onClick={() => setIsActive(true)}>
+          显示
+        </button>
+      )}
+    </section>
+  );
+}
+
+export default function Accordion() {
+  return (
+    <>
+      <h2>哈萨克斯坦，阿拉木图</h2>
+      <Panel title="关于">
+        阿拉木图人口约200万，是哈萨克斯坦最大的城市。它在 1929 年到 1997 年间都是首都。
+      </Panel>
+      <Panel title="词源">
+        这个名字来自于 <span lang="kk-KZ">алма</span>，哈萨克语中“苹果”的意思，经常被翻译成“苹果之乡”。事实上，阿拉木图的周边地区被认为是苹果的发源地，<i lang="la">Malus sieversii</i> 被认为是现今苹果的祖先。
+      </Panel>
+    </>
+  );
+}
+```
+
+在这个例子中，每一个`Panel`的组件的`isActive`变量都是独立的互不影响，这是已经知道的
+
+现在需求是展开第 2 个面板应会折叠第 1 个面板，即永远只会展开一个面板（考虑不只有两个面板的情况）
+
+#### 从子组件中移除状态
+
+你将把 `Panel` 组件对 `isActive` 的控制权交给他们的父组件。这意味着，父组件会将 `isActive` 作为 `prop` 传给子组件 `Panel`
+
+
+
+#### 从父组件传递数据
+
+为了实现状态提升，必须定位到你想协调的 **两个或多个** 子组件最近的公共父组件
+
+这一步中还未定义父组件的state，因此可以先传递死数据
+
+
+
+#### 公共父组件添加状态
+
+状态提升通常会**改变**原状态的**数据存储类型**。
+
+在这个例子中，一次只能激活一个面板。这意味着 `Accordion` 这个父组件需要记录 **哪个** 面板是被激活的面板。我们可以用数字作为当前被激活 `Panel` 的**索引**，而不是 `boolean` 值
+
+```jsx
+const [activeIndex, setActiveIndex] = useState(0);
+```
+
+当 `activeIndex` 为 `0` 时，激活第一个面板，为 `1` 时，激活第二个面板。
+
+而当用户点击子组件按钮时，则修改父组件的`state`即可
+
+最终效果：
+
+```jsx
+import { useState } from 'react';
+
+export default function Accordion() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  return (
+    <>
+      <h2>哈萨克斯坦，阿拉木图</h2>
+      <Panel
+        title="关于"
+        isActive={activeIndex === 0}
+        onShow={() => setActiveIndex(0)}
+      >
+        阿拉木图人口约200万，是哈萨克斯坦最大的城市。它在 1929 年到 1997 年间都是首都。
+      </Panel>
+      <Panel
+        title="词源"
+        isActive={activeIndex === 1}
+        onShow={() => setActiveIndex(1)}
+      >
+        这个名字来自于 <span lang="kk-KZ">алма</span>，哈萨克语中“苹果”的意思，经常被翻译成“苹果之乡”。事实上，阿拉木图的周边地区被认为是苹果的发源地，<i lang="la">Malus sieversii</i> 被认为是现今苹果的祖先。
+      </Panel>
+    </>
+  );
+}
+
+function Panel({
+  title,
+  children,
+  isActive,
+  onShow
+}) {
+  return (
+    <section className="panel">
+      <h3>{title}</h3>
+      {isActive ? (
+        <p>{children}</p>
+      ) : (
+        <button onClick={onShow}>
+          显示
+        </button>
+      )}
+    </section>
+  );
+}
+
+```
+
+> 受控组件与非受控组件的概念：
+>
+> 通常我们把包含“不受控制”状态的组件称为“非受控组件”。例如，最开始带有 `isActive` 状态变量的 `Panel` 组件就是不受控制的，因为其父组件无法控制面板的激活状态。
+>
+> 相反，当组件中的重要信息是由 `props` 而不是其自身状态驱动时，就可以认为该组件是“受控组件”。这就允许父组件完全指定其行为。最后带有 `isActive` 属性的 `Panel` 组件是由 `Accordion` 组件控制的。
+
+
+
+### 每个状态对应唯一的数据源
+
+这里是为了强调，对于每一个**独特的状态，都应该存在且只存在于一个指定的组件中作为 state**
+
+这一原则也被称为拥有 [“可信单一数据源”](https://en.wikipedia.org/wiki/Single_source_of_truth)。它并不意味着所有状态都存在一个地方——对每个状态来说，都需要一个特定的组件来保存这些状态信息。你应该 **将状态提升** 到公共父级，或 **将状态传递** 到需要它的子级中，**而不是在组件之间复制共享的状态**。
+
+
+
+## 对state进行保留和重置
+
+各个组件的 state 是各自独立的。根据组件在 UI 树中的位置，React 可以跟踪哪些 state 属于哪个组件。你可以控制在重新渲染过程中何时对 state 进行保留和重置。
+
+
+
+### 状态与渲染树中的位置相关
+
+根据上一章的知识，我们已经知道React渲染树的存在
+
+我们可能会以为state存在于"组件"里
+
+但是实际上，state是由React存储的，**React是通过组件在渲染树中的位置将它保存的状态与组件关联起来**
+
+```jsx
+import { useState } from 'react';
+
+export default function App() {
+  const [showB, setShowB] = useState(true);
+  return (
+    <div>
+      <Counter />
+      {showB && <Counter />} 
+      <label>
+        <input
+          type="checkbox"
+          checked={showB}
+          onChange={e => {
+            setShowB(e.target.checked)
+          }}
+        />
+        渲染第二个计数器
+      </label>
+    </div>
+  );
+}
+
+function Counter() {
+  const [score, setScore] = useState(0);
+  const [hover, setHover] = useState(false);
+
+  let className = 'counter';
+  if (hover) {
+    className += ' hover';
+  }
+
+  return (
+    <div
+      className={className}
+      onPointerEnter={() => setHover(true)}
+      onPointerLeave={() => setHover(false)}
+    >
+      <h1>{score}</h1>
+      <button onClick={() => setScore(score + 1)}>
+        加一
+      </button>
+    </div>
+  );
+}
+
+```
+
+如上这个例子，我们尝试先对两个组件的state都进行修改，再取消渲染第二个组件
+
+再次重新渲染出第二个组件，我们可以发现state被重置了！
+
+也就是说：**当你停止渲染第二个计数器的那一刻，它的 state 完全消失了。这是因为 React 在移除一个组件时，也会销毁它的 state。**
+
+![71290280596](React.assets/1712902805961.png)
+
+**当你重新勾选“渲染第二个计数器”复选框时，另一个计数器及其 state 将从头开始初始化（`score = 0`）并被添加到 DOM 中。**
+
+![71290282351](React.assets/1712902823514.png)
+
+总结一句话：
+
+只要一个组件还在被渲染在UI树的相同位置，React就会保留它的state，但是如果他被移除/替代了，那么React就会丢掉它的state
+
+
+
+
+
+### 相同位置的相同组件会使得state被保留下来
+
+还是看一个例子：
+
+```jsx
+import { useState } from 'react';
+
+export default function App() {
+  const [isFancy, setIsFancy] = useState(false);
+  return (
+    <div>
+      {isFancy ? (
+        <Counter isFancy={true} /> 
+      ) : (
+        <Counter isFancy={false} /> 
+      )}
+      <label>
+        <input
+          type="checkbox"
+          checked={isFancy}
+          onChange={e => {
+            setIsFancy(e.target.checked)
+          }}
+        />
+        使用好看的样式
+      </label>
+    </div>
+  );
+}
+
+function Counter({ isFancy }) {
+  const [score, setScore] = useState(0);
+  const [hover, setHover] = useState(false);
+
+  let className = 'counter';
+  if (hover) {
+    className += ' hover';
+  }
+  if (isFancy) {
+    className += ' fancy';
+  }
+
+  return (
+    <div
+      className={className}
+      onPointerEnter={() => setHover(true)}
+      onPointerLeave={() => setHover(false)}
+    >
+      <h1>{score}</h1>
+      <button onClick={() => setScore(score + 1)}>
+        加一
+      </button>
+    </div>
+  );
+}
+
+```
+
+我们发现：
+
+当你勾选或清空复选框的时候，计数器 **state 并没有**被重置。
+
+不管 `isFancy` 是 `true` 还是 `false`，根组件 `App` 返回的 `div` 的第一个子组件都是 `<Counter />`：
+
+![71290315774](React.assets/1712903157748.png)
+
+所以：**处于相同位置的相同组件的state会被保留**
+
+> 注意！！！
+>
+> **对React来说重要的是组件在UI树中的位置，而不是在JSX中的位置**，因为你的jsx在React看来就是一棵**渲染树**
+
+
+
+### 相同位置的不同组件会使得state重置
+
+还是看一个例子：
+
+```jsx
+import { useState } from 'react';
+
+export default function App() {
+  const [isPaused, setIsPaused] = useState(false);
+  return (
+    <div>
+      {isPaused ? (
+        <p>待会见！</p> 
+      ) : (
+        <Counter /> 
+      )}
+      <label>
+        <input
+          type="checkbox"
+          checked={isPaused}
+          onChange={e => {
+            setIsPaused(e.target.checked)
+          }}
+        />
+        休息一下
+      </label>
+    </div>
+  );
+}
+
+function Counter() {
+  const [score, setScore] = useState(0);
+  const [hover, setHover] = useState(false);
+
+  let className = 'counter';
+  if (hover) {
+    className += ' hover';
+  }
+
+  return (
+    <div
+      className={className}
+      onPointerEnter={() => setHover(true)}
+      onPointerLeave={() => setHover(false)}
+    >
+      <h1>{score}</h1>
+      <button onClick={() => setScore(score + 1)}>
+        加一
+      </button>
+    </div>
+  );
+}
+
+```
+
+我们发现，当我们根据条件对相同位置的组件进行替换时，state被重置了
+
+![71290368818](React.assets/1712903688180.png)
+
+![71290369574](React.assets/1712903695742.png)
+
+ 考虑这样的情况
+
+```jsx
+import { useState } from 'react';
+
+export default function App() {
+  const [isFancy, setIsFancy] = useState(false);
+  return (
+    <div>
+      {isFancy ? (
+        <div>
+          <Counter isFancy={true} /> 
+        </div>
+      ) : (
+         // 使用不同的根节点标签
+        <section>
+          <Counter isFancy={false} />
+        </section>
+      )}
+      <label>
+        <input
+          type="checkbox"
+          checked={isFancy}
+          onChange={e => {
+            setIsFancy(e.target.checked)
+          }}
+        />
+        使用好看的样式
+      </label>
+    </div>
+  );
+}
+
+function Counter({ isFancy }) {
+  const [score, setScore] = useState(0);
+  const [hover, setHover] = useState(false);
+
+  let className = 'counter';
+  if (hover) {
+    className += ' hover';
+  }
+  if (isFancy) {
+    className += ' fancy';
+  }
+
+  return (
+    <div
+      className={className}
+      onPointerEnter={() => setHover(true)}
+      onPointerLeave={() => setHover(false)}
+    >
+      <h1>{score}</h1>
+      <button onClick={() => setScore(score + 1)}>
+        加一
+      </button>
+    </div>
+  );
+}
+
+```
+
+在这个例子中，虽然`Counter`组件还在原来的位置，但是它的父组件改变了，因此state还是会被重置
+
+![71290389763](React.assets/1712903897636.png)![71290390544](React.assets/1712903905446.png)
+
+总结：
+
+**如果你想在重新渲染时保留state，那么不同次渲染中的树形结构应该是一样的，否则会导致state的销毁**
+
+> 为什么不把组件函数的定义嵌套：
+>
+> 如下例子我们将`MyTextField`组件定义在`MyComponent`内部
+>
+> ```jsx
+> import { useState } from 'react';
+>
+> export default function MyComponent() {
+>   const [counter, setCounter] = useState(0);
+>
+>   function MyTextField() {
+>     const [text, setText] = useState('');
+>
+>     return (
+>       <input
+>         value={text}
+>         onChange={e => setText(e.target.value)}
+>       />
+>     );
+>   }
+>
+>   return (
+>     <>
+>       <MyTextField />
+>       <button onClick={() => {
+>         setCounter(counter + 1)
+>       }}>点击了 {counter} 次</button>
+>     </>
+>   );
+> }
+>
+> ```
+>
+> 现象：点击按钮导致输入框内容重置
+>
+> 原因：当我们点击按钮即修改了`MyComponent`组件的state，那么组件重新渲染，则内部的函数`MyTextField`会被重新创建，则相同位置渲染了不同的`MyTextField`组件，因此`MyTextField`的state会被重置
+>
+> 总之，**永远要将组件定义在最上层并且不要把它们的定义嵌套起来。**
+
+
+
+### 在相同的位置重置state
+
+正如前面所说，在相同位置的同一个组件的state不会被重置，但是有时候我们希望它被重置：
+
+```jsx
+import { useState } from 'react';
+
+export default function Scoreboard() {
+  const [isPlayerA, setIsPlayerA] = useState(true);
+  return (
+    <div>
+      {isPlayerA ? (
+        <Counter person="Taylor" />
+      ) : (
+        <Counter person="Sarah" />
+      )}
+      <button onClick={() => {
+        setIsPlayerA(!isPlayerA);
+      }}>
+        下一位玩家！
+      </button>
+    </div>
+  );
+}
+
+function Counter({ person }) {
+  const [score, setScore] = useState(0);
+  const [hover, setHover] = useState(false);
+
+  let className = 'counter';
+  if (hover) {
+    className += ' hover';
+  }
+
+  return (
+    <div
+      className={className}
+      onPointerEnter={() => setHover(true)}
+      onPointerLeave={() => setHover(false)}
+    >
+      <h1>{person} 的分数：{score}</h1>
+      <button onClick={() => setScore(score + 1)}>
+        加一
+      </button>
+    </div>
+  );
+}
+
+```
+
+如下，两个组件代表了两个不同的玩家，我们肯定希望玩家的分数不是"共享"的
+
+因此，我们需要让相同位置的相同组件重置state
+
+#### 法1：将组件渲染在不同的位置
+
+```jsx
+import { useState } from 'react';
+
+export default function Scoreboard() {
+  const [isPlayerA, setIsPlayerA] = useState(true);
+  return (
+    <div>
+      {isPlayerA &&
+        <Counter person="Taylor" />
+      }
+      {!isPlayerA &&
+        <Counter person="Sarah" />
+      }
+      <button onClick={() => {
+        setIsPlayerA(!isPlayerA);
+      }}>
+        下一位玩家！
+      </button>
+    </div>
+  );
+}
+
+function Counter({ person }) {
+  const [score, setScore] = useState(0);
+  const [hover, setHover] = useState(false);
+
+  let className = 'counter';
+  if (hover) {
+    className += ' hover';
+  }
+
+  return (
+    <div
+      className={className}
+      onPointerEnter={() => setHover(true)}
+      onPointerLeave={() => setHover(false)}
+    >
+      <h1>{person} 的分数：{score}</h1>
+      <button onClick={() => setScore(score + 1)}>
+        加一
+      </button>
+    </div>
+  );
+}
+
+```
+
+这样的做法只限于在组件数量少的情况下使用
+
+
+
+
+
+
+
+#### 使用key重置state
+
+key不只限于用于列表渲染，我们可以使用key来让React区分任何组件
+
+默认React 使用父组件内部的顺序（“第一个计数器”、“第二个计数器”）来区分组件
+
+但是 key 可以让你告诉 React 这不仅仅是 **第一个** 或者 **第二个** 计数器，而且还是一个特定的计数器——例如，**Taylor 的** 计数器。这样无论它出现在树的任何位置， React 都会知道它是 **Taylor 的** 计数器！
+
+```jsx
+import { useState } from 'react';
+
+export default function Scoreboard() {
+  const [isPlayerA, setIsPlayerA] = useState(true);
+  return (
+    <div>
+      {isPlayerA ? (
+        <Counter key="Taylor" person="Taylor" />
+      ) : (
+        <Counter key="Sarah" person="Sarah" />
+      )}
+      <button onClick={() => {
+        setIsPlayerA(!isPlayerA);
+      }}>
+        下一位玩家！
+      </button>
+    </div>
+  );
+}
+
+function Counter({ person }) {
+  const [score, setScore] = useState(0);
+  const [hover, setHover] = useState(false);
+
+  let className = 'counter';
+  if (hover) {
+    className += ' hover';
+  }
+
+  return (
+    <div
+      className={className}
+      onPointerEnter={() => setHover(true)}
+      onPointerLeave={() => setHover(false)}
+    >
+      <h1>{person} 的分数：{score}</h1>
+      <button onClick={() => setScore(score + 1)}>
+        加一
+      </button>
+    </div>
+  );
+}
+
+```
+
+这样即使两个相同的组件在同一个位置，也不会共享state了
+
+> 注意：
+>
+> key不需要全局唯一，它们只能指定**父组件内部**的顺序
+
+
+
+#### 使用key重置表单
+
+简单看一下这个例子
+
+```jsx
+import { useState } from 'react';
+import Chat from './Chat.js';
+import ContactList from './ContactList.js';
+
+export default function Messenger() {
+  const [to, setTo] = useState(contacts[0]);
+  return (
+    <div>
+      <ContactList
+        contacts={contacts}
+        selectedContact={to}
+        onSelect={contact => setTo(contact)}
+      />
+      <Chat contact={to} />
+    </div>
+  )
+}
+
+const contacts = [
+  { id: 0, name: 'Taylor', email: 'taylor@mail.com' },
+  { id: 1, name: 'Alice', email: 'alice@mail.com' },
+  { id: 2, name: 'Bob', email: 'bob@mail.com' }
+];
+
+```
+
+![71290778933](React.assets/1712907789337.png)
 
 
 
