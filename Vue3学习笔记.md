@@ -282,7 +282,36 @@ const fullName = computed({
 - 绑定数组
 
 
+我们可以给 `:class` 绑定一个数组来渲染多个 CSS class：
 
+```js
+const activeClass = ref('active')
+const errorClass = ref('text-danger')
+```
+
+```vue
+<div :class="[activeClass, errorClass]"></div>
+```
+
+渲染的结果是：
+
+```vue
+<div class="active text-danger"></div>
+```
+
+如果你也想在数组中有条件地渲染某个 class，你可以使用三元表达式：
+
+```vue
+<div :class="[isActive ? activeClass : '', errorClass]"></div>
+```
+
+`errorClass` 会一直存在，但 `activeClass` 只会在 `isActive` 为真时才存在。
+
+然而，这可能在有多个依赖条件的 class 时会有些冗长。因此也可以在数组中嵌套对象：
+
+```vue
+<div :class="[{ active: isActive }, errorClass]"></div>
+```
 
 
 
@@ -882,7 +911,7 @@ const model = defineModel({ default: 0 })
 // 父组件为v-model传递一个参数
 <MyComponent v-model:title="bookTitle" />
 // 相当于
-<MyComponent :title="bookTitle" @update:title="event => title = event.target.value"/>
+<MyComponent :title="bookTitle" @update:title="event =>bookTitle=event.target.value"/>
 
 // 子组件
 <!-- MyComponent.vue -->
