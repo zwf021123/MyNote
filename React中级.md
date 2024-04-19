@@ -2566,11 +2566,113 @@ export default function AddTask() {
 
 
 
+### 将相关逻辑移动到单个文件
 
+一般来说，我们可以将`reducer`和`context`结合的相关逻辑移动到单个文件中，方便维护
 
+我们甚至可以将其结合为一个组件进行使用
 
+例如
 
+```jsx
+export function TasksProvider({ children }) {
+  // 它将 把 children 作为 prop，所以你可以传递 JSX
+  const [tasks, dispatch] = useReducer(tasksReducer, initialTasks);
 
+  return (
+    <TasksContext.Provider value={tasks}>
+      <TasksDispatchContext.Provider value={dispatch}>
+        {children}
+      </TasksDispatchContext.Provider>
+    </TasksContext.Provider>
+  );
+}
+```
+
+还可以导出使用`context`的函数
+
+```jsx
+export function useTasks() {
+  return useContext(TasksContext);
+}
+
+export function useTasksDispatch() {
+  return useContext(TasksDispatchContext);
+}
+```
+
+这样其他组件还是可以通过这些函数得到想要的context，但它会允许你之后进一步分割这些 context 或向这些函数添加一些逻辑
+
+完整例子如下：
+
+```jsx
+import { createContext, useContext, useReducer } from 'react';
+
+const TasksContext = createContext(null);
+
+const TasksDispatchContext = createContext(null);
+
+export function TasksProvider({ children }) {
+  const [tasks, dispatch] = useReducer(
+    tasksReducer,
+    initialTasks
+  );
+
+  return (
+    <TasksContext.Provider value={tasks}>
+      <TasksDispatchContext.Provider value={dispatch}>
+        {children}
+      </TasksDispatchContext.Provider>
+    </TasksContext.Provider>
+  );
+}
+
+export function useTasks() {
+  return useContext(TasksContext);
+}
+
+export function useTasksDispatch() {
+  return useContext(TasksDispatchContext);
+}
+
+function tasksReducer(tasks, action) {
+  switch (action.type) {
+    case 'added': {
+      return [...tasks, {
+        id: action.id,
+        text: action.text,
+        done: false
+      }];
+    }
+    case 'changed': {
+      return tasks.map(t => {
+        if (t.id === action.task.id) {
+          return action.task;
+        } else {
+          return t;
+        }
+      });
+    }
+    case 'deleted': {
+      return tasks.filter(t => t.id !== action.id);
+    }
+    default: {
+      throw Error('Unknown action: ' + action.type);
+    }
+  }
+}
+
+const initialTasks = [
+  { id: 0, text: 'Philosopher’s Path', done: true },
+  { id: 1, text: 'Visit the temple', done: false },
+  { id: 2, text: 'Drink matcha', done: false }
+];
+
+```
+
+> 注意：
+>
+> 这里我们自定义了两个函数`useTasks`和`useTasksDispatch`，这些函数名以`use`开头的我们认为他就是一个`Hook`
 
 
 
