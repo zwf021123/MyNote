@@ -42,3 +42,18 @@ forEach 跳出本次循环，使用return
 
 
 
+
+
+### 空值合并运算符
+
+**空值合并运算符**（`??`）是一个逻辑运算符，**当左侧的操作数为 [`null`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/null) 或者 [`undefined`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/undefined) 时**，返回其右侧操作数，否则返回左侧操作数。
+
+不难想到，**逻辑或运算符（`||`）**，逻辑或运算符会在左侧操作数为[假值](https://developer.mozilla.org/zh-CN/docs/Glossary/Falsy)时返回右侧操作数。也就是说，如果使用 `||` 来为某些变量设置默认值
+
+对比：
+
+- 不同点：
+  - **空值合并运算符**（`??`）的假值只有`null`或`undefined`
+  - **逻辑或运算符（`||`）**的假值更多，包括`0`， `''`， `NaN`， `null`， `undefined`，如果你希望将`0`， `''`， `NaN`作为有效值，那么建议使用空值合并运算符
+- 相同点：
+  - 都是可以短路的
