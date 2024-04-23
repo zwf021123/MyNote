@@ -289,6 +289,7 @@ Sequlize ORM 对象关系映射：<https://www.sequelize.com.cn/core-concepts/mo
    2. 前端用户可以安装 => 远程拉取已上传的命令代码 => vue 加载组件
 4. 完善终端，比如性能，解决输入卡顿
 5. web 端改移动端，提供虚拟键盘便于用户更快地输入
+6. ​
 
 
 
@@ -321,8 +322,51 @@ Sequlize ORM 对象关系映射：<https://www.sequelize.com.cn/core-concepts/mo
 7. 为了防止频繁输入提示影响页面的性能， 使用 Lodash 库的防抖功能，减少用户输入的卡顿感
 8. 引入 Axios、Dayjs 插件并二次封装为前端插件集，实现了多环境、全局统一的配置，不用重复定义接口地址等
 9. 使用 ESLint + Prettier + TypeScript 配合 IDE 实现语法提示，统一项目规范，减少开发中的错误
-10. 仿 Linux 命令自实现文件系统，封装为空间命令，可以像管理文件一样管理已收藏的网站
+10. **仿 Linux 命令自实现文件系统，封装为空间命令，可以像管理文件一样管理已收藏的网站**
 11. 怎么部署？
+
+
+
+
+
+
+## 遇到的困难
+
+### 随机背景图切换时存在css渲染卡顿
+
+因为获取的背景图片较大导致渲染到页面上时（不是请求接口慢的问题）卡顿+空背景
+
+- 解决办法
+  - 先使用loading缓解用户加载焦虑
+  - 使用工具如`TinyPNG`这样的包可以减小图片的文件大小
+  - cdn加速（假设你的图片都放在服务器中）
+  - 使用不同格式的图片先后显示（例如可以使用较小可以快速加载出来的`webp`格式，叠加较清晰的`png`图片格式，这样浏览器可以先渲染出大致内容，再变清晰）
+
+
+
+
+
+### 提示
+
+- 当命令关键字之间存在多余空格时无法显示提示（正则表达式匹配分割即可，`trim(inputText).split(/\s+/)`）
+- 必须完全输入子命令关键字才能显示提示（新增子查询时模糊匹配子命令）
+- 存在子命令时tab失效
+
+将当前已经输入的单词个数匹配到提示数组的个数，并将在此之前的所有单词都替换为提示数组的单词
+
+```ts
+    const wordArr = inputCommand.value.text.split(/\s+/);
+    const hintArr = hint.value.split(/\s+/);
+    const wordNum = wordArr.length;
+    // 将当前输入个数的单词替换为提示的单词
+    inputCommand.value.text = wordArr
+      .map((word, index) => {
+        return index <= wordNum - 1 ? hintArr[index] : "";
+      })
+      .join(" ");
+```
+
+
 
 
 
