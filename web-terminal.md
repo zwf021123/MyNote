@@ -358,12 +358,11 @@ Sequlize ORM 对象关系映射：<https://www.sequelize.com.cn/core-concepts/mo
     const wordArr = inputCommand.value.text.split(/\s+/);
     const hintArr = hint.value.split(/\s+/);
     const wordNum = wordArr.length;
-    // 将当前输入个数的单词替换为提示的单词
-    inputCommand.value.text = wordArr
-      .map((word, index) => {
-        return index <= wordNum - 1 ? hintArr[index] : "";
-      })
-      .join(" ");
+    // 将当前输入个数的单词替换为提示的单词(除了用户输入之前的)
+    inputCommand.value.text = [
+      ...wordArr.slice(0, wordNum - 1),
+      hintArr[wordNum - 1],
+    ].join(" ");
 ```
 
 
