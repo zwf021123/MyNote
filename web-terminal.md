@@ -369,3 +369,128 @@ Sequlize ORM 对象关系映射：<https://www.sequelize.com.cn/core-concepts/mo
 
 
 
+
+
+### sasa的
+
+- 发现pinia的action无法使用console.log
+
+原来是我之前重构代码到一半就去写需求，导致pinia的store导入出现问题
+
+
+
+
+
+### redis与cookie的协同工作
+
+```ts
+    const sessionOptions = {
+      // store session存储实例，默认为一个新的 MemoryStore 实例。
+      store: new RedisStore({ client: redisClient }), // 只需设置这个就可存储到redis
+      name: "session_id", // 默认connect.sid
+      secret: "IIndex", // 设置签名秘钥  内容可以任意填写
+      resave: false, // 强制保存，如果session没有被修改也要重新保存,默认true(推荐false)
+      saveUninitialized: true, // 如果原先没有session那么就设置，否则不设置(推荐true)
+      rolling: true, // 每次请求更新有效时长
+      cookie: {
+        // domain: ".yuindex.com", // 需要共享 cookie 时再设置
+        // 全局设置 cookie，就是访问随便 api 就会设置 cookie，也可以在登录的路由下单独设置
+        maxAge: 1000 * 60 * 60 * 24 * 30, // 30 天后过期
+        httpOnly: true, // 是否允许客户端修改 cookie（默认 true 不能被修改）
+      },
+    };
+```
+
+在这段代码中，Redis和Cookie被用于不同的目的。
+
+`Cookie`主要用于在**客户端（用户的浏览器）存储会话信息**。当用户访问网站时，服务器会创建一个会话，并将**会话ID存储在Cookie**中，然后将Cookie发送给客户端。当用户再次访问网站时，浏览器会将Cookie发送回服务器，服务器通过Cookie中的会话ID来识别用户。
+
+`Redis`在这里被用作**会话存储**。**当服务器创建会话后，会将会话数据（包括会话ID和其他相关信息）存储在Redis中。当服务器收到包含会话ID的Cookie时，会查询Redis来获取会话数据**。
+
+所以，Cookie和Redis在这里是协同工作的。Cookie在客户端存储会话ID，而Redis在服务器端存储会话数据。
+
+
+
+
+
+
+
+
+
+
+
+### 登录
+
+- 为什么没有本地存储也能得到用户信息
+
+今天突然产生一个疑问？？？我将浏览器的localStorage的内容删除后，发现还是可以得到个人的用户信息
+
+自己还是没有完全理解，登录的业务逻辑：
+
+先要理解上面redis与cookie的协同工作，理解之后，那么登录就是这样的
+
+![71394752994](web-terminal.assets/1713947529945.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+### 为什么后端代码通常会自己创建一个异常类
+
+鱼皮的代码中：
+
+```ts
+class MyError extends Error {
+  constructor(code, message) {
+    super(message);
+    this.code = code;
+    this.message = message;
+    this.name = "MyError";
+  }
+}
+
+module.exports = MyError;
+
+```
+
+实际上，在原生的Error类中，没有code这个属性，因此，我们才需要创建一个新的类
+
+
+
+
+
+### 为什么要使用controller、service两个目录分割请求代码
+
+这里的controller实际上指的是计算机设计模式MVC中的控制器(controller)，
+
+![71394927108](web-terminal.assets/1713949271088.png)
+
+但是实际上在前后端分离的背景下，现在的项目中已经只剩下C了
+
+而在这个项目中（拥有controller和model层，使用vue框架实现view层）：
+
+- **Controller是控制层，或者叫接口层，主要用来接收请求的**
+- **Service是业务层，在这一层里处理请求的业务逻辑**
+
+![71394954164](web-terminal.assets/1713949541642.png)
+
+原先还有个DAO层，用来执行SQL，现在用了MyBatis或MyBatis Plus的话DAO层也没怎么用了
+
+> [MVC 模式是什么 (freecodecamp.org)](https://www.freecodecamp.org/chinese/news/what-does-mvc-mean-in-computer-science/)
+
+
+
+
+
+
+
+- 在路径输入时tab补全失效
+
