@@ -1002,6 +1002,26 @@ function jsonp (url,data,fn){
 
 
 
+
+
+
+
+## 第七周
+
+### v-html中的a标签
+
+今天在写terminal项目时，发现使用`v-html`渲染的字符串中包含的a标签中的`href`属性如果编写了`http`或`https`前缀，那么会导致跳转失败，同时路由被改变了
+
+询问gpt后发现可能是因为Vue Router的`mode: 'history'`选项。这会导致浏览器忽略`<a>`标签的`href`属性，而是使用Vue Router来处理链接。如果Vue Router的配置中没有匹配到这个URL，那么点击链接时就不会有任何反应。
+
+
+
+
+
+
+
+
+
 tips
 
 总价？显示？
