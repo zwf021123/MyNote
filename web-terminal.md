@@ -488,13 +488,93 @@ module.exports = MyError;
 
 
 
+### 路径处理
+
+递归：
+
+注意在递归里面的name传递最好没有任何前缀以便拼接当前路径字符串获取绝对路径
+
+1. 递归出口：name以**单独**`/`开头时，或`dir + (dir === "/" ? "" : "/") + name;`
+2. name以`./`开头时，调用`getFullPath(dir,name.substring(2))`避免多层`./`
+3. name以`../`开头时，调用`getFullPath(dir,name.substring(3))`避免多层`../`
+
+例子：
+
+"/createDir", "../zhihu"  =>期望得到 /zhihu  实际得到 /zhihu
+
+"/createDir", "../../../zhihu" => 期望得到/zhihu 实际得到 /zhihu
+
+"/createDir", "./zhihu" => 期望得到  /createDir/zhihu 实际得到 /createDir/zhihu
+
+"/createDir", "./createDir2/zhihu" => 期望得到 /createDir/createDir2/zhihu 实际得到 /createDir/createDir2/zhihu
+
+"/", "../zhihu" => 期望得到 /zhihu 实际得到 /zhihu
+
+"/", "../../../zhihu" => 期望得到 /zhihu 实际得到 /zhihu
+
+"/", "./zhihu" => 期望得到 /zhihu 实际得到 /zhihu
 
 
 
 
-- 在路径输入时tab补全失效
-- 使用copy复制条目时，源路径最前面不能加上任何前缀包括`/`、`./`、`../`等，同时目标路径也是
 
+### 路径补全
+
+思路：利用已实现的getFullPath方法，例如传参"/createDir",""可以得到绝对路径"/createDir/"这一点，再去拼接用户输入的模糊路径后半部分（因为存储是使用的绝对路径），使用拼接的字符串去查询，如果能够查询得到，则再次拼接恢复用户输入的字符串前缀（因为用户可能输入的是相对路径，例如./ ../）
+
+而判断什么时候使用路径补全则是利用当前的hint，提示中是否包含关键字"目录""路径"
+
+
+
+
+
+### 递归复制目录
+
+```ts
+    copyDirectory(sourcePath: string, targetPath: string): ResultType {
+      // console.log("sourcePath", sourcePath, "targetPath", targetPath);
+
+      const items = this.listItems(sourcePath, true);
+      // console.log("items", items);
+      const itemName = getItemName(sourcePath);
+      const newDirPath = targetPath + itemName;
+      if (!this.space[newDirPath]) {
+        this.addItem({
+          dir: targetPath,
+          name: itemName,
+          type: "dir",
+        });
+      }
+      for (const item of items) {
+        // 计算在目标目录中的路径
+        const targetItemPath = targetPath + itemName + "/" + item.name;
+        // console.log("targetItemPath", targetItemPath);
+
+        // 如果这一项是一个目录，则递归调用 copyDirectory
+        if (item.type === "dir") {
+          this.copyDirectory(item.dir, targetItemPath);
+        } else {
+          // 否则，直接复制这一项
+          this.space[targetItemPath] = { ...item, dir: targetPath + itemName };
+        }
+      }
+      return {
+        result: true,
+      };
+    },
+
+```
+
+
+
+
+
+
+
+- 部分命令不支持cd /createDir/createDir2/
+- 可选参数tab补全
+- 将localStorage里的数据空间支持命令下载到本地，和从本地加载
+- 将空间数据与用户绑定同时存储到数据库中
 
 
 
