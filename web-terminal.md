@@ -289,7 +289,6 @@ Sequlize ORM 对象关系映射：<https://www.sequelize.com.cn/core-concepts/mo
    2. 前端用户可以安装 => 远程拉取已上传的命令代码 => vue 加载组件
 4. 完善终端，比如性能，解决输入卡顿
 5. web 端改移动端，提供虚拟键盘便于用户更快地输入
-6. ​
 
 
 
