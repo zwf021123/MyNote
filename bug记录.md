@@ -1020,21 +1020,21 @@ function jsonp (url,data,fn){
 
 
 
-
-
-tips
-
-总价？显示？
-
-加一个函数才能跑？？？
-
-trigger自动计算位置失效了
-
-1280下显示
+## 第八周
 
 
 
 
+
+## 第九周
+
+~~推广页状态颜色规范~~
+
+~~禁用查看按钮打开的dialog内容~~
+
+注意jsx中的绑定方法不像vue可以直接带括号，jsx中绑定方法直接带括号会直接调用该方法
+
+预约页面seatch中使得radio进行loading导致换页也会loading
 
 
 
