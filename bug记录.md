@@ -1036,5 +1036,52 @@ function jsonp (url,data,fn){
 
 预约页面seatch中使得radio进行loading导致换页也会loading
 
+封装组件的意义（让外层组件变得简洁一些、
 
+a-table已经提供了双向绑定为什么Table组件还需要拆解操作
 
+~~dialog内数据如果需要实时变化，需要使用prop进行传递数据，同时在fullfilled时search
+
+~~dialog的确定按钮消失
+
+~~notifaction能否向左消失
+
+~~notifaction的样式修改能否不使用querySelect
+
+~~更新完毕再次点击原来的批量编辑数据还是旧的
+
+~~监听tableData更新双向绑定的值（或导致点击分页都要更新绑定的值
+
+~~配置Selection里的绑定值有必要写吗
+
+~~果然导致原来对选择的限制失效了
+
+~~限制备注~~
+
+~~在用户关闭批量编辑框后需要重新回到1到>=2~~
+
+~~批量编辑个数不是响应式~~
+
+~~貌似因为Notifaction是函数调用的，因此不能被Vue响应式跟踪到
+
+~~button 46 left 10~~
+
+~~notifaction remove失效~~(因为使用了`??`运算符只是返回右边代码内容)
+
+~~notifaction z-index太大~~
+
+~~表单布局问题~~
+
+~~radio间隔~~
+
+~~进度条显示异常~~
+
+多个失败时，点击全部重试时不能触发所有失败项的loading（挂起
+
+~~校验不到标签字段（还是那个问题，嵌套表单绑定时需要使用`.`语法~~
+
+~~删除按钮需要禁用~~
+
+~~单独重新提交按钮~~
+
+~~allSettled会导致全部请求一起发吗（会，和Promise.all一样~~
