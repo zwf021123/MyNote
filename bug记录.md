@@ -1105,3 +1105,20 @@ function jsonp (url,data,fn){
 ~~单独重新提交按钮~~
 
 ~~allSettled会导致全部请求一起发吗（会，和Promise.all一样~~
+
+
+
+
+
+
+
+## 第十周
+
+~~新的editer的传参传到最外层的desc~~
+
+~~为什么使用class选择不到dialog内容
+
+~~上移到最顶部禁用按钮~~
+
+~~info-card加一个二维码位置(lodash防抖不能用？？)
+
