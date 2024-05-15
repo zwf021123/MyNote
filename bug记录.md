@@ -1036,7 +1036,7 @@ function jsonp (url,data,fn){
 
 ~~注意jsx中的绑定方法不像vue可以直接带括号，jsx中绑定方法直接带括号会直接调用该方法~~
 
-预约页面seatch中使得radio进行loading导致换页也会loading
+~~预约页面seatch中使得radio进行loading导致换页也会loading（两个数据在一个接口不好分开~~
 
 封装组件的意义（让外层组件变得简洁一些、
 
@@ -1116,27 +1116,29 @@ function jsonp (url,data,fn){
 
 ~~新的editer的传参传到最外层的desc~~
 
-~~为什么使用class选择不到dialog内容
+~~为什么使用class选择不到dialog内容~~
 
 ~~上移到最顶部禁用按钮~~
 
-~~info-card加一个二维码位置(lodash防抖不能用？？)
+~~info-card加一个二维码位置(lodash防抖不能用？？)~~
 
-~~默认分区无法删除
+~~默认分区无法删除~~
 
 ~~标签里有个test
 
-~~能否让tag-select自适应输入框长度
+~~能否让tag-select自适应输入框长度~~
 
 ~~服务名
 
-~~zone标签报错
+~~zone标签报错~~
 
-~~zone页面存在滚动条
+~~zone页面存在滚动条（原来是因为table计算高度未考虑margin)~~
 
 ![71565827369](bug记录.assets/1715658273696.png)
 
 功能属性前端写死？？
+
+~~能否将tagSelect的name与id的对应为对象字典~~
 
 ![71565829789](bug记录.assets/1715658297895.png)
 
@@ -1146,20 +1148,44 @@ function jsonp (url,data,fn){
 
 提取功能属性
 
-tagSelect组件没有loading
+~~tagSelect组件没有loading~~
 
-专区列表api没给status
+~~专区列表api没给status~~
 
 ~~添加专区报错~~
 
-有tagSelect的地方接口怎么传
+~~有tagSelect的地方接口怎么传~~
 
-需要深拷贝吗
+~~需要深拷贝吗~~
 
-新增专区的置顶美甲得到的数据没有置顶
+~~新增专区的置顶美甲得到的数据没有置顶~~
 
-不再允许tagSelect组件创建标签
+~~不再允许tagSelect组件创建标签~~
 
-既然标签都放在后台了，base-info需要将id给我
+~~既然标签都放在后台了，base-info需要将id给我~~
 
-看来还是要把标签名字也给我
+~~看来还是要把标签名字也给我~~
+
+~~刷新出现不明请求
+
+
+
+~~去除国际化相关（开个分支
+
+~~移动 节流~~
+
+~~提示点击过快~~
+
+~~tagSelect显示问题~~
+
+
+
+~~编辑回显接口返回数据的置顶顺序问题~~
+
+~~默认专区
+
+~~少了个删除专区接口~~
+
+~~新增专区的置顶商品没有显示，并且所有专区的置顶商品一样~~
+
+~~出现sort重复的情况~~
