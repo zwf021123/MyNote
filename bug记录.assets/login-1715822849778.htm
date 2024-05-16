@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<head>
+		<title>登录-TAPD</title>
+	<meta charset="utf-8">
+	
+	<meta itemprop="image" content="https://file.tapd.cn/img_dist/help/share-icon-599c5922be.png"/>
+		<meta name="keywords" content="TAPD,腾讯,团队协作工具,项目管理工具,项目协作工具,敏捷开发,敏捷项目管理,scrum,devops,需求分析,缺陷管理,持续集成,测试用例,持续集成,持续交付,Wiki,甘特图,Git">
+		<meta name="description" content="TAPDIt is derived from Tencent\'s agile product research and development collaboration platform, which provides one-stop service throughout the life cycle of agile research and development. It covers the whole life cycle of product development from product concept formation, product planning, requirements analysis, project planning and tracking, quality testing to construction release and user feedback tracking, providing flexible customizable applications and strong integration capabilities. help R & D teams effectively manage requirements, resources, schedule and quality, standardize and improve product R & D processes, and improve R & D efficiency and product quality">
+	<meta name="description" itemprop="description" content="高效研发协作最佳实践，腾讯团队协作理念与敏捷研发精髓沉淀。">
+	<meta name="baidu-site-verification" content="Bi8SB5veOo" />
+	<meta name="google-site-verification" content="ByUVxM8aDnQa-hngQECk6feO7Q3J9zXHkSJIYnfA5M0" />
+	<meta name="360-site-verification" content="ab14abe3183b05805ad0913985f2f97e" />
+	<meta name="sogou_site_verification" content="qudPralQcl"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+	
+	<script type="text/javascript"  nonce="65e9d3937c9b6dec874cf735169c" >	var defindGlobalConst = function(varName, value){
+		Object.defineProperty(window, varName, {
+			get: function(){return value;},
+			set: function(){throw 'Not Allow Assignment to constant variable';},
+			configurable: true
+		});
+	}
+	try{
+	defindGlobalConst('_tapd_jquery', 'true');
+	defindGlobalConst('_base', 'https://www.tapd.cn/');
+	defindGlobalConst('_domain', 'tapd.cn');
+	defindGlobalConst('isCloud', true);
+	defindGlobalConst('isExternal', true);
+	defindGlobalConst('isDev', false);
+    defindGlobalConst('_viper', 'https://viper.tapd.cn/');
+    defindGlobalConst('productRdProject', '1');
+    defindGlobalConst('productMiniProject', '2');
+		defindGlobalConst('userLocaleId', '2');
+	defindGlobalConst('userLocale', 'zh_CN');
+	defindGlobalConst('workspace_workitem_name', '');
+	defindGlobalConst('workspace_workitem_english_name', '');
+	defindGlobalConst('workspace_workitem_english_plural_name', '');
+			}catch(e){
+
+	}
+	
+		
+	var tfl_path = "https://tdl.tapd.cn/tfl/";
+	var cdn_enabled = "";
+	var enable_version_fail_log = "1";
+	var jsVersion = '3312702043';
+	var tui_skin = 'lego';
+	var tui_content_skin = 'lego';
+	var is_idc_odc_network_failure = false;
+	var cloud_vpc_site = 'www.tapd.cn';
+	var enableAvatar = false;
+	var userChooserVersion = false;
+	var enable_user_chooser_of_backend = false;
+
+	var enable_user_contact = false;
+
+	var holidayWorkdayInfo = {"2012":[{"9":["29"],"1":["21","29"]},{"10":["01","02","03","04","05","06","07"],"9":["30"],"1":["01","02","03","22","23","24","25","26","27","28"]}],"2011":[{"12":["31"]},[]],"2013":[{"1":["05","06"],"2":["17"],"4":["07","27","28"],"6":["08","09"],"9":["22","29"],"10":["12"]},{"1":["01","02","03"],"2":["09","10","11","12","14","15","13","08"],"4":["04","05","06","29","30"],"5":["01"],"6":["10","11","12"],"9":["19","20","21"],"10":["01","02","03","04","05","06","07"]}],"2014":[{"1":["26"],"2":["08"],"5":["04"],"9":["28"],"10":["11"]},{"1":["01","31"],"2":["01","02","03","04","05","06"],"4":["05","07"],"5":["01","02"],"6":["02"],"9":["08"],"10":["01","02","03","04","05","06","07"]}],"2015":[{"1":["04"],"2":["15","28"],"10":["10"],"9":["06"]},{"1":["01","02","03"],"2":["17","18","19","20","23","24","25"],"4":["06"],"5":["01"],"6":["22"],"10":["01","02","05","06","07"],"9":["03","04","05"]}],"2016":[{"6":["12"],"9":["18"],"10":["08","09"]},{"1":["01"],"2":["08","09","10","11","12"],"4":["04"],"5":["02"],"6":["09","10"],"9":["15","16"],"10":["03","04","05","06","07"]}],"2017":[{"1":["22"],"2":["04","05"],"4":["01"],"5":["27"],"9":["30"]},{"1":["01","02","27","28","29","30","31","25","26"],"2":["01","02","03"],"4":["02","03","04"],"5":["01","28","29","30"],"10":["01","02","03","04","05","06","07","08"]}],"2018":[{"2":["11","12","24"],"4":["08","28"],"9":["29","30"],"12":["29"]},{"1":["01"],"2":["14","15","16","17","19","21","22","18","20"],"4":["05","06","07","29","30"],"5":["01"],"10":["01","02","03","04","05","06","07"],"6":["18"],"9":["24"],"12":["31"]}],"1970":[{"1":["00"]},[]],"2019":[{"2":["02"],"9":["29"],"10":["12"]},{"1":["01"],"2":["04","05","06","07","08","09","10","03","11"],"4":["05","06","07"],"5":["01"],"6":["07","08","09"],"9":["13","14","15"],"10":["01","02","04","03","05","06","07"]}],"2020":[{"1":["19"],"4":["26"],"5":["09"],"6":["28"],"9":["27"],"10":["10"]},{"1":["01","24","25","26","27","28","29","30","23","31"],"4":["04","05","06"],"5":["01","02","03","04","05"],"6":["25","26","27"],"10":["01","02","03","04","05","06","07","08"],"2":["01","03","04","02","05","06","07","08","09"]}],"2021":[{"2":["07","20"],"4":["25"],"5":["08"],"9":["18","26"],"10":["09"]},{"1":["01","02","03"],"2":["11","13","12","14","15","16","17"],"4":["03","04","05"],"5":["01","02","03","04","05"],"6":["12","13","14"],"9":["19","20","21"],"10":["01","02","03","04","05","06","07"]}],"2022":[{"1":["29","30"],"4":["02","24"],"5":["07"],"10":["08","09"]},{"1":["01","02","03","31"],"2":["01","02","03","04","05","06"],"4":["03","04","05","30"],"5":["01","02","03","04"],"6":["03","04","05"],"9":["10","11","12"],"10":["01","02","03","04","05","06","07"],"12":["31"]}],"2023":[{"1":["28","29"],"10":["07","08"],"4":["23"],"5":["06"],"6":["25"]},{"1":["01","02","21","22","23","24","25","26","27"],"4":["05","29","30"],"5":["01","02","03"],"6":["22","23","24"],"9":["29","30"],"10":["01","02","03","04","05","06"]}],"2024":[{"2":["18","04"],"4":["07","28"],"9":["14","29"],"10":["12"],"5":["11"]},{"1":["01"],"2":["10","11","12","13","14","15","16","17"],"4":["04","05","06"],"5":["01","02","03","04","05"],"6":["10"],"9":["15","16","17"],"10":["01","03","04","05","06","07","02"]}]};
+
+	var cookie = {
+		set(key, value, options) {
+			const path = options && options.path ? ';path=' + options.path : ';path=/';
+			const domain = options && options.domain ? ';domain=' + options.domain : '';
+			const expires =
+			options && options.expires ? ';expires=' + options.expires : '';
+			document.cookie = encodeURIComponent(key) + '=' + encodeURIComponent(value) + path + domain + expires;
+		},
+		get(key) {
+			let result = document.cookie.match(
+				new RegExp(encodeURIComponent(key) + '=' + '([^;]+);{0,1}')
+			);
+			result = result ? result[1] : '';
+			return decodeURIComponent(result);
+		},
+	}
+	
+	// 兼容 chrome tab activate ，不刷新资源问题
+	function forceRefresh() {
+		const reloadPage = Number(cookie.get('reloadPage')) || 0;
+		if (reloadPage < 1) {
+			// 过期时间 5 分钟
+			const now = new Date();
+			now.setTime(now.getTime() + 5 * 60 * 1000);
+
+			cookie.set('reloadPage', reloadPage + 1, { expires: now.toUTCString() });
+			console.error('静态资源更新，页面需刷新');
+			window.location.reload(true);
+		} else {
+			console.error('刷新次数过多，停止刷新');
+			// cookie.set('reloadPage', 0);
+		}
+	}
+
+	function tapdScriptLoadErrorHandle(error) {
+		forceRefresh();
+	}
+	window.tapdScriptLoadErrorHandle = tapdScriptLoadErrorHandle;
+
+
+        try {
+			document.domain = _domain;
+        
+    } catch(e) {
+    }
+</script><script type="text/javascript" src="/js_dist/translate-eeb3168747.js"  nonce="65e9d3937c9b6dec874cf735169c" onerror="tapdScriptLoadErrorHandle(event)" ></script><script type="text/javascript" src="https://file.tapd.cn//js/compress/locale/zh_CN.js"  nonce="65e9d3937c9b6dec874cf735169c" onerror="tapdScriptLoadErrorHandle(event)" ></script>	<script nonce="65e9d3937c9b6dec874cf735169c">DIST_VERSION_MAP=[];</script><script nonce="65e9d3937c9b6dec874cf735169c" src="https://www.tapd.cn/dist/dist_version_map-3312702043.js"></script><script nonce="65e9d3937c9b6dec874cf735169c" src="https://tdl.tapd.cn/tfl/dist/dist_version_map-3700950730.js"></script>	<link rel="stylesheet" type="text/css" href="https://tdl.tapd.cn/tfl/css_dist/tfl-style-0c62604a91.css" onerror="tapdScriptLoadErrorHandle(event)" />	<link rel="stylesheet" type="text/css" href="/css_dist/tui-tapd-316962fb61.css" onerror="tapdScriptLoadErrorHandle(event)" />	<link rel="stylesheet" type="text/css" href="/css_dist/tcloud/official/home-common-92276d08b8.css" onerror="tapdScriptLoadErrorHandle(event)" />	<link rel="stylesheet" type="text/css" href="/css_dist/tui-tapd-iconfont-ac099bb532.css" onerror="tapdScriptLoadErrorHandle(event)" />	<script type="text/javascript" src="/js_dist/jquery-mix-539622a680.js"  nonce="65e9d3937c9b6dec874cf735169c" onerror="tapdScriptLoadErrorHandle(event)" ></script>	<script type="text/javascript"  nonce="65e9d3937c9b6dec874cf735169c" >		tfl_path = 'https://tdl.tapd.cn/tfl/';
+	</script>	<script type="text/javascript" src="https://tdl.tapd.cn/tfl/js/compress/core|dialog|dropdown|tselect|tips|cluetip|template.js?v=3312702043&compress=1"  nonce="65e9d3937c9b6dec874cf735169c" onerror="tapdScriptLoadErrorHandle(event)"></script><script type="text/javascript" src="/js/compress/new_with_pack_lib.66433caff71ea8fc517539d5d424d5cc-3312702043.js"  nonce="65e9d3937c9b6dec874cf735169c" onerror="tapdScriptLoadErrorHandle(event)" ></script></head>
+<body class=" ">
+<div class="bodywrap">
+<link rel="stylesheet" type="text/css" href="/css_dist/tcloud/login-eae36e6397.css" onerror="tapdScriptLoadErrorHandle(event)" /><div class="layout-logo layout-logo-for-login">
+  <a href="https://www.tapd.cn/">
+    <img src="https://www.tapd.cn/img/new_home/tapd-logo.svg" alt="" />
+  </a>
+</div>
+<div class="login-body">
+  <div class="msgbox">
+<span id="flash_message" style="display:none"></span>
+
+</div>
+  <div class="login-wrapper tab__2 j-login-wrapper">
+    <div class="login-left-part"></div>
+    <form class="login-form login-right-part"  id="login_cn_form" method="post" autocomplete="off">
+                        <input type="hidden" name="data[Login][ref]" value="https://www.tapd.cn/">
+                <input type="hidden" id="redirect-url" value='https://www.tapd.cn/'/>
+        <input type="hidden" id="base-path" value='https://www.tapd.cn/'/>
+        <input type="hidden" name='data[Login][encrypt_key]' id="encrypt_key" />
+        <input type="hidden"  name='data[Login][encrypt_iv]' id="encrypt_iv" />
+        <input type="hidden" name="data[Login][site]" value="TAPD">
+        <input type="hidden" name="data[Login][txcap_randstr]" id="j-txcap-randstr" value="">
+        <input type="hidden" name="data[Login][txcap_ticket]" id="j-txcap-ticket" value="">
+        <input type="hidden" name="data[Login][login]" value="login">
+        <input id="login_via_password" type="hidden" name="data[Login][via]" value="encrypt_password" />
+        <div class="login-title">欢迎来到TAPD</div>
+    
+        <div class="login-tab">
+                  <div data-value="1" class="login-tab-one j-login-tab-one login-tab-sms">验证码登录</div>
+                  <div data-value="2" class="login-tab-one j-login-tab-one login-tab-password">密码登录</div>
+          <div data-value="4" class="login-tab-one j-login-tab-one login-tab-qy">企业微信登录</div>
+          <input type="hidden" name="data[Login][type]" class="j-login-type" value="2" />
+        </div>
+  
+        <!-- 手机号 -->
+        <div class="login-input-item phone-sms-wraper" data-type="1">
+          <style>
+	#mobile-error-tips {
+		display:none;	}
+
+	#code-error-tips {
+		display:none;	}
+
+	#unbind-mobile-error {
+		display:none;	}
+
+	#unbind-mobile-tip {
+			}
+
+	#unbind-mobile-operate {
+		display:none;	}
+	#register-user-form .mobile-sms-verify {
+		padding-left: 18px !important;
+	}
+
+</style>
+
+<div class="phone-input__wrapper">
+<div name="code-menu" id="dropdown-menu" class="dropdown nation-code-dropdown" data-dropdown='click' maxheight="200" >
+	<div 
+    class="dropdown-toggle current-nation" 
+      >
+    <span id="area-name" class="text-left" >
+				</span>
+		<span id="area-code" class="text-right">+86</span>
+	</div>
+			<i class="font font-arrow-down"></i>
+		<div class="dropdown-menu" >
+				<ul>
+							<li>
+          <a 
+            value="+86" 
+            nation-name="China Mainland" 
+            title="中国大陆"
+          >
+            <span class="text-left" >
+              中国大陆            </span>
+            <span class="text-right">
+              +86            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+852" 
+            nation-name="Hongkong,China" 
+            title="中国香港"
+          >
+            <span class="text-left" >
+              中国香港            </span>
+            <span class="text-right">
+              +852            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+853" 
+            nation-name="Macao,China" 
+            title="中国澳门"
+          >
+            <span class="text-left" >
+              中国澳门            </span>
+            <span class="text-right">
+              +853            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+886" 
+            nation-name="Taiwan,China" 
+            title="中国台湾"
+          >
+            <span class="text-left" >
+              中国台湾            </span>
+            <span class="text-right">
+              +886            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+971" 
+            nation-name="United Arab Emirates" 
+            title="阿联酋"
+          >
+            <span class="text-left" >
+              阿联酋            </span>
+            <span class="text-right">
+              +971            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+61" 
+            nation-name="Australia" 
+            title="澳大利亚"
+          >
+            <span class="text-left" >
+              澳大利亚            </span>
+            <span class="text-right">
+              +61            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+55" 
+            nation-name="Brazil" 
+            title="巴西"
+          >
+            <span class="text-left" >
+              巴西            </span>
+            <span class="text-right">
+              +55            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+49" 
+            nation-name="Germany" 
+            title="德国"
+          >
+            <span class="text-left" >
+              德国            </span>
+            <span class="text-right">
+              +49            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+7" 
+            nation-name="Russia" 
+            title="俄罗斯"
+          >
+            <span class="text-left" >
+              俄罗斯            </span>
+            <span class="text-right">
+              +7            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+33" 
+            nation-name="France" 
+            title="法国"
+          >
+            <span class="text-left" >
+              法国            </span>
+            <span class="text-right">
+              +33            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+82" 
+            nation-name="South Korea" 
+            title="韩国"
+          >
+            <span class="text-left" >
+              韩国            </span>
+            <span class="text-right">
+              +82            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+1" 
+            nation-name="Canada" 
+            title="加拿大"
+          >
+            <span class="text-left" >
+              加拿大            </span>
+            <span class="text-right">
+              +1            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+356" 
+            nation-name="Malta" 
+            title="马耳他"
+          >
+            <span class="text-left" >
+              马耳他            </span>
+            <span class="text-right">
+              +356            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+60" 
+            nation-name="Malaysia" 
+            title="马来西亚"
+          >
+            <span class="text-left" >
+              马来西亚            </span>
+            <span class="text-right">
+              +60            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+1" 
+            nation-name="United States" 
+            title="美国"
+          >
+            <span class="text-left" >
+              美国            </span>
+            <span class="text-right">
+              +1            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+52" 
+            nation-name="Mexico" 
+            title="墨西哥"
+          >
+            <span class="text-left" >
+              墨西哥            </span>
+            <span class="text-right">
+              +52            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+351" 
+            nation-name="Portugal" 
+            title="葡萄牙"
+          >
+            <span class="text-left" >
+              葡萄牙            </span>
+            <span class="text-right">
+              +351            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+81" 
+            nation-name="Japan" 
+            title="日本"
+          >
+            <span class="text-left" >
+              日本            </span>
+            <span class="text-right">
+              +81            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+966" 
+            nation-name="Kyrgyzstan" 
+            title="吉尔吉斯斯坦"
+          >
+            <span class="text-left" >
+              吉尔吉斯斯坦            </span>
+            <span class="text-right">
+              +966            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+66" 
+            nation-name="Thailand" 
+            title="泰国"
+          >
+            <span class="text-left" >
+              泰国            </span>
+            <span class="text-right">
+              +66            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+90" 
+            nation-name="Turkey" 
+            title="土耳其"
+          >
+            <span class="text-left" >
+              土耳其            </span>
+            <span class="text-right">
+              +90            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+34" 
+            nation-name="Spain" 
+            title="西班牙"
+          >
+            <span class="text-left" >
+              西班牙            </span>
+            <span class="text-right">
+              +34            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+65" 
+            nation-name="Singapore" 
+            title="新加坡"
+          >
+            <span class="text-left" >
+              新加坡            </span>
+            <span class="text-right">
+              +65            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+64" 
+            nation-name="New Zealand" 
+            title="新西兰"
+          >
+            <span class="text-left" >
+              新西兰            </span>
+            <span class="text-right">
+              +64            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+91" 
+            nation-name="India" 
+            title="印度"
+          >
+            <span class="text-left" >
+              印度            </span>
+            <span class="text-right">
+              +91            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+62" 
+            nation-name="Indonesia" 
+            title="印度尼西亚"
+          >
+            <span class="text-left" >
+              印度尼西亚            </span>
+            <span class="text-right">
+              +62            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+44" 
+            nation-name="United Kingdom" 
+            title="英国"
+          >
+            <span class="text-left" >
+              英国            </span>
+            <span class="text-right">
+              +44            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+84" 
+            nation-name="Vietnam" 
+            title="越南"
+          >
+            <span class="text-left" >
+              越南            </span>
+            <span class="text-right">
+              +84            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+39" 
+            nation-name="Italy" 
+            title="意大利"
+          >
+            <span class="text-left" >
+              意大利            </span>
+            <span class="text-right">
+              +39            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+380" 
+            nation-name="Ukraine" 
+            title="乌克兰"
+          >
+            <span class="text-left" >
+              乌克兰            </span>
+            <span class="text-right">
+              +380            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+31" 
+            nation-name="Netherlands" 
+            title="荷兰"
+          >
+            <span class="text-left" >
+              荷兰            </span>
+            <span class="text-right">
+              +31            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+48" 
+            nation-name="Poland" 
+            title="波兰"
+          >
+            <span class="text-left" >
+              波兰            </span>
+            <span class="text-right">
+              +48            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+47" 
+            nation-name="Norway" 
+            title="挪威"
+          >
+            <span class="text-left" >
+              挪威            </span>
+            <span class="text-right">
+              +47            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+420" 
+            nation-name="Czech Republic" 
+            title="捷克"
+          >
+            <span class="text-left" >
+              捷克            </span>
+            <span class="text-right">
+              +420            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+373" 
+            nation-name="Moldova" 
+            title="摩尔多瓦"
+          >
+            <span class="text-left" >
+              摩尔多瓦            </span>
+            <span class="text-right">
+              +373            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+20" 
+            nation-name="Egypt" 
+            title="埃及"
+          >
+            <span class="text-left" >
+              埃及            </span>
+            <span class="text-right">
+              +20            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+880" 
+            nation-name="Bangladesh" 
+            title="孟加拉"
+          >
+            <span class="text-left" >
+              孟加拉            </span>
+            <span class="text-right">
+              +880            </span>
+          </a>
+        </li>
+							<li>
+          <a 
+            value="+95" 
+            nation-name="Myanmar" 
+            title="缅甸"
+          >
+            <span class="text-left" >
+              缅甸            </span>
+            <span class="text-right">
+              +95            </span>
+          </a>
+        </li>
+					</ul>
+		<div class="dropdown-shadow"></div>
+	</div>
+</div>
+<input class="control-input mobile-sms-verify mobile-input" id="phone-num" data-nation-name="China Mainland" data-nation-value="86" data-check-not-midify="0" class="mobile-sms-verify" type="tel" data-control="mobileSmsVerify" code-type="authentication" error-dom="#mobile-error-tips" code-error-dom="#code-error-tips" name="data[Register][mobile]" placeholder="你的手机号码" data-placeholder="你的手机号码" value="" needValidatePhoneNumUnique="0" needUnbindMobile="0" needUpdateTips="0" displayVerifyCode="1" tabindex="1" >
+<span id="mobile-error-tips" class="error-tips"></span>
+<span id="code-error-tips" class="error-tips"></span>
+</div>
+
+<div id="unbind-mobile-div" style="display:none">
+	<div id="unbind-mobile-error">
+		<span id="unbind-mobile-tip">该号码已绑定帐号，请更换号码</span>
+		<span id="unbind-mobile-operate">
+			<a useiframe="true" class="unbind-a" fullscreen="false" data-id="unbind-mobile" data-control="dialog" href="#">
+				原帐号不再使用？解除绑定			</a>
+					</span>
+	</div>
+</div>
+<!-- 移动端时需要链接modal的控制模块 -->
+<script type="text/javascript" src="https://ssl.captcha.qq.com/TCaptcha.js"  nonce="65e9d3937c9b6dec874cf735169c" onerror="tapdScriptLoadErrorHandle(event)" ></script><script type="text/javascript"  nonce="65e9d3937c9b6dec874cf735169c" >$(function() {
+	var options = {
+		id: 'phone-num',
+		areaCode: {"China Mainland":{"code":"+86","cn":"\u4e2d\u56fd\u5927\u9646","reg":"^[1][3,4,5,6,7,8,9][0-9]{9}$"},"Hongkong,China":{"code":"+852","cn":"\u4e2d\u56fd\u9999\u6e2f","reg":"^[4,5,6,9][0-9]{7}$"},"Macao,China":{"code":"+853","cn":"\u4e2d\u56fd\u6fb3\u95e8","reg":"^[6][0-9]{7}$"},"Taiwan,China":{"code":"+886","cn":"\u4e2d\u56fd\u53f0\u6e7e","reg":"^([0][9]|[9])[0-9]{8}$"},"United Arab Emirates":{"code":"+971","cn":"\u963f\u8054\u914b","reg":"^\\d{6,12}$"},"Australia":{"code":"+61","cn":"\u6fb3\u5927\u5229\u4e9a","reg":"^[4][0-9]{8}$"},"Brazil":{"code":"+55","cn":"\u5df4\u897f","reg":"^\\d{6,12}$"},"Germany":{"code":"+49","cn":"\u5fb7\u56fd","reg":"^[1]([5][0,1,2,5,6,7,8,9])|([6][0,2,3])|([7][0-9])[0-9]{6,10}$"},"Russia":{"code":"+7","cn":"\u4fc4\u7f57\u65af","reg":"^[9][0,1,2,3,5,6][0-9]{8}$"},"France":{"code":"+33","cn":"\u6cd5\u56fd","reg":"^[6][0-9]{8}$"},"South Korea":{"code":"+82","cn":"\u97e9\u56fd","reg":"^[1][0,1,3,6,7,8,9][0-9]{8}$"},"Canada":{"code":"+1","cn":"\u52a0\u62ff\u5927","reg":"^[0-9]{10}$"},"Malta":{"code":"+356","cn":"\u9a6c\u8033\u4ed6","reg":"^\\d{8}$"},"Malaysia":{"code":"+60","cn":"\u9a6c\u6765\u897f\u4e9a","reg":"^[1][0-9]{8,9}$"},"United States":{"code":"+1","cn":"\u7f8e\u56fd","reg":"^[0-9]{10}$"},"Mexico":{"code":"+52","cn":"\u58a8\u897f\u54e5","reg":"^\\d{6,12}$"},"Portugal":{"code":"+351","cn":"\u8461\u8404\u7259","reg":"^\\d{6,12}$"},"Japan":{"code":"+81","cn":"\u65e5\u672c","reg":"^0{0,1}[7,8,9](?:\\d{8}|\\d{9})$"},"Kyrgyzstan":{"code":"+966","cn":"\u5409\u5c14\u5409\u65af\u65af\u5766","reg":"^\\d{6,12}$"},"Thailand":{"code":"+66","cn":"\u6cf0\u56fd","reg":"^[8,9,6][0-9]{8}$"},"Turkey":{"code":"+90","cn":"\u571f\u8033\u5176","reg":"^\\d{6,12}$"},"Spain":{"code":"+34","cn":"\u897f\u73ed\u7259","reg":"^\\d{6,12}$"},"Singapore":{"code":"+65","cn":"\u65b0\u52a0\u5761","reg":"^[8,9][0-9]{7}$"},"New Zealand":{"code":"+64","cn":"\u65b0\u897f\u5170","reg":"^[278]\\d{7,9}$"},"India":{"code":"+91","cn":"\u5370\u5ea6","reg":"^[7,8,9][0-9]{9}$"},"Indonesia":{"code":"+62","cn":"\u5370\u5ea6\u5c3c\u897f\u4e9a","reg":"^[2-9]\\d{7,11}$"},"United Kingdom":{"code":"+44","cn":"\u82f1\u56fd","reg":"^[7][0-9]{9}$"},"Vietnam":{"code":"+84","cn":"\u8d8a\u5357","reg":"^[1-9]\\d{6,9}$"},"Italy":{"code":"+39","cn":"\u610f\u5927\u5229","reg":"^[37]\\d{8,11}$"},"Ukraine":{"code":"+380","cn":"\u4e4c\u514b\u5170","reg":"^\\d{9,11}$"},"Netherlands":{"code":"+31","cn":"\u8377\u5170","reg":"^\\d{9,11}$"},"Poland":{"code":"+48","cn":"\u6ce2\u5170","reg":"^[5-8]\\d{8}$"},"Norway":{"code":"+47","cn":"\u632a\u5a01","reg":"^\\d{8,12}$"},"Czech Republic":{"code":"+420","cn":"\u6377\u514b","reg":"^\\d{9}$"},"Moldova":{"code":"+373","cn":"\u6469\u5c14\u591a\u74e6","reg":"^\\d{8}$"},"Egypt":{"code":"+20","cn":"\u57c3\u53ca","reg":"^\\d{8,12}$"},"Bangladesh":{"code":"+880","cn":"\u5b5f\u52a0\u62c9","reg":"^[1-9]{1}[0-9]{3}[0-9]{6}$"},"Myanmar":{"code":"+95","cn":"\u7f05\u7538","reg":"^[1-9]{1}[0-9]{7,8}$"}},
+		prefix: '',
+		locale: 'zh_cn',
+		txcap_enable: true,
+		txcap_appid: '2049541429',
+	};
+	TFL.use('phoneVerify', function(){
+		TFL.phoneVerify(options);
+	});
+	$('.nation-code-dropdown li').click(function(){
+		if (window.maskLayer && window.maskLayer.fadeOut) {
+			window.maskLayer.fadeOut('fast', function() {
+				window.maskLayer.remove();
+				window.maskLayer = null;
+			});
+		}
+		if (window.dropdownMenu && window.dropdownMenu.appendTo) {
+			window.dropdownMenu.appendTo($('.nation-code-dropdown'));
+			window.dropdownMenu = null;
+		}
+
+		var content = $(this).find('a').html(),
+		nationName = $(this).find('a').attr('nation-name'),
+		nationCode = $(this).find('a').attr('value');
+
+		$('.nation-code-dropdown .dropdown-toggle').html(content);
+		$('#phone-num').attr('data-nation-name', nationName);
+		$('#phone-num').attr('data-nation-value', nationCode);
+
+		$('#phone-num').val() && TFL.phoneVerify.instances[options.id].validateMobile();
+	});
+})
+</script>        </div>
+  
+        <!-- 账号 -->
+        <div class="login-input-item" data-type="2">
+          <input  id="username" maxlength="50" placeholder="请输入邮箱或手机" data-placeholder="请输入邮箱或手机" tabindex="1" type="text" name="data[Login][email]" value="" class="inputFeed" data-feed-object="common" data-feed-action="input" data-feed-group="ecology" data-feed-place="ecology_login_input_name">
+        </div>
+    
+        <!-- 密码 -->
+        <div class="login-input-item" data-type="2" id="pwd-div">
+          <input  id="password_input" type="password" tabindex="2" placeholder="请输入密码" data-placeholder="请输入密码" name="data[Login][password]" value="" class="inputFeed" data-feed-object="common" data-feed-action="input" data-feed-group="ecology" data-feed-place="ecology_login_input_password">
+        </div>
+  
+        <!-- 服务协议 -->
+        <label class="login-protocol" data-type="3" >
+            <input tabindex="4" type="checkbox" id="protocol-checkbox" name="data[protocol]"> 阅读并同意 <a class="read-and-agree-info" href="https://www.tapd.cn/home/protocol" target="_blank">《TAPD服务协议》</a>   <a class="read-and-agree-info" href="https://www.tapd.cn/home/privacy" target="_blank">《TAPD隐私政策》</a>
+        </label>
+    
+        <!-- 支持sso登录提示文案 -->
+        <div class="login-sso-block" data-type="3">
+          <div class="login-sso__line" ></div>
+          <div class="login-sso__placeholder" >支持sso登录</div>
+        </div>
+
+        <!-- 登录按钮 -->
+        <div class="login-btns" data-type="3" >
+          <div tabindex="5" id="tcloud_login_button" data-login-default="登录" class="clickFeed login-submit" data-feed-object="common" data-feed-action="click" data-feed-group="ecology" data-feed-place="ecology_login_submit">
+            登录          </div>
+        </div>
+    
+    
+        <!-- 注册和忘记密码 -->
+                  <div class="login-more" data-type="2">
+            <a class="login-register-btn clickFeed" href="https://www.tapd.cn/registers/select_product?source=button" data-feed-object="common" data-feed-action="click" data-feed-group="ecology" data-feed-place="ecology_login_register_company">
+              注册公司            </a>
+            <a id="forget_password" class="forget-password" href="/cloud_logins/forget_password/">忘记密码？</a>
+          </div>
+          <div class="login-register" data-type="1">
+           <a class="login-register-btn clickFeed" href="https://www.tapd.cn/registers/select_product?source=button" data-feed-object="common" data-feed-action="click" data-feed-group="ecology" data-feed-place="ecology_login_register_company">
+              注册公司            </a>
+          </div>
+          
+        <!-- 企微二维码 -->
+        <div class="login-input-item qw-wrapper" data-type="4">
+          <div id="ww-login-container"></div>
+        </div>
+
+        <!-- 企微服务协议 -->
+        <div class="qy-login-protocol" data-type="4" >
+          授权即同意 <a class="read-and-agree-info" href="https://www.tapd.cn/home/protocol" target="_blank">《TAPD服务协议》</a>   <a class="read-and-agree-info" href="https://www.tapd.cn/home/privacy" target="_blank">《TAPD隐私政策》</a>
+        </div>
+  
+    </form>
+  </div>
+</div>
+
+
+<script type="text/javascript" src="/js_dist/ptlogin/aes-4ff108e458.js"  nonce="65e9d3937c9b6dec874cf735169c" onerror="tapdScriptLoadErrorHandle(event)" ></script><script type="text/javascript" src="/js_dist/ptlogin/pad-zeropadding-26ae9c71f6.js"  nonce="65e9d3937c9b6dec874cf735169c" onerror="tapdScriptLoadErrorHandle(event)" ></script><script type="text/javascript" src="/js_dist/ptlogin/pbkdf2-f60f116a24.js"  nonce="65e9d3937c9b6dec874cf735169c" onerror="tapdScriptLoadErrorHandle(event)" ></script><script type="text/javascript" src="/js_dist/cloud/loginFormValidator-73e05bb48a.js"  nonce="65e9d3937c9b6dec874cf735169c" onerror="tapdScriptLoadErrorHandle(event)" ></script><script src="https://wwcdn.weixin.qq.com/node/open/js/wecom-jssdk-1.3.1.js"></script>
+<script type="text/javascript"  nonce="65e9d3937c9b6dec874cf735169c" >  var errorMsg = "";
+  var errorCode = '';
+  var currentUserNotMath = false;
+  
+  $('#tcloud_login_button').on('click', function(e) {
+    if(!loginPrecheck.checkMustInput(true)) {
+      $('#tcloud_login_button').removeClass('enabled');
+      return;
+    }else {
+      $('#tcloud_login_button').addClass('enabled');
+    }
+          $('#login_cn_form').submit();
+      })
+
+  function show_qy_login() {
+    const wwLogin = ww.createWWLoginPanel({
+      el: "#ww-login-container",
+      params: {
+        login_type: "ServiceApp",
+        appid: "wxf65d923d8497fb1f",
+        redirect_uri: "https://www.tapd.cn/cloud_logins/qy_login?new_ww_login=1&state_chk=be80aa0e05d09a8b7b20986a0ad32b0e&ref=https%3A%2F%2Fwww.tapd.cn%2F",
+        state: "5925170",
+        redirect_type: 'top',
+        panel_size: 'small',
+      },
+      onCheckWeComLogin({ isWeComLogin }) {
+        console.log(isWeComLogin);
+      },
+      onLoginSuccess({ code }) {
+        console.log({ code });
+      },
+      onLoginFail(err) {
+        console.log(err);
+      },
+    });
+  }
+</script><script type="text/javascript" src="/js_dist/tcloud/official/home-common-5ba45b1545.js"  nonce="65e9d3937c9b6dec874cf735169c" onerror="tapdScriptLoadErrorHandle(event)" ></script><script type="text/javascript" src="/js_dist/dsc-5ee9a31721.js"  nonce="65e9d3937c9b6dec874cf735169c" onerror="tapdScriptLoadErrorHandle(event)" ></script></div>
+<!-- WPA start -->
+<script type="text/javascript" src="https://wp.qiye.qq.com/qidian/2852063974/1574fde8398c4632314d88341239fe57"  id="qd28520639741574fde8398c4632314d88341239fe57" nonce="65e9d3937c9b6dec874cf735169c" onerror="tapdScriptLoadErrorHandle(event)" ></script><!-- WPA end -->
+</body>
+</html>
