@@ -1199,6 +1199,55 @@ function jsonp (url,data,fn){
 
 ## 第十一周
 
+为什么tablequery组件与tagSelect死循环??
+
+- 需求：在编辑回显时将当前绑定的一维数组更新为二维数组
+
+![71626135421](bug记录.assets/1716261354216.png)
+
+- 踩坑：在外层父组件`TableQuery`组件中没有更新update:modelValue，导致绑定值的死循环
+
+![71626143365](bug记录.assets/1716261433653.png)
+
+如上，我们如果在第一张图中只`emits('change',二维数组)`，那么会触发上图两个函数，这里之后将会深拷贝我们绑定的值进行简单处理（在这个问题中不重要），会对已绑定的值重新赋值，从而触发响应式，而其中的值并没有被修改为想要的二维数组，而在`TableQuery`组件中的绑定值formData已经被修改了，而触发响应式，导致需求组件中再次触发这个监听函数，但传入的值还是一维数组，进而没有终止而继续循环
+
+```js
+    watch(
+        () => props.modelValue,
+        (val) => {
+            console.log('modelValue', val, JSON.stringify(val));
+            // 只允许传入一维数组
+            if (
+                !val ||
+                (Array.isArray(val) && val.some((item) => Array.isArray(item)))
+            ) {
+                console.log('传入', val, '不符合要求');
+                return;
+            }
+            selectCheckBoxValue.value = val.map(
+                (id) => `${idToGroupDict.value[id]}-${id}`
+            );
+            // getSelectedValue(val);
+            selectedValue.value = val.map((id) => idToNameDict.value[id]);
+            console.log(
+                'realSelectedValue',
+                realSelectedValue.value,
+                selectCheckBoxValue.value,
+                selectedValue.value
+            );
+            // 编辑回显时希望将绑定的值更新为二维数组
+            if (props.to2D) {
+                emits('update:modelValue', realSelectedValue.value);
+                emits('change', realSelectedValue.value);
+            }
+        }
+    );
+```
+
+子组件计算的结果还没传递给父组件，父组件就使用了吗？？？
+
+~~zoneDialog的table高度希望增高~~
+
 ~~横向滚动体很小
 
 又犯傻了（父子组件数据双向绑定时注意传出传入的数据结构（在数据结构不同时
@@ -1207,7 +1256,53 @@ function jsonp (url,data,fn){
 
 原来监听不到双向绑定的formData.tags变化是因为没有使用deep参数
 
+~~清空时参数未更新~~
 
+编辑回显时不是嵌套数组
+
+table横向滚动问题
+
+
+
+子组件的响应式变量更新但父组件未更新时进行请求导致请求数据不是最新的
+
+- 关键
+
+1. Vue的响应式更新机制：Vue 是一个基于虚拟 DOM 的框架。当你修改一个响应式变量（比如 `searchParams.value`）时，Vue 并不会立即同步地更新 DOM 或其他依赖这个变量的响应式计算属性或方法。相反，Vue 会将这些更新推送到一个队列中，然后在下一个“更新周期”中一起处理。这个设计优化了性能，因为它减少了不必要的 DOM 操作次数。（即Vue是进行异步的响应式更新的）
+2. 异步操作与修改响应式变量和更新DOM：由于 Vue 的这种批量处理机制，修改响应式变量和响应 DOM 更新之间可能存在一个短暂的延迟。在这种情况下，立即调用依赖于这些响应式变量的函数（比如你的 `search` 方法），可能会导致该函数获取到的变量值不是最新的。
+3. 使用nextTick：`nextTick` 是 Vue 提供的一个方法，它可以确保一个回调函数在下一个 DOM 更新周期之后执行。换句话说，它保证在你对响应式变量的修改被应用到 DOM 后才执行回调函数。这样，你可以确保在 `nextTick` 的回调中访问到最新的响应式数据。
+
+
+
+
+
+可以将tagsselect里的字典都移动到store里
+
+删除分组成功但实际未删除
+
+
+
+
+
+
+
+- ~~添加按钮按钮风格，尺寸跟其他页面的“添加”一样~~
+  ![点击看原图](https://file.tapd.cn/compress/compress_img/700/tapd_22410361_1715932270_787.png?src=/tfl/pictures/202405/tapd_22410361_1715932270_787.png)
+  ![点击看原图](https://file.tapd.cn/compress/compress_img/700/tapd_22410361_1715932298_777.png?src=/tfl/pictures/202405/tapd_22410361_1715932298_777.png)
+- ~~分页区固定在底部~~
+  ![点击看原图](https://file.tapd.cn/compress/compress_img/700/tapd_22410361_1715931827_916.png?src=/tfl/pictures/202405/tapd_22410361_1715931827_916.png)
+- ~~编辑、删除专区，使用Outline风格~~
+  ![点击看原图](https://file.tapd.cn/compress/compress_img/700/tapd_22410361_1715931918_633.png?src=/tfl/pictures/202405/tapd_22410361_1715931918_633.png)
+- ~~标签：限制最大高度为300px~~
+  ![点击看原图](https://file.tapd.cn/compress/compress_img/700/tapd_22410361_1715931967_375.png?src=/tfl/pictures/202405/tapd_22410361_1715931967_375.png)
+- ~~置顶图标，改为24px大小~~
+  ![点击看原图](bug记录.assets/login-1716275988637.htm)
+
+# 美甲库
+
+- ~~“不支持”的，用"废弃"色#7c8597~~
+  ![点击看原图](bug记录.assets/login-1716275988636.htm)
+- zonedialog上移下移
 
 
 
