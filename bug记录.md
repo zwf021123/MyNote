@@ -1167,11 +1167,11 @@ function jsonp (url,data,fn){
 
 ~~看来还是要把标签名字也给我~~
 
-~~刷新出现不明请求
+~~刷新出现不明请求~~
 
 
 
-~~去除国际化相关（开个分支
+~~去除国际化相关（开个分支~~
 
 ~~移动 节流~~
 
@@ -1183,7 +1183,7 @@ function jsonp (url,data,fn){
 
 ~~编辑回显接口返回数据的置顶顺序问题~~
 
-~~默认专区
+~~默认专区~~
 
 ~~少了个删除专区接口~~
 
@@ -1191,7 +1191,7 @@ function jsonp (url,data,fn){
 
 ~~出现sort重复的情况~~
 
-~~改为防抖
+~~改为防抖~~
 
 
 
@@ -1244,11 +1244,13 @@ function jsonp (url,data,fn){
     );
 ```
 
-子组件计算的结果还没传递给父组件，父组件就使用了吗？？？
+~~~~
+
+~~~~
 
 ~~zoneDialog的table高度希望增高~~
 
-~~横向滚动体很小
+~~横向滚动体很小~~
 
 又犯傻了（父子组件数据双向绑定时注意传出传入的数据结构（在数据结构不同时
 
@@ -1258,9 +1260,23 @@ function jsonp (url,data,fn){
 
 ~~清空时参数未更新~~
 
-编辑回显时不是嵌套数组
+~~编辑回显时不是嵌套数组~~
 
-table横向滚动问题
+~~table横向滚动问题~~
+
+~~存在多个input框，因此在v-for中不能只是使用一个ref~~
+
+~~因为使用了v-if，因此点击时拿到的e.target也不是显示切换后的元素~~
+
+~~使用v-for的模板引用时，如果使用的是v-if，那么每次重新渲染后，ref绑定的值就不是最新的了~~
+
+~~新增全部折叠全部收起~~
+
+今天直接将一个响应式的一维computed数组赋予给另一个可修改的i响应式变量，导致computed的数组被引用到并且被修改了
+
+~~第一次打开全部展开会卡顿~~
+
+~~新增数据导致的重新渲染之后原来的ref失效~~
 
 
 
@@ -1276,85 +1292,464 @@ table横向滚动问题
 
 
 
-可以将tagsselect里的字典都移动到store里
-
-删除分组成功但实际未删除
 
 
+~~删除分组成功但实际未删除~~
 
+~~新增折叠全部按钮~~
 
+~~新增双击编辑标签
 
-
-
-- ~~添加按钮按钮风格，尺寸跟其他页面的“添加”一样~~
-  ![点击看原图](https://file.tapd.cn/compress/compress_img/700/tapd_22410361_1715932270_787.png?src=/tfl/pictures/202405/tapd_22410361_1715932270_787.png)
-  ![点击看原图](https://file.tapd.cn/compress/compress_img/700/tapd_22410361_1715932298_777.png?src=/tfl/pictures/202405/tapd_22410361_1715932298_777.png)
-- ~~分页区固定在底部~~
-  ![点击看原图](https://file.tapd.cn/compress/compress_img/700/tapd_22410361_1715931827_916.png?src=/tfl/pictures/202405/tapd_22410361_1715931827_916.png)
-- ~~编辑、删除专区，使用Outline风格~~
-  ![点击看原图](https://file.tapd.cn/compress/compress_img/700/tapd_22410361_1715931918_633.png?src=/tfl/pictures/202405/tapd_22410361_1715931918_633.png)
-- ~~标签：限制最大高度为300px~~
-  ![点击看原图](https://file.tapd.cn/compress/compress_img/700/tapd_22410361_1715931967_375.png?src=/tfl/pictures/202405/tapd_22410361_1715931967_375.png)
-- ~~置顶图标，改为24px大小~~
-  ![点击看原图](bug记录.assets/login-1716275988637.htm)
-
-# 美甲库
-
-- ~~“不支持”的，用"废弃"色#7c8597~~
-  ![点击看原图](bug记录.assets/login-1716275988636.htm)
-- zonedialog上移下移
-
-
-
-# 管理端
-
-- ~~页面路由有点冗余，比如：[http://admin_test.nailcanvas.cn/nail/nail-manager，应该只需要http://admin_test.nailcanvas.cn/nail，其他主导航页存在类似问题~~](http://admin_test.nailcanvas.cn/nail/nail-manager%EF%BC%8C%E5%BA%94%E8%AF%A5%E5%8F%AA%E9%9C%80%E8%A6%81http://admin_test.nailcanvas.cn/nail%EF%BC%8C%E5%85%B6%E4%BB%96%E4%B8%BB%E5%AF%BC%E8%88%AA%E9%A1%B5%E5%AD%98%E5%9C%A8%E7%B1%BB%E4%BC%BC%E9%97%AE%E9%A2%98)
-
-# 管理端-编辑美甲
-
-- 美甲编辑数据查询太慢（后端
-- ~~详情编辑，编辑区宽度改为跟外框大小一致~~
-  ![点击看原图](bug记录.assets/login-1715823704123.htm)
-- ~~隐藏“定制穿戴甲”~~
-- ~~在Tab上，如果功能不支持，需要显示“(不支持)”~~
-  ![点击看原图](bug记录.assets/login-1715823704438.htm)
-
-# 管理端-专区
-
-- ~~“置顶”报错~~
-  ![点击看原图](bug记录.assets/login-1715823704173.htm)
-- 默认专区不能删除时，增加鼠标tips：“默认专区无法删除”
-- ~~“上下架”状态改为“可见”、“不可见”，当不可见时，tab上增加icon提示，hover图标提示“专区当前为“不可见”状态，在小程序端不显示”~~
-  ![点击看原图](bug记录.assets/login-1715823704446.htm)
-  ![点击看原图](bug记录.assets/login-1715823704446.htm)
-- ~~专区任何修改成功后（包括新增、修改、删除、上架、置顶等），都统一轻提示：“修改成功，系统将在5分钟左右同步到小程序端”~~
-- 将“基础信息”列加宽到80，没加卡片的标签单行显示，不够省略，且~~
-- ~~鼠标tips显示全部~~
-- ~~“访问量/人”改为“访问人数”~~
-- ~~调整“操作”区域按钮左右间距，整体页面确保在1360宽度下能够显示完整（现在右边的上移、下移会看不见）~~
-- ​
-- ~~“关联标签”文字字号跟后面的标签保持一致，要注意标签很多的情况，要完整显示，标签列表区域换行~~
-  ​
-- ~~编辑专区后，“关联标签”没有更新，要刷新页面才会更新~~
-- ~~专区tab需要支持拖动排序（默认专区不能排序）~~
-- ~~“置顶”的二次确认不要用“警告”，而该用“提示”；“删除”、“下架”类才用警告~~
-  ​
-- 选择美甲支持根据标签过滤，且从专区编辑打开时，将专区的关联标签带过来（低优先级）
 - table计算高度问题(要使用视口高度而非offsetHeight，新问题，是否可以通过overflow:scroll得到，监听window大小变化进行计算table)
-- ~~标签undefined（只有标签字典建立好才能使用）~~
-- ~~标签紧凑一点~~
-- 其实只要提交数据之前将sort赋值即可
-- ~~拖动做防抖~~
-- ~~详细描述书写区间增大~~
+- ​
+- ~~其实只要提交数据之前将sort赋值即可~~
 - 监听窗口改变重新计算table高度
 
 
-- ~~创建时间：增加“近半年”、“近1年”的选项，默认选择“近半年”~~
-- 涉及近半年或近一周的内容需要实时性
+~~看看虚拟表格是什么（大量数据时获得高性能）~~
 
-~~建立idToGroupId字典解决~~
 
-~~将专区管理放到第二个~~
+
+
+
+
+
+## 第十二周
+
+~~标签回显出问题~~
+
+适配美甲在美甲师被删除的情况（相反
+
+实际上在需要保证异步代码执行顺序的情况下，使用async/await比.then更好因为我们可以像使用同步代码一样编写代码，而不用使用嵌套的.then
+
+当美甲被删除时返回的数据都是null
+
+![71679208871](bug记录.assets/1716792088716.png)
+
+~~将美甲库页面的标签适配正常化~~
+
+需要在美甲师与美甲绑定时对已下架美甲进行判断吗
+
+美甲库滚动条一直在
+
+~~二维码正常显示弹出之前做loading~~
+
+niu-shop在/page/index首页写，组件写在nail/component/
+
+~~切换时能否其他的opactiy变为0，最好不要操作DOM~~
+
+将可移动到store的内容都移动到store
+
+~~给study看的时候单独一个页面看~~
+
+
+
+### 完成需求双层轮播图效果
+
+~~又犯傻了，在做轮播图的时候，更新完每个页面的`opacity`属性值的时候，activeBannerIndex更新，但是对应的属性值没有更新过去啊啊啊，事实证明写代码写久了跟着直觉走就会带来愚蠢的bug~~
+
+具体样式需求可以参考 goodme 和 优剪 小程序的banner
+
+实现思路：因为需求需要有两层banner轮播且其中上面一层我们只需要普通的滑动效果即可，因此这一层可以使用uniapp自带的组件`swiper`，底下一层则需要淡入淡出的效果，查遍了第三方的包，怕未来维护起来麻烦，还是自己做一个吧，使用uniapp的事件`touchstart`、`touchend`、`touchmove`，监听用户的触摸，
+
+触摸开始时记录用户触摸的位置坐标，
+
+触摸结束时同样获取用户触摸的位置坐标，可以计算判断用户是上下还是左右划（需求只有左右），根据滑动距离（绝对值）超过当前banner高度/宽度的一定比例时才进行滑动，实际已无用，因为内置的组件swiper控制的底下的淡入淡出组件，所以无论超出还是不超出都会进行滑动（当然根据内置swiper组件判断），但是这里还是需要对`opacity`滑动失败时进行重置
+
+`touchmove`事件主要用于在用户手指一直touch时重新计算滑动方向两个（例如向后滑就是当前banner和后一个banner）的透明度值，当然这种频繁的事件还是需要防抖的，不管为了透明度计算过渡得比较自然，我们的时间值需要设置的小一些（并且需要leading，即立即触发事件），其中还是计算已滑动距离，同时需要判断向左右的哪个方向进行滑动，从而对两个banner的透明度重新赋值，这里的计算公式是
+
+```js
+opacity = 1 - Math.abs(subX) / this.maxWidthBoundary;
+// 得到的opacity是当前banner的值，而前后的opacity只需1-opacity即可
+```
+
+即滑动距离占我们设置的变量值的多少来减少，这里的`maxWidthBoundary`设置为banner宽度，则opacity的值会在滑动距离为整个banner的宽度时才变为0
+
+```vue
+<template>
+	<div class="mo-swiper">
+		<!-- 需要在用户中间触摸过程中动态计算opacity的值 -->
+		<div class="mo-banner-fade" style="z-index: 1">
+			<div
+				:style="[
+					{ transitionDuration: '500ms' },
+					index === current
+						? { opacity: activeOpacity }
+						: index === current + 1
+						? { opacity: nextOpacity }
+						: index === current - 1
+						? { opacity: prevOpacity }
+						: { opacity: 0 }
+				]"
+				class="banner-item"
+				:class="{
+					'banner-item-active': current == index,
+					'banner-item-next': index === current + 1,
+					'banner-item-prev': index === current - 1
+				}"
+				v-for="(banner, index) in bgBanners"
+				:key="index"
+			>
+				<image :src="banner" mode="aspectFill" class="banner-item-img"></image>
+			</div>
+			<div class="banner-dots" style="z-index: 2" v-if="bannerDots">
+				<div
+					class="banner-dots_item"
+					:style="bannerDotsStyle"
+					:class="{ active: current == index }"
+					v-for="(item, index) in banners"
+					:key="index"
+				></div>
+			</div>
+		</div>
+		<swiper
+			class="banner"
+			style="z-index: 2"
+			:current="current"
+			:autoplay="autoplay"
+			:circular="circular"
+			:interval="interval"
+			easing-function="easeInOutCubic"
+			@change="handleSlideChange"
+		>
+			<swiper-item
+				class="banner-item"
+				@touchstart="touchstart"
+				@touchmove="touchmove"
+				@touchend="touchend"
+				v-for="(banner, index) in fgBanners"
+				:key="index"
+			>
+				<image class="banner-img" :src="banner" mode="aspectFill"></image>
+			</swiper-item>
+		</swiper>
+	</div>
+</template>
+
+<script>
+	import { debounce } from '../../common/js/util.js';
+	export default {
+		components: {},
+		props: {
+			// 背景图片
+			bgBanners: {
+				type: Array,
+				required: true
+			},
+			// 前景图片
+			fgBanners: {
+				type: Array,
+				required: true
+			},
+			// 面板指示点
+			bannerDots: {
+				type: Boolean,
+				default: false
+			},
+			// 面板指示点样式
+			bannerDotsStyle: {
+				type: Object
+			},
+			// 是否自动播放
+			autoplay: {
+				type: Boolean,
+				default: false
+			},
+			// 循环播放间隔时长（单位毫秒）
+			interval: {
+				type: Number,
+				default: 2000
+			},
+			// 是否采用衔接滑动
+			circular: {
+				type: Boolean,
+				default: false
+			}
+		},
+		data() {
+			return {
+				current: 0,
+				timer: null, // 定时器
+				startData: {
+					// 初次touch滑动数据
+					clientX: 0, // 左右滑动
+					clientY: 0 // 上下滑动
+				},
+				// transitionDuration: '0ms',
+				activeOpacity: 1,
+				nextOpacity: 0,
+				prevOpacity: 0,
+				// 触发banner切换的滑动距离
+				maxWidthBoundary: 50,
+				maxHeightBoundary: 50
+			};
+		},
+		computed: {},
+		methods: {
+			handleSlideChange(e) {
+				const { source, current } = e.detail;
+				console.log('current change', source, current, this.current);
+				// 根据滑动的swiper更新fade的swiper
+				if (current < this.current) {
+					console.log('上一张');
+					// 右滑
+					this.swipePrev();
+				} else if (current > this.current) {
+					console.log('下一张');
+					// 左滑
+					this.swipeNext();
+				} else {
+					this.resetOpacity();
+				}
+				this.current = current;
+			},
+			// 循环播放(背景图片单独循环播放)
+			loopPlay() {
+				if (!this.autoplay) return;
+				clearInterval(this.timer); // 先将已有的计时器清除
+				this.timer = setInterval(
+					function () {
+						// 循环
+						console.log('循环', this.current);
+						this.current++;
+						// 到达最后一张
+						if (this.current >= this.bgBanners.length) {
+							if (!this.circular) {
+								// 不衔接滑动，循环一轮后即清除定时器
+								this.current--;
+								clearInterval(this.timer);
+								return;
+							}
+							this.current = 0;
+						}
+					}.bind(this),
+					this.interval
+				);
+			},
+			// 重置opacity
+			resetOpacity() {
+				this.activeOpacity = 1;
+				this.prevOpacity = 0;
+				this.nextOpacity = 0;
+			},
+
+			// 滑动开始
+			touchstart(e) {
+				console.log('开始位置', e.changedTouches[0].clientX);
+				// 记录用户初次touch位置
+				this.startData.clientX = e.changedTouches[0].clientX;
+				this.startData.clientY = e.changedTouches[0].clientY;
+				// 触摸时取消自动播放
+				// clearInterval(this.timer);
+			},
+			touchmove(e) {
+				this.debounceTouchMove(e)();
+			},
+			debounceTouchMove(e) {
+				return debounce(
+					() => {
+						// 滑动过程
+						console.log(
+							'滑动过程',
+							this.current,
+							this.prevOpacity,
+							this.activeOpacity,
+							this.nextOpacity
+						);
+						// 计算已滑动距离
+						const subX = e.changedTouches[0].clientX - this.startData.clientX;
+						const subY = e.changedTouches[0].clientY - this.startData.clientY;
+						let opacity;
+						// 动态计算opacity的值（如果是不同的transition-property则不同）
+						if (Math.abs(subY) > this.maxHeightBoundary) {
+							console.log('上下划');
+						} else {
+							opacity = 1 - Math.abs(subX) / this.maxWidthBoundary;
+							// 避免opacity超出
+							if (opacity < 0) opacity = 0;
+							// 区分向左和向右划
+							if (subX > 0) {
+								// 右滑
+								this.activeOpacity = opacity;
+								this.prevOpacity = 1 - opacity;
+							} else if (subX < 0) {
+								// 左滑
+								this.activeOpacity = opacity;
+								this.nextOpacity = 1 - opacity;
+							}
+						}
+					},
+					60,
+					{
+						leading: true
+					}
+				);
+			},
+			// 滑动结束
+			touchend(e) {
+				// 重新开启自动播放
+				// this.loopPlay()
+				const subX = e.changedTouches[0].clientX - this.startData.clientX;
+				const subY = e.changedTouches[0].clientY - this.startData.clientY;
+				console.log('结束位置', subX, subY);
+				console.log(
+					'滑动结束',
+					this.current,
+					this.prevOpacity,
+					this.activeOpacity,
+					this.nextOpacity,
+					'slide current',
+					this.current
+				);
+
+				// 当滑动距离（绝对值）超过当前banner高度/宽度的一定比例时，才进行滑动
+				// 判断是否存在maxWidthBoundary与maxHeightBoundary
+				if (!this.maxWidthBoundary || !this.maxHeightBoundary) {
+					console.log(this.maxHeightBoundary, this.maxWidthBoundary);
+					this.$util.showToast({
+						title: '计算高度/宽度失败'
+					});
+					return;
+				}
+				console.log('max', this.maxWidthBoundary, this.maxHeightBoundary);
+
+				if (Math.abs(subY) > this.maxHeightBoundary) {
+					console.log('上下滑');
+				} else {
+					// 注意：滑动未成功时需要重置opacity
+					if (Math.abs(subX) < this.maxWidthBoundary) {
+						console.log('滑动未成功重置opacity');
+						this.resetOpacity();
+						return;
+					}
+
+					if (subX > this.maxWidthBoundary) {
+						// 右滑，显示前一张，当前的页面减一。
+						this.swipePrev();
+					} else if (subX < -this.maxWidthBoundary) {
+						// 左滑，显示下一张，当前的页面加一。
+						this.swipeNext();
+					}
+				}
+			},
+			swipePrev() {
+				if (this.current == 0) {
+					if (!this.circular) return;
+					// 如果当前页面是第一张，显示最后一张。
+					this.current = this.bgBanners.length - 1;
+				} else {
+					this.current--;
+				}
+				this.resetOpacity();
+			},
+			swipeNext() {
+				if (this.current == this.bgBanners.length - 1) {
+					if (!this.circular) return;
+					// 如果当前页面是最后一张，显示第一张。
+					this.current = 0;
+				} else {
+					this.current++;
+				}
+				this.resetOpacity();
+			}
+		},
+		created() {},
+		mounted() {
+			const query = uni.createSelectorQuery().in(this);
+			query
+				.select('.mo-banner-fade')
+				.boundingClientRect((data) => {
+					// 获取banner宽度
+					this.maxWidthBoundary = data?.width;
+					this.maxHeightBoundary = data?.height;
+				})
+				.exec();
+		}
+	};
+</script>
+
+<style lang="less" scoped>
+	.mo-swiper {
+		position: relative;
+
+		.banner {
+			position: absolute;
+			top: 0;
+			width: 100%;
+			height: 1000rpx;
+
+			.banner-item {
+				width: 100%;
+				height: 100%;
+
+				.banner-img {
+					width: 100%;
+					height: 100%;
+				}
+			}
+		}
+
+		.mo-banner-fade {
+			width: 100%;
+			height: 1000rpx;
+			position: relative;
+
+			.banner-item {
+				width: 100%;
+				height: 100%;
+				pointer-events: none;
+				transition-property: opacity;
+				transition-timing-function: ease-in-out;
+
+				/*设置过渡时间*/
+				position: absolute;
+
+				.banner-item-img {
+					position: absolute;
+					/*把所有图片放在同一个位置*/
+					width: 100%;
+					height: 100%;
+				}
+
+				&.banner-item-active {
+					pointer-events: auto;
+				}
+			}
+
+			.banner-dots {
+				position: absolute;
+				bottom: 10rpx;
+				left: 50%;
+				transform: translateX(-50%);
+
+				.banner-dots_item {
+					float: left;
+					width: 18rpx;
+					height: 18rpx;
+					border-radius: 50%;
+					margin-left: 20rpx;
+					background-color: #fff;
+				}
+
+				.active {
+					background-color: red;
+				}
+			}
+		}
+	}
+</style>
+
+```
+
+
+
+
+
+
+
+
+
+
 
 
 
