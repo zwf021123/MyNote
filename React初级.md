@@ -511,7 +511,7 @@ state有搜索文本框内容state、checkbox的state
 
 # 描述用户界面
 
-##你的第一个组件
+## 你的第一个组件
 
 该内容与前面的内容存在重复，因此这里只记录部分内容
 
@@ -633,7 +633,7 @@ export default function App() {
 
 ## 使用JSX书写
 
-###什么是JSX
+### 什么是JSX
 
 **JSX** 是 JavaScript 语法扩展，可以让你在 JavaScript 文件中书写类似 HTML 的标签。
 

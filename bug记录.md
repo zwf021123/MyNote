@@ -1757,7 +1757,7 @@ opacity = 1 - Math.abs(subX) / this.maxWidthBoundary;
 
 
 
-
+使用async/await对比使用.then.catch：可以更加像同步代码一样去保证异步代码的执行顺序
 
 
 
