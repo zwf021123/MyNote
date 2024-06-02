@@ -1067,6 +1067,1180 @@ getChannelList()
 
 
 
+
+
+## TypeScript模块
+
+### 简介
+
+**任何包含 import 或 export 语句的文件，就是一个模块（module）。相应地，如果文件不包含 export 语句，就是一个全局的脚本文件。**
+
+模块本身就是一个作用域，不属于全局作用域，模块内部的变量、函数、类只在内部可见，对于模块外部是不可见的。暴露给外部的接口，必须用 export 命令声明；如果其他文件要使用模块的接口，必须用 import 命令来输入。
+
+如果一个文件没有任何`import`或`export`语句，但是希望将其变为一个模块（即内部变量对外不可见），可以在脚本头部添加`export {}`
+
+上面这行语句不产生任何实际作用，但会让当前文件被当作模块处理，所有它的代码都变成了内部代码。
+
+而Ts的模块除了支持所有 ES 模块的语法，特别之处在于允许输出和输入类型。
+
+```ts
+export type Bool = true | false;
+```
+
+假定上面的模块文件为`a.ts`，另一个文件`b.ts`就可以使用 import 语句，输入这个类型。
+
+```ts
+import { Bool } from './a';
+// 注意，加载文件，没有写脚本文件的后缀名。
+// TypeScript 允许加载模块时，省略模块文件的后缀名，它会自动定位
+
+let foo:Bool = true;
+```
+
+
+
+### import type 语句
+
+import 在一条语句中，可以同时输入类型和正常接口。
+
+```ts
+// a.ts
+export interface A {
+  foo: string;
+}
+
+export let a = 123;
+
+// b.ts
+import { A, a } from './a';
+```
+
+上面示例中，文件`a.ts`的 export 语句输出了一个类型`A`和一个正常接口`a`，另一个文件`b.ts`则在同一条语句中输入了类型和正常接口。
+
+这样很不利于区分类型和正常接口，容易造成混淆。为了解决这个问题，TypeScript 引入了两个解决方法。
+
+1. 在`import`语句输入的类型前面加上`type`关键字
+
+```ts
+import { type A, a } from './a';
+```
+
+上面示例中，import 语句输入的类型`A`前面有`type`关键字，表示这是一个类型。
+
+2. 使用 import type 语句，这个语句只用来输入类型，不用来输入正常接口。
+
+```ts
+// 正确
+import type { A } from './a';
+let b:A = 'hello';
+
+// 报错
+import type { a } from './a';
+let b = a;
+```
+
+上面示例中，import type 输入类型`A`是正确的，可以把`A`当作类型使用。但是，输入正常接口`a`，并把`a`当作一个值使用，就会报错。这就是说，看到`import type`，你就知道它输入的肯定是类型。
+
+当然，对于默认导出的类型也可以导入
+
+```ts
+import type DefaultType from 'moduleA';
+```
+
+import type 在一个名称空间下，输入所有类型的写法如下。
+
+```ts
+import type * as TypeNS from 'moduleA';
+```
+
+以此类推，`export`语句也有两种方法表示输出的是类型
+
+```ts
+type A = 'a';
+type B = 'b';
+
+// 方法一
+export {type A, type B};
+
+// 方法二
+export type {A, B};
+```
+
+上面示例中，方法一是使用`type`关键字作为前缀，表示输出的是类型；方法二是使用 export type 语句，表示整行输出的都是类型。
+
+
+
+### CommandJs模块
+
+CommonJS 是 Node.js 的专用模块格式，与 ES 模块格式不兼容。（想起来了吧，在学习nodejs时引入文件都是使用的`require`
+
+
+
+#### import = 语句
+
+TypeScript 使用`import =`语句输入 CommonJS 模块。
+
+```ts
+import fs = require('fs');
+const code = fs.readFileSync('hello.ts', 'utf8');
+```
+
+上面示例中，使用`import =`语句和`require()`命令输入了一个 CommonJS 模块。模块本身的用法跟 Node.js 是一样的。
+
+除了使用`import =`语句，TypeScript 还允许使用`import * as [接口名] from "模块文件"`输入 CommonJS 模块。
+
+```ts
+import * as fs from 'fs';
+// 等同于
+import fs = require('fs');
+```
+
+
+
+#### export = 语句
+
+TypeScript 使用`export =`语句，输出 CommonJS 模块的对象，等同于 CommonJS 的`module.exports`对象。
+
+```ts
+let obj = { foo: 123 };
+
+export = obj;
+```
+
+`export =`语句输出的对象，只能使用`import =`语句加载。
+
+```ts
+import obj = require('./a');
+
+console.log(obj.foo); // 123
+```
+
+
+
+
+
+
+
+## namespace
+
+namespace 是一种将相关代码组织在一起的方式，中文译为“命名空间”。
+
+它出现在 ES 模块诞生之前，作为 TypeScript 自己的模块格式而发明的。但是，自从有了 ES 模块，**官方已经不推荐使用 namespace** 了。
+
+### 基本用法
+
+namespace 用来建立一个容器，内部的所有变量和函数，都必须在这个容器里面使用。
+
+```ts
+namespace Utils {
+  function isString(value:any) {
+    return typeof value === 'string';
+  }
+
+  // 正确
+  isString('yes');
+}
+
+Utils.isString('no'); // 报错
+```
+
+上面示例中，命名空间`Utils`里面定义了一个函数`isString()`，它只能在`Utils`里面使用，如果用于外部就会报错。如果要在命名空间以外使用内部成员，就必须为该成员加上`export`前缀，表示对外输出该成员。
+
+上面示例中，只要加上`export`前缀，就可以在命名空间外部使用内部成员。
+
+实际上，在包含namespace的ts文件编译后，命名空间`Utils`（以上面这个例子为例）变成了JavaScript 的一个对象，凡是`export`的内部成员，都成了该对象的属性。
+
+这就是说，namespace 会变成一个值，保留在编译后的代码中。这一点要小心，它不是纯的类型代码。
+
+namespace 内部还可以使用`import`命令输入外部成员，相当于为外部成员起别名。当外部成员的名字比较长时，别名能够简化代码。
+
+```ts
+namespace Utils {
+  export function isString(value:any) {
+    return typeof value === 'string';
+  }
+}
+
+namespace App {
+  import isString = Utils.isString;
+
+  isString('yes');
+  // 等同于
+  Utils.isString('yes');
+}
+```
+
+`import`命令也可以在 namespace 外部，指定别名。
+
+```ts
+namespace Shapes {
+  export namespace Polygons {
+    export class Triangle {}
+    export class Square {}
+  }
+}
+
+import polygons = Shapes.Polygons;
+
+// 等同于 new Shapes.Polygons.Square()
+let sq = new polygons.Square();
+```
+
+上面示例中，`import`命令在命名空间`Shapes`的外部，指定`Shapes.Polygons`的别名为`polygons`。
+
+namespace 可以嵌套。
+
+```ts
+namespace Utils {
+  export namespace Messaging {
+    export function log(msg:string) {
+      console.log(msg);
+    }
+  }
+}
+
+Utils.Messaging.log('hello') // "hello"
+```
+
+上面示例中，命名空间`Utils`内部还有一个命名空间`Messaging`。注意，如果要在外部使用`Messaging`，必须在它前面加上`export`命令。
+
+namespace 不仅可以包含实义代码，还可以包括类型代码。
+
+```ts
+namespace N {
+  export interface MyInterface{}
+  export class MyClass{}
+}
+```
+
+上面代码中，命令空间`N`不仅对外输出类，还对外输出一个接口，它们都可以用作类型。
+
+小总结：namespace 与模块的作用是一致的，都是把相关代码组织在一起，对外输出接口。区别是一个文件只能有一个模块，但可以有多个 namespace。**由于模块可以取代 namespace，而且是 JavaScript 的标准语法，还不需要编译转换，所以建议总是使用模块，替代 namespace。**
+
+如果 namespace 代码放在一个单独的文件里，那么引入这个文件需要使用三斜杠的语法。
+
+```ts
+/// <reference path = "SomeFileName.ts" />
+```
+
+
+
+### namespace的输出
+
+namespace 本身也可以使用`export`命令输出，供其他文件使用。
+
+```ts
+// shapes.ts
+export namespace Shapes {
+  export class Triangle {
+    // ...
+  }
+  export class Square {
+    // ...
+  }
+}
+```
+
+上面示例是一个文件`shapes.ts`，里面使用`export`命令，输出了一个命名空间`Shapes`。
+
+其他脚本文件使用`import`命令，加载这个命名空间。
+
+```ts
+// 写法一
+import { Shapes } from './shapes';
+let t = new Shapes.Triangle();
+
+// 写法二
+import * as shapes from "./shapes";
+let t = new shapes.Shapes.Triangle();
+```
+
+**不过，更好的方法还是建议使用模块，采用模块的输出和输入。**
+
+```ts
+// shapes.ts
+export class Triangle {
+  /* ... */
+}
+export class Square {
+  /* ... */
+}
+
+// shapeConsumer.ts
+import * as shapes from "./shapes";
+let t = new shapes.Triangle();
+```
+
+上面示例中，使用模块的输出和输入，改写了前面的例子。
+
+
+
+### namespace的合并
+
+多个同名的 namespace 会自动合并，这一点跟 interface 一样。
+
+```ts
+namespace Animals {
+  export class Cat {}
+}
+namespace Animals {
+  export interface Legged {
+    numberOfLegs: number;
+  }
+  export class Dog {}
+}
+
+// 等同于
+namespace Animals {
+  export interface Legged {
+    numberOfLegs: number;
+  }
+  export class Cat {}
+  export class Dog {}
+}
+```
+
+这样做的目的是，如果同名的命名空间分布在不同的文件中，TypeScript 最终会将它们合并在一起。这样就比较方便扩展别人的代码。
+
+合并命名空间时，命名空间中的非`export`的成员不会被合并，但是它们只能在各自的命名空间中使用。
+
+```ts
+namespace N {
+  const a = 0;
+
+  export function foo() {
+    console.log(a);  // 正确
+  }
+}
+
+namespace N {
+  export function bar() {
+    foo(); // 正确
+    console.log(a);  // 报错
+  }
+}
+```
+
+上面示例中，变量`a`是第一个名称空间`N`的非对外成员，它只在第一个名称空间可用。
+
+命名空间还可以跟同名函数合并，但是要求同名函数必须在命名空间之前声明。这样做是为了确保先创建出一个函数对象，然后同名的命名空间就相当于给这个函数对象添加额外的属性。
+
+```ts
+function f() {
+  return f.version;
+}
+
+namespace f {
+  export const version = '1.0';
+}
+
+f()   // '1.0'
+f.version // '1.0'
+```
+
+上面示例中，函数`f()`与命名空间`f`合并，相当于命名空间为函数对象`f`添加属性。
+
+命名空间也能与同名 class 合并，同样要求class 必须在命名空间之前声明，原因同上。
+
+```ts
+class C {
+  foo = 1;
+}
+
+namespace C {
+  export const bar = 2;
+}
+
+C.bar // 2
+```
+
+上面示例中，名称空间`C`为类`C`添加了一个静态属性`bar`。
+
+命名空间还能与同名 Enum 合并。
+
+```ts
+enum E {
+  A,
+  B,
+  C,
+}
+
+namespace E {
+  export function foo() {
+    console.log(E.C);
+  }
+}
+
+E.foo() // 2
+```
+
+上面示例中，命名空间`E`为枚举`E`添加了一个`foo()`方法。
+
+注意，Enum 成员与命名空间导出成员不允许同名。
+
+```ts
+enum E {
+  A, // 报错
+  B,
+}
+
+namespace E {
+  export function A() {} // 报错
+}
+```
+
+上面示例中，同名 Enum 与命名空间有同名成员，结果报错。
+
+
+
+
+
+## declare关键字
+
+### 简介
+
+declare 关键字用来告诉编译器，某个类型是存在的，可以在当前文件中使用。
+
+它的主要作用，就是**让当前文件可以使用其他文件声明的类型**。举例来说，自己的脚本使用外部库定义的函数，编译器会因为不知道外部函数的类型定义而报错，这时就可以在自己的脚本里面使用`declare`关键字，告诉编译器外部函数的类型。这样的话，编译单个脚本就不会因为使用了外部类型而报错。
+
+declare 关键字可以描述以下类型。
+
+- 变量（const、let、var 命令声明）
+- type 或者 interface 命令声明的类型
+- class
+- enum
+- 函数（function）
+- 模块（module）
+- 命名空间（namespace）
+
+declare 关键字的**重要特点**是，它只是通知编译器某个类型是存在的，不用给出具体实现。比如，只描述函数的类型，不给出函数的实现，如果不使用`declare`，这是做不到的。
+
+declare 只能用来描述已经存在的变量和数据结构，不能用来声明新的变量和数据结构。另外，所有 declare 语句都不会出现在编译后的文件里面。
+
+
+
+### declare variable
+
+declare 关键字可以给出外部变量的类型描述。
+
+举例来说，当前脚本使用了其他脚本定义的全局变量`x`。
+
+```ts
+x = 123; // 报错
+```
+
+上面示例中，变量`x`是其他脚本定义的，当前脚本不知道它的类型，编译器就会报错。
+
+这时使用 declare 命令给出它的类型，就不会报错了。
+
+```ts
+declare let x:number;
+x = 1;
+```
+
+如果 declare 关键字没有给出变量的具体类型，那么变量类型就是`any`。
+
+```ts
+declare let x;
+x = 1;
+```
+
+上面示例中，变量`x`的类型为`any`。
+
+下面的例子是脚本使用浏览器全局对象`document`。
+
+```ts
+declare var document;
+document.title = 'Hello';
+```
+
+上面示例中，declare 告诉编译器，变量`document`的类型是外部定义的（具体定义在 TypeScript 内置文件`lib.d.ts`）。
+
+如果 TypeScript 没有找到`document`的外部定义，这里就会假定它的类型是`any`。
+
+注意，declare 关键字只用来给出类型描述，是纯的类型代码，不允许设置变量的初始值，即不能涉及值。
+
+```ts
+// 报错
+declare let x:number = 1;
+```
+
+上面示例中，declare 设置了变量的初始值，结果就报错了。
+
+
+
+
+
+### declare function
+
+declare 关键字可以给出外部函数的类型描述。
+
+下面是一个例子。
+
+```ts
+declare function sayHello(
+  name:string
+):void;
+
+sayHello('张三');
+```
+
+上面示例中，declare 命令给出了`sayHello()`的类型描述，表示这个函数是由外部文件定义的，因此这里可以直接使用该函数。
+
+注意，这种单独的函数类型声明语句，只能用于`declare`命令后面。一方面，TypeScript 不支持单独的函数类型声明语句；另一方面，declare 关键字后面也不能带有函数的具体实现。
+
+```ts
+// 报错
+function sayHello(
+  name:string
+):void;
+
+let foo = 'bar';
+
+function sayHello(name:string) {
+  return '你好，' + name;
+}
+```
+
+上面示例中，单独写函数的类型声明就会报错。
+
+
+
+### declare class
+
+declare 给出 class 类型描述的写法如下。
+
+```ts
+declare class Animal {
+  constructor(name:string);
+  eat():void;
+  sleep():void;
+}
+```
+
+下面是一个复杂一点的例子。
+
+```ts
+declare class C {
+  // 静态成员
+  public static s0():string;
+  private static s1:string;
+
+  // 属性
+  public a:number;
+  private b:number;
+
+  // 构造函数
+  constructor(arg:number);
+
+  // 方法
+  m(x:number, y:number):number;
+
+  // 存取器
+  get c():number;
+  set c(value:number);
+
+  // 索引签名
+  [index:string]:any;
+}
+```
+
+同样的，declare 后面不能给出 Class 的具体实现或初始值。
+
+
+
+### declare module，declare namespace
+
+如果想把变量、函数、类组织在一起，可以将 declare 与 module 或 namespace 一起使用。
+
+```ts
+declare namespace AnimalLib {
+  class Animal {
+    constructor(name:string);
+    eat():void;
+    sleep():void;
+  }
+
+  type Animals = 'Fish' | 'Dog';
+}
+
+// 或者
+declare module AnimalLib {
+  class Animal {
+    constructor(name:string);
+    eat(): void;
+    sleep(): void;
+  }
+
+  type Animals = 'Fish' | 'Dog';
+}
+```
+
+上面示例中，declare 关键字给出了 module 或 namespace 的类型描述。
+
+==**declare module 和 declare namespace 里面，加不加 export 关键字都可以。**==
+
+```ts
+declare namespace Foo {
+  export var a: boolean;
+}
+
+declare module 'io' {
+  export function readFile(filename:string):string;
+}
+```
+
+上面示例中，namespace 和 module 里面使用了 export 关键字。
+
+下面的例子是当前脚本使用了`myLib`这个外部库，它有方法`makeGreeting()`和属性`numberOfGreetings`。
+
+```ts
+let result = myLib.makeGreeting('你好');
+console.log('欢迎词：' + result);
+
+let count = myLib.numberOfGreetings;
+```
+
+`myLib`的类型描述就可以这样写。
+
+```ts
+declare namespace myLib {
+  function makeGreeting(s:string): string;
+  let numberOfGreetings: number;
+}
+```
+
+==**declare 关键字的另一个用途，是为外部模块添加属性和方法时，给出新增部分的类型描述。**==
+
+```ts
+import { Foo as Bar } from 'moduleA';
+
+declare module 'moduleA' {
+  interface Foo {
+    custom: {
+      prop1: string;
+    }
+  }
+}
+```
+
+上面示例中，从模块`moduleA`导入了类型`Foo`，它是一个接口（interface），并将其重命名为`Bar`，然后用 declare 关键字为`Foo`增加一个属性`custom`。这里需要注意的是，虽然接口`Foo`改名为`Bar`，但是扩充类型时，还是扩充原始的接口`Foo`，因为同名 interface 会自动合并类型声明。
+
+下面是另一个例子。一个项目有多个模块，可以在一个模块中，对另一个模块的接口进行类型扩展。
+
+```ts
+// a.ts
+export interface A {
+  x: number;
+}
+
+// b.ts
+import { A } from './a';
+
+declare module './a' {
+  interface A {
+    y: number;
+  }
+}
+
+const a:A = { x: 0, y: 0 };
+```
+
+上面示例中，脚本`a.ts`定义了一个接口`A`，脚本`b.ts`为这个接口添加了属性`y`。`declare module './a' {}`表示对`a.ts`里面的模块，进行类型声明，而同名 interface 会自动合并，所以等同于扩展类型。
+
+使用这种语法进行模块的类型扩展时，有两点需要注意：
+
+（1）`declare module NAME`语法里面的模块名`NAME`，跟 import 和 export 的模块名规则是一样的，且必须跟当前文件加载该模块的语句写法（上例`import { A } from './a'`）保持一致。
+
+（2）不能创建新的顶层类型。也就是说，只能对`a.ts`模块中已经存在的类型进行扩展，不允许增加新的顶层类型，比如新定义一个接口`B`。
+
+（3）不能对默认的`default`接口进行扩展，只能对 export 命令输出的命名接口进行扩充。这是因为在进行类型扩展时，需要依赖输出的接口名。
+
+==**某些第三方模块，原始作者没有提供接口类型，这时可以在自己的脚本顶部加上下面一行命令。**==
+
+```ts
+declare module "模块名";
+
+// 例子
+declare module "hot-new-module";
+```
+
+加上上面的命令以后，外部模块即使没有类型声明，也可以通过编译。但是，从该模块输入的所有接口都将为`any`类型。
+
+declare module 描述的模块名可以使用通配符。
+
+```ts
+declare module 'my-plugin-*' {
+  interface PluginOptions {
+    enabled: boolean;
+    priority: number;
+  }
+
+  function initialize(options: PluginOptions): void;
+  export = initialize;
+}
+```
+
+上面示例中，模块名`my-plugin-*`表示适配所有以`my-plugin-`开头的模块名（比如`my-plugin-logger`）。
+
+
+
+
+
+
+
+## d.ts类型声明文件
+
+### 简介
+
+单独使用的模块，一般会同时提供一个单独的类型声明文件（declaration file），把本模块的外部接口的所有类型都写在这个文件里面，便于模块使用者了解接口，也便于编译器检查使用者的用法是否正确。
+
+类型声明文件里面只有类型代码，没有具体的代码实现。它的文件名一般为`[模块名].d.ts`的形式，其中的`d`表示 declaration（声明）。
+
+举例来说，有一个模块的代码如下。
+
+```ts
+const maxInterval = 12;
+
+function getArrayLength(arr) {
+  return arr.length;
+}
+
+module.exports = {
+  getArrayLength,
+  maxInterval,
+};
+```
+
+它的类型声明文件可以写成下面这样。
+
+```ts
+export function getArrayLength(arr: any[]): number;
+export const maxInterval: 12;
+```
+
+类型声明文件也可以使用`export =`命令，输出对外接口。下面是 moment 模块的类型声明文件的例子。
+
+```ts
+declare module 'moment' {
+  function moment(): any;
+  export = moment;
+}
+```
+
+上面示例中，模块`moment`内部有一个函数`moment()`，而`export =`表示`module.exports`输出的就是这个函数。
+
+除了使用`export =`，模块输出在类型声明文件中，也可以使用`export default`表示。
+
+```ts
+// 模块输出
+module.exports = 3.142;
+
+// 类型输出文件
+// 写法一
+declare const pi: number;
+export default pi;
+
+// 写法二
+declare const pi: number;
+export= pi;
+```
+
+上面示例中，模块输出的是一个整数，那么可以用`export default`或`export =`表示输出这个值。
+
+下面是一个如何使用类型声明文件的简单例子。有一个类型声明文件`types.d.ts`。
+
+```ts
+// types.d.ts
+export interface Character {
+  catchphrase?: string;
+  name: string;
+}
+```
+
+然后，就可以在 TypeScript 脚本里面导入该文件声明的类型。
+
+```ts
+// index.ts
+import { Character } from "./types";
+
+export const character:Character = {
+  catchphrase: "Yee-haw!",
+  name: "Sandy Cheeks",
+};
+```
+
+**类型声明文件也可以包括在项目的 tsconfig.json 文件里面，这样的话，编译器打包项目时，会自动将类型声明文件加入编译，而不必在每个脚本里面加载类型声明文件**。比如，moment 模块的类型声明文件是`moment.d.ts`，使用 moment 模块的项目可以将其加入项目的 tsconfig.json 文件。
+
+```ts
+{
+  "compilerOptions": {},
+  "files": [
+    "src/index.ts",
+    "typings/moment.d.ts"
+  ]
+}
+```
+
+
+
+### 类型声明文件的来源
+
+类型声明文件主要有以下三种来源。
+
+- TypeScript 编译器自动生成。
+- TypeScript 内置类型文件。
+- 外部模块的类型声明文件，需要自己安装。
+
+
+
+#### 自动生成
+
+只要使用编译选项`declaration`，编译器就会在编译时自动生成单独的类型声明文件。
+
+下面是在`tsconfig.json`文件里面，打开这个选项。
+
+```ts
+{
+  "compilerOptions": {
+    "declaration": true
+  }
+}
+```
+
+你也可以在命令行打开这个选项。
+
+```
+$ tsc --declaration
+```
+
+
+
+#### 内置声明文件
+
+安装 TypeScript 语言时，会同时安装一些内置的类型声明文件，主要是内置的全局对象（JavaScript 语言接口和运行环境 API）的类型声明。
+
+这些内置声明文件位于 TypeScript 语言安装目录的`lib`文件夹内，数量大概有几十个，下面是其中一些主要文件。
+
+- lib.d.ts
+- lib.dom.d.ts
+- lib.es2015.d.ts
+- lib.es2016.d.ts
+- lib.es2017.d.ts
+- lib.es2018.d.ts
+- lib.es2019.d.ts
+- lib.es2020.d.ts
+- lib.es5.d.ts
+- lib.es6.d.ts
+
+这些内置声明文件的文件名统一为“lib.[description].d.ts”的形式，其中`description`部分描述了文件内容。比如，`lib.dom.d.ts`这个文件就描述了 DOM 结构的类型。
+
+如果开发者想了解全局对象的类型接口（比如 ES6 全局对象的类型），那么就可以去查看这些内置声明文件。
+
+TypeScript 编译器会自动根据编译目标`target`的值，加载对应的内置声明文件，所以不需要特别的配置。但是，可以使用编译选项`lib`，指定加载哪些内置声明文件。
+
+```ts
+{
+  "compilerOptions": {
+    "lib": ["dom", "es2021"]
+  }
+}
+```
+
+上面示例中，`lib`选项指定加载`dom`和`es2021`这两个内置类型声明文件。
+
+编译选项`noLib`会禁止加载任何内置声明文件。
+
+
+
+#### 外部类型声明文件
+
+如果项目中使用了外部的某个第三方代码库，那么就需要这个库的类型声明文件。
+
+这时又分成三种情况。
+
+（1）这个库自带了类型声明文件。
+
+一般来说，如果这个库的源码包含了`[vendor].d.ts`文件，那么就自带了类型声明文件。其中的`vendor`表示这个库的名字，比如`moment`这个库就自带`moment.d.ts`。使用这个库可能需要单独加载它的类型声明文件。
+
+（2）这个库没有自带，但是可以找到社区制作的类型声明文件。
+
+第三方库如果没有提供类型声明文件，社区往往会提供。TypeScript 社区主要使用 [DefinitelyTyped 仓库](https://github.com/DefinitelyTyped/DefinitelyTyped)，各种类型声明文件都会提交到那里，已经包含了几千个第三方库。
+
+这些声明文件都会作为一个单独的库，发布到 npm 的`@types`名称空间之下。比如，jQuery 的类型声明文件就发布成`@types/jquery`这个库，使用时安装这个库就可以了。
+
+```ts
+$ npm install @types/jquery --save-dev
+```
+
+执行上面的命令，`@types/jquery`这个库就安装到项目的`node_modules/@types/jquery`目录，里面的`index.d.ts`文件就是 jQuery 的类型声明文件。如果类型声明文件不是`index.d.ts`，那么就需要在`package.json`的`types`或`typings`字段，指定类型声明文件的文件名。
+
+TypeScript 会自动加载`node_modules/@types`目录下的模块，但可以使用编译选项`typeRoots`改变这种行为。
+
+```ts
+{
+  "compilerOptions": {
+    "typeRoots": ["./typings", "./vendor/types"]
+  }
+}
+```
+
+上面示例表示，TypeScript 不再去`node_modules/@types`目录，而是去跟当前`tsconfig.json`同级的`typings`和`vendor/types`子目录，加载类型模块了。
+
+默认情况下，TypeScript 会自动加载`typeRoots`目录里的所有模块，编译选项`types`可以指定加载哪些模块。
+
+```ts
+{
+  "compilerOptions": {
+    "types" : ["jquery"]
+  }
+}
+```
+
+上面设置中，`types`属性是一个数组，成员是所要加载的类型模块，要加载几个模块，这个数组就有几个成员，每个类型模块在`typeRoots`目录下都有一个自己的子目录。这样的话，TypeScript 就会自动去`jquery`子目录，加载 jQuery 的类型声明文件。
+
+（3）找不到类型声明文件，需要自己写。
+
+有时实在没有第三方库的类型声明文件，又很难完整给出该库的类型描述，这时你可以告诉 TypeScript 相关对象的类型是`any`。比如，使用 jQuery 的脚本可以写成下面这样。
+
+```ts
+declare var $:any
+
+// 或者
+declare type JQuery = any;
+declare var $:JQuery;
+```
+
+上面代码表示，jQuery 的`$`对象是外部引入的，类型是`any`，也就是 TypeScript 不用对它进行类型检查。
+
+也可以采用下面的写法，将整个外部模块的类型设为`any`。
+
+```ts
+declare module '模块名';
+```
+
+有了上面的命令，指定模块的所有接口都将视为`any`类型。
+
+
+
+### d.ts里的declare关键字
+
+类型声明文件只包含类型描述，不包含具体实现，所以非常适合使用 declare 语句来描述类型
+
+类型声明文件里面，**变量的类型描述**必须使用`declare`命令，否则会报错，因为变量声明语句是值相关代码。
+
+```ts
+declare let foo:string;
+```
+
+interface 类型有没有`declare`都可以，因为 interface 是完全的类型代码。
+
+```ts
+interface Foo {} // 正确
+declare interface Foo {} // 正确
+```
+
+类型声明文件里面，顶层可以使用`export`命令，也可以不用，除非使用者脚本会显式使用`export`命令输入类型。
+
+```ts
+export interface Data {
+  version: string;
+}
+```
+
+下面是类型声明文件的一些例子。先看 moment 模块的类型描述文件`moment.d.ts`。
+
+```ts
+declare module 'moment' {
+  export interface Moment {
+    format(format:string): string;
+
+    add(
+      amount: number,
+      unit: 'days' | 'months' | 'years'
+    ): Moment;
+
+    subtract(
+      amount:number,
+      unit:'days' | 'months' | 'years'
+    ): Moment;
+  }
+
+  function moment(
+    input?: string | Date
+  ): Moment;
+
+  export default moment;
+}
+```
+
+上面示例中，可以注意一下默认接口`moment()`的写法。
+
+下面是 D3 库的类型声明文件`D3.d.ts`。
+
+```ts
+declare namespace D3 {
+  export interface Selectors {
+    select: {
+      (selector: string): Selection;
+      (element: EventTarget): Selection;
+    };
+  }
+
+  export interface Event {
+    x: number;
+    y: number;
+  }
+
+  export interface Base extends Selectors {
+    event: Event;
+  }
+}
+
+declare var d3: D3.Base;
+```
+
+
+
+
+
+### 模块发布
+
+当前模块如果包含自己的类型声明文件，可以在 package.json 文件里面添加一个`types`字段或`typings`字段，指明类型声明文件的位置。
+
+```json
+{
+  "name": "awesome",
+  "author": "Vandelay Industries",
+  "version": "1.0.0",
+  "main": "./lib/main.js",
+  "types": "./lib/main.d.ts"
+}
+```
+
+上面示例中，`types`字段给出了类型声明文件的位置。
+
+注意，如果类型声明文件名为`index.d.ts`，且在项目的根目录中，那就不需要在`package.json`里面注明了。
+
+有时，类型声明文件会单独发布成一个 npm 模块，这时用户就必须同时加载该模块。
+
+```json
+{
+  "name": "browserify-typescript-extension",
+  "author": "Vandelay Industries",
+  "version": "1.0.0",
+  "main": "./lib/main.js",
+  "types": "./lib/main.d.ts",
+  "dependencies": {
+    "browserify": "latest",
+    "@types/browserify": "latest",
+    "typescript": "next"
+  }
+}
+```
+
+上面示例是一个模块的 package.json 文件，该模块需要 browserify 模块。由于后者的类型声明文件是一个单独的模块`@types/browserify`，所以还需要加载那个模块。
+
+
+
+
+
+### 三斜杠命令
+
+如果类型声明文件的内容非常多，可以拆分成多个文件，然后入口文件使用三斜杠命令，加载其他拆分后的文件。
+
+举例来说，入口文件是`main.d.ts`，里面的接口定义在`interfaces.d.ts`，函数定义在`functions.d.ts`。那么，`main.d.ts`里面可以用三斜杠命令，加载后面两个文件。
+
+```ts
+/// <reference path="./interfaces.d.ts" />
+/// <reference path="./functions.d.ts" />
+```
+
+三斜杠命令（`///`）是一个 TypeScript 编译器命令，用来指定编译器行为。它只能用在文件的头部，如果用在其他地方，会被当作普通的注释。另外，若一个文件中使用了三斜线命令，那么在三斜线命令之前只允许使用单行注释、多行注释和其他三斜线命令，否则三斜杠命令也会被当作普通的注释。
+
+除了拆分类型声明文件，三斜杠命令也可以用于普通脚本加载类型声明文件。
+
+三斜杠命令主要包含三个参数，代表三种不同的命令。
+
+- path
+- types
+- lib
+
+下面依次进行讲解。
+
+
+
+#### `/// <reference path="" />`
+
+`/// <reference path="" />`是最常见的三斜杠命令，告诉编译器在编译时需要包括的文件，常用来声明当前脚本依赖的类型文件。
+
+```ts
+/// <reference path="./lib.ts" />
+
+let count = add(1, 2);
+```
+
+上面示例表示，当前脚本依赖于`./lib.ts`，里面是`add()`的定义。编译当前脚本时，还会同时编译`./lib.ts`。编译产物会有两个 JS 文件，一个当前脚本，另一个就是`./lib.js`。
+
+下面的例子是当前脚本依赖于 Node.js 类型声明文件。
+
+```ts
+/// <reference path="node.d.ts"/>
+import * as URL from "url";
+let myUrl = URL.parse("https://www.typescriptlang.org");
+```
+
+编译器会在预处理阶段，找出所有三斜杠引用的文件，将其添加到编译列表中，然后一起编译。
+
+`path`参数指定了所引入文件的路径。如果该路径是一个相对路径，则基于当前脚本的路径进行计算。
+
+使用该命令时，有以下两个注意事项。
+
+- `path`参数必须指向一个存在的文件，若文件不存在会报错。
+- `path`参数不允许指向当前文件。
+
+默认情况下，每个三斜杠命令引入的脚本，都会编译成单独的 JS 文件。如果希望编译后只产出一个合并文件，可以使用编译选项`outFile`。但是，`outFile`编译选项不支持合并 CommonJS 模块和 ES 模块，只有当编译参数`module`的值设为 None、System 或 AMD 时，才能编译成一个文件。
+
+如果打开了编译参数`noResolve`，则忽略三斜杠指令。将其当作一般的注释，原样保留在编译产物中。
+
+
+
+#### `/// <reference types="" />`
+
+types 参数用来告诉编译器当前脚本依赖某个 DefinitelyTyped 类型库，通常安装在`node_modules/@types`目录。
+
+types 参数的值是类型库的名称，也就是安装到`node_modules/@types`目录中的子目录的名字。
+
+```ts
+/// <reference types="node" />
+```
+
+上面示例中，这个三斜杠命令表示编译时添加 Node.js 的类型库，实际添加的脚本是`node_modules`目录里面的`@types/node/index.d.ts`。
+
+可以看到，这个命令的作用类似于`import`命令。
+
+注意，这个命令只在你自己手写类型声明文件（`.d.ts`文件）时，才有必要用到，也就是说，只应该用在`.d.ts`文件中，普通的`.ts`脚本文件不需要写这个命令。如果是普通的`.ts`脚本，可以使用`tsconfig.json`文件的`types`属性指定依赖的类型库。
+
+
+
+#### `/// <reference lib="" />`
+
+`/// <reference lib="..." />`命令允许脚本文件显式包含内置 lib 库，等同于在`tsconfig.json`文件里面使用`lib`属性指定 lib 库。
+
+前文说过，安装 TypeScript 软件包时，会同时安装一些内置的类型声明文件，即内置的 lib 库。这些库文件位于 TypeScript 安装目录的`lib`文件夹中，它们描述了 JavaScript 语言和引擎的标准 API。
+
+库文件并不是固定的，会随着 TypeScript 版本的升级而更新。库文件统一使用“lib.[description].d.ts”的命名方式，而`/// <reference lib="" />`里面的`lib`属性的值就是库文件名的`description`部分，比如`lib="es2015"`就表示加载库文件`lib.es2015.d.ts`。
+
+```ts
+/// <reference lib="es2017.string" />
+```
+
+上面示例中，`es2017.string`对应的库文件就是`lib.es2017.string.d.ts`。
+
+
+
+
+
 # TypeScript类型声明文件
 
 ## 基本介绍

@@ -1853,7 +1853,7 @@ Reducers 并非没有缺点！以下是比较它们的几种方法：
 
 
 
-###编写一个好的reducers
+### 编写一个好的reducers
 
 - **reducer必须是纯粹的**(纯函数)，这一点和 [状态更新函数](https://react.docschina.org/learn/queueing-a-series-of-state-updates) 是相似的，`reducer`是在渲染时运行的（actions会排队知道下一次渲染），它们不应该包含异步请求、定时器或者任何副作用（对组件外部有影响的操作）。它们应该以不可变值的方式去更新 [对象](https://react.docschina.org/learn/updating-objects-in-state) 和 [数组](https://react.docschina.org/learn/updating-arrays-in-state)。
 - 每一个action都描述了**单一的用户交互（即代表用户一种操作）**，即使它会更新多个数据变化
