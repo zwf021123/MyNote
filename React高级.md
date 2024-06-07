@@ -1559,9 +1559,275 @@ export default function Form() {
 
 ```
 
+**自定义 Hook 共享的只是状态逻辑而不是状态本身。对 Hook 的每个调用完全独立于对同一个 Hook 的其他调用**。这就是上面两个 sandbox 结果完全相同的原因。如果愿意，你可以划上去进行比较。提取自定义 Hook 前后组件的行为是一致的。
+
+当你需要在多个组件之间共享 state 本身时，需要 [将变量提升并传递下去](https://react.docschina.org/learn/sharing-state-between-components)。
+
+
+
+### 在Hook之间传递响应值
+
+每当组件重新渲染，自定义 Hook 中的代码就会重新运行。这就是组件和自定义 Hook 都 [需要是纯函数](https://react.docschina.org/learn/keeping-components-pure) 的原因。我们应该把自定义 Hook 的代码看作组件主体的一部分。
+
+由于自定义 Hook 会随着组件一起重新渲染，所以组件可以一直接收到最新的 props 和 state
+
+例如，由如下这样的Hook
+
+```jsx
+export function useChatRoom({ serverUrl, roomId }) {
+  useEffect(() => {
+    const options = {
+      serverUrl: serverUrl,
+      roomId: roomId
+    };
+    const connection = createConnection(options);
+    connection.connect();
+    connection.on('message', (msg) => {
+      showNotification('New message: ' + msg);
+    });
+    return () => connection.disconnect();
+  }, [roomId, serverUrl]);
+}
+```
+
+使用该Hook
+
+```jsx
+export default function ChatRoom({ roomId }) {
+  const [serverUrl, setServerUrl] = useState('https://localhost:1234');
+
+  useChatRoom({
+    roomId: roomId,
+    serverUrl: serverUrl
+  });
+
+  return (
+    <>
+      <label>
+        Server URL:
+        <input value={serverUrl} onChange={e => setServerUrl(e.target.value)} />
+      </label>
+      <h1>Welcome to the {roomId} room!</h1>
+    </>
+  );
+}
+```
+
+注意逻辑 **仍然响应** props 和 state 的变化
+
+每次 `ChatRoom` 组件重新渲染，它就会传最新的 `roomId` 和 `serverUrl` 到你的 Hook
+
+
+
+### 把事件处理函数传递到自定义Hook中（实验性）
+
+看下面这个例子我们可以理解`useEffectEvent`的作用：
+
+```jsx
+/// app.js
+import { useCounter } from './useCounter.js';
+import { useInterval } from './useInterval.js';
+
+export default function Counter() {
+  const count = useCounter(1000);
+
+  useInterval(() => {
+    const randomColor = `hsla(${Math.random() * 360}, 100%, 50%, 0.2)`;
+    document.body.style.backgroundColor = randomColor;
+  }, 2000);
+
+  return <h1>Seconds passed: {count}</h1>;
+}
+
+// useCounter.js
+import { useState } from 'react';
+import { useInterval } from './useInterval.js';
+
+export function useCounter(delay) {
+  const [count, setCount] = useState(0);
+  useInterval(() => {
+    setCount(c => c + 1);
+  }, delay);
+  return count;
+}
+
+// useInterval.js
+import { useEffect } from 'react';
+import { experimental_useEffectEvent as useEffectEvent } from 'react';
+
+export function useInterval(onTick, delay) {
+  useEffect(() => {
+    console.log('✅ Setting up an interval with delay ', delay)
+    const id = setInterval(onTick, delay);
+    return () => {
+      console.log('❌ Clearing an interval with delay ', delay)
+      clearInterval(id);
+    };
+  }, [onTick, delay]);
+}
+```
+
+如上我们自定义了两个Hook，一个用于设置一个定时器，一个用于每秒递增count变量且使用了定时器Hook，在顶层组件app中也使用了定时器Hook用于定时设置背景颜色
+
+值得注意的是：`useInterval`Hook中的useEffect依赖传入的一个回调函数
+
+观察打印内容，我们不难发现，每过一秒，就会导致useEffect的同步行为，这是因为在useCounter中使用useInterval传入的回调函数更新了state变量导致了页面重新渲染进而导致useEffect同步行为的发生
+
+因此我们需要从 Effect 的依赖项中删掉 `onTick`。每次组件重新渲染时，Effect 将不会重新同步
+
+并且使用到这个实验性的钩子`useEffectEvent`
+
+最终代码：
+
+```js
+import { useEffect } from 'react';
+import { experimental_useEffectEvent as useEffectEvent } from 'react';
+
+export function useInterval(callback, delay) {
+  const onTick = useEffectEvent(callback);
+  useEffect(() => {
+    const id = setInterval(onTick, delay);
+    return () => clearInterval(id);
+  }, [delay]);
+}
+
+```
 
 
 
 
 
 
+
+
+
+### 什么时候使用自定义Hook
+
+你没必要对每段重复的代码都提取自定义 Hook。一些重复是好的。例如像早前提取的包裹单个 `useState` 调用的 `useFormInput` Hook 就是没有必要的。
+
+但是每当你写 Effect 时，考虑一下把它包裹在自定义 Hook 是否更清晰。[你不应该经常使用 Effect](https://react.docschina.org/learn/you-might-not-need-an-effect)，所以如果你正在写 Effect 就意味着你需要“走出 React”和某些外部系统同步，或者需要做一些 React 中没有对应内置 API 的事。把 Effect 包裹进自定义 Hook 可以准确表达你的目标以及数据在里面是如何流动的。
+
+例如，假设 `ShippingForm` 组件展示两个下拉菜单：一个显示城市列表，另一个显示选中城市的区域列表。你可能一开始会像这样写代码去分别请求两个列表数据
+
+```jsx
+function ShippingForm({ country }) {
+  const [cities, setCities] = useState(null);
+  // 这个 Effect 拉取一个国家的城市数据
+  useEffect(() => {
+    let ignore = false;
+    fetch(`/api/cities?country=${country}`)
+      .then(response => response.json())
+      .then(json => {
+        if (!ignore) {
+          setCities(json);
+        }
+      });
+    return () => {
+      ignore = true;
+    };
+  }, [country]);
+
+  const [city, setCity] = useState(null);
+  const [areas, setAreas] = useState(null);
+  // 这个 Effect 拉取选中城市的区域列表
+  useEffect(() => {
+    if (city) {
+      let ignore = false;
+      fetch(`/api/areas?city=${city}`)
+        .then(response => response.json())
+        .then(json => {
+          if (!ignore) {
+            setAreas(json);
+          }
+        });
+      return () => {
+        ignore = true;
+      };
+    }
+  }, [city]);
+```
+
+尽管这部分代码是重复的，但是 [把这些 Effect 各自分开是正确的](https://react.docschina.org/learn/removing-effect-dependencies#is-your-effect-doing-several-unrelated-things)。他们同步两件不同的事情，所以不应该把他们合并到同一个 Effect。而是提取其中的通用逻辑到你自己的 `useData` Hook 来简化上面的 `ShippingForm` 组件：
+
+```jsx
+function useData(url) {
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    if (url) {
+      let ignore = false;
+      fetch(url)
+        .then(response => response.json())
+        .then(json => {
+          if (!ignore) {
+            setData(json);
+          }
+        });
+      return () => {
+        ignore = true;
+      };
+    }
+  }, [url]);
+  return data;
+}
+```
+
+现在你可以在 `ShippingForm` 组件中调用 `useData` 替换两个 Effect：
+
+```jsx
+function ShippingForm({ country }) {
+
+  const cities = useData(`/api/cities?country=${country}`);
+
+  const [city, setCity] = useState(null);
+
+  const areas = useData(city ? `/api/areas?city=${city}` : null);
+
+  // ...
+    
+```
+
+提取自定义 Hook 让数据流清晰。输入 `url`，就会输出 `data`。通过把 Effect “隐藏”在 `useData` 内部，你也可以防止一些正在处理 `ShippingForm` 组件的人向里面添加 [不必要的依赖](https://react.docschina.org/learn/removing-effect-dependencies)。随着时间的推移，应用中大部分 Effect 都会存在于自定义 Hook 内部。
+
+**好的自定义 Hook 通过限制功能使代码调用更具声明性**。例如 `useChatRoom(options)` 只能连接聊天室，而 `useImpressionLog(eventName, extraData)` 只能向分析系统发送展示日志。如果你的自定义 Hook API 没有约束用例且非常抽象，那么在长期的运行中，它引入的问题可能比解决的问题更多。
+
+
+
+### 自定义 Hook 帮助你迁移到更好的模式 
+
+Effect 是一个 [脱围机制](https://react.docschina.org/learn/escape-hatches)：当需要“走出 React”且用例没有更好的内置解决方案时你可以使用他们。随着时间的推移，React 团队的目标是通过给更具体的问题提供更具体的解决方案来最小化应用中的 Effect 数量。把你的 Effect 包裹进自定义 Hook，当这些解决方案可用时升级代码会更加容易。
+
+在前面的例子中，我们建立了一个关于网络状态的Hook，但并不是最好的解决方案，因为存在边界用例：例如当组件加载时`isOnline`已经为true但是如果在监听器注册之前网络已经离线，那么这就是错误的，可以使用浏览器 [`navigator.onLine`](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/onLine) API 来检查
+
+幸运的是，React 18 包含了一个叫做 [`useSyncExternalStore`](https://react.docschina.org/reference/react/useSyncExternalStore) 的专用 API，它可以解决你所有这些问题。这里展示了如何利用这个新 API 来重写你的 `useOnlineStatus` Hook：
+
+```jsx
+import { useSyncExternalStore } from 'react';
+
+function subscribe(callback) {
+  window.addEventListener('online', callback);
+  window.addEventListener('offline', callback);
+  return () => {
+    window.removeEventListener('online', callback);
+    window.removeEventListener('offline', callback);
+  };
+}
+
+export function useOnlineStatus() {
+  return useSyncExternalStore(
+    subscribe,
+    () => navigator.onLine, // 如何在客户端获取值
+    () => true // 如何在服务端获取值
+  );
+}
+
+```
+
+而这里我们需要学习到的重点在于：**你不需要修改任何组件** 就能完成这次改进
+
+这是把 Effect 包裹进自定义 Hook 有益的另一个原因：
+
+1. 你让进出 Effect 的数据流非常清晰。
+2. 你让组件专注于目标，而不是 Effect 的准确实现。
+3. 当 React 增加新特性时，你可以在不修改任何组件的情况下移除这些 Effect。
+
+和 [设计系统](https://uxdesign.cc/everything-you-need-to-know-about-design-systems-54b109851969) 相似，你可能会发现从应用的组件中提取通用逻辑到自定义 Hook 是非常有帮助的。这会让你的组件代码专注于目标，并且避免经常写原始 Effect。许多很棒的自定义 Hook 是由 React 社区维护的。

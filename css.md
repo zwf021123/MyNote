@@ -102,7 +102,7 @@ CSS书写规则
 -  通配符选择器	
   - 查找页面所有标签，设置相同样式
   - 实际开发中用于清除默认样式
-	 属性选择器	
+		属性选择器	
   - **属性选择器**匹配那些具有特定属性或属性值的元素
 
 ```
@@ -142,16 +142,16 @@ a[class~="logo"] {
 -  font-size属性	
   - 必须带单位px
   - 谷歌浏览器默认像素大小为16px
-	 font-weight	
+		font-weight	
   - 属性值可以是数字正常是400，加粗是700
   - 也可以是关键字，正常是normal，加粗是bold
-	 font-style	
+		font-style	
   - 通常用于清除文字倾斜效果
   - 属性值正常是normal，倾斜是italic
-	 line-height	
+		line-height	
   - 设置多行文字的间距
   - 属性值通常是数字+px，或数字（表示当前标签font-size属性值的倍数）
-  - 测量行高的方法：		
+  	 测量行高的方法：		
     - 从一行文字的最顶（最底）测量到下一行文字的最顶（最底）
   	 单行文字垂直居中（只适用于单行文字）		
     - 只需设置当前行高为盒子高度即可
@@ -237,6 +237,104 @@ a[class~="logo"] {
 超链接的伪类
 
 ![img](https://img-blog.csdnimg.cn/0819c348780d46479adfc8cb950e4d37.png)
+
+
+
+### :is()
+
+**:is()** [CSS](https://developer.mozilla.org/zh-CN/docs/Web/CSS) [伪类](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Pseudo-classes)函数以选择器列表作为参数，并选择该列表中任意一个选择器可以选择的元素。
+
+伪元素在 `:is()` 的选择器列表中无效。
+
+直接看例子：
+
+```html
+<ol>
+  <li>Saturn</li>
+  <li>
+    <ul>
+      <li>Mimas</li>
+      <li>Enceladus</li>
+      <li>
+        <ol>
+          <li>Voyager</li>
+          <li>Cassini</li>
+        </ol>
+      </li>
+      <li>Tethys</li>
+    </ul>
+  </li>
+  <li>Uranus</li>
+  <li>
+    <ol>
+      <li>Titania</li>
+      <li>Oberon</li>
+    </ol>
+  </li>
+</ol>
+
+```
+
+```css
+ol {
+  list-style-type: upper-alpha;
+  color: darkblue;
+}
+
+/* stylelint-disable-next-line selector-pseudo-class-no-unknown */
+:is(ol, ul, menu:unsupported) :is(ol, ul) {
+  color: green;
+}
+
+:is(ol, ul) :is(ol, ul) ol {
+  list-style-type: lower-greek;
+  color: chocolate;
+}
+
+如上这个选择器可能有如下情况：
+ol下的ol下的ol
+ol下的ul下的ol
+ul下的ol下的ol
+ul下的ul下的ol
+```
+
+
+
+
+
+
+
+### :where()
+
+**:where()** [CSS 伪类](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Pseudo-classes)函数接受[选择器列表](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Selector_list)作为它的参数，将会选择所有能被该选择器列表中任何一条规则选中的元素
+
+```css
+/* Selects any paragraph inside a header, main
+   or footer element that is being hovered */
+:where(header, main, footer) p:hover {
+  color: red;
+  cursor: pointer;
+}
+
+/* The above is equivalent to the following */
+header p:hover,
+main p:hover,
+footer p:hover {
+  color: red;
+  cursor: pointer;
+}
+
+```
+
+`:where()` 和 [`:is()`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/:is) 的不同之处在于，`:where()` 的[优先级](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Specificity)总是为 0，但是 `:is()` 的优先级是由它的选择器列表中优先级最高的[选择器](https://developer.mozilla.org/zh-CN/docs/Glossary/CSS_Selector)决定的。
+
+
+
+
+
+
+
+
 
 ------
 

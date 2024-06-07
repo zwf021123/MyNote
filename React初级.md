@@ -3617,6 +3617,32 @@ function Field({ label }) {
 
 
 
+##同一快照下多次setState
+
+出现了，react官方文档的举例的一个Bug！！！
+
+需求是：在组件挂载后，渲染出三句话（写死的）
+
+![71766728997](React初级.assets/1717667289971.png)
+
+注意这里连续调用了三次`writeTextOutput`函数，再看这个函数的实现！
+
+![71766726614](React初级.assets/1717667356173.png)
+
+可以看到这里有一个对state变量的修改，根据react官网说法，当多次调用对state变量的修改函数时，React会将这些更新批量处理，那么相当于这三次修改都处于一开始为空的state快照中
+
+本质就是：
+
+```jsx
+setOutputList([...[], newOutput1]);
+setOutputList([...[], newOutput2]);
+setOutputList([...[], newOutput3]);
+```
+
+你只是调用了三次同一快照的函数罢了，因此解决办法就是传入更新函数基于最新状态去更新state
+
+
+
 
 
 
