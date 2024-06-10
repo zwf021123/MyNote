@@ -3643,6 +3643,185 @@ setOutputList([...[], newOutput3]);
 
 
 
+## 闭包问题（闭包陷阱）
+
+今天在写代码过程中发现，terminal暴露的函数中引用了某一个state变量，但是函数实际运行过程中发现这个state变量打印的值永远是初始值，调试工具中该值是实际被改变了的
+
+这是因为在react中，闭包是常见的，因为react的组件都是函数，我们在函数里面写函数，这不就是闭包吗，而如果没有处理措施，那么闭包中引用的值将永远都是该函数创建时后引用的初始值！！
+
+### 什么是闭包陷阱
+
+```jsx
+const FunctionComponent = () => {
+  const [value, setValue] = useState(1)
+  const log = () => {
+    setTimeout(() => {
+      alert(value)
+    }, 1000);
+  }
+  return (
+    <div>
+      <p>FunctionComponent</p>
+      <div>value: {value}</div>
+      <button onClick={() => setValue(value + 1)}>add</button>
+      <br/>
+      <button onClick={log}>alert</button>
+    </div>
+  )
+}
+```
+
+如上组件中我们定义了一个state，并且提供一个按钮可以增加他的值并将其展示在页面中，同时还有一个按钮用于延时展示state的值
+
+假设我们在1s内点击6次，出现下面的结果
+
+![71793990850](React初级.assets/1717939908507.png)
+
+**log 方法内的 value 和点击动作触发那一刻的 value 相同，但是value 的后续变化不会对 log 方法内的 value 造成影响**。这种现象被称为“闭包陷阱”或者被叫做“Capture Value” ：函数式组件每次render 都会生产一个新的 log 函数，这个新的 log 函数会产生一个在当前这个阶段 value 值的闭包。
+
+- 完整过程：
+
+1. 初始次渲染，生成一个 log 函数（value = 1）
+2. value 为 1 时，点击 alert 按钮执行 log 函数（value = 1）
+3. 点击按钮增加 value，比如 value 增加到 6，组件 render ，生成一个新的 log 函数（value = 6）
+4. 计时器触发，log 函数（value = 1）弹出闭包内的 value 为 1
+
+
+
+### 解决办法
+
+#### useRef保存最新引用
+
+```jsx
+  const countRef = useRef(value)
+
+  useEffect(() => {
+    countRef.current = value
+  }, [value])
+
+  const log = useCallback(
+    () => {
+      setTimeout(() => {
+        alert(countRef.current)
+      }, 1000);
+    },
+    [value],
+  )
+
+```
+
+还是一样的例子，**useRef** 每次 render 时都会返回**同一个引用类型的对象**，使用`useEffect`获取最新值赋予给它，我们设置值和读取值都在这个对象上处理，这样就能获取到最新的 value 值了。
+
+
+
+#### 使用状态更新函数
+
+假设现在我们要开一个每秒自增的计数器，我们一般会写出下面这样的代码：
+
+```jsx
+const Counter = () => {
+  const [value, setValue] = useState(0)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      console.log('new value:', value+1)
+      setValue(value + 1)
+    }, 1000);
+    return () => {
+      clearInterval(timer)
+    }
+  }, [])
+
+  return (
+    <div>
+      <p>Counter</p>
+      <div>count: {value}</div>
+    </div>
+  )
+}
+```
+
+上面的代码中，我们在 `useEffect` 中不断更新 value 的值，但是结合我们之前的闭包陷阱问题来分析，我们可以发现定时器的value值永远都会是 0，这就导致每次设置的 value 值都是 1，下图是运行的结果。
+
+![image-20210612163548629](React初级.assets/c8ebab428eae434cb098cdeff5a60dfc-tplv-k3u1fbpfcp-zoom-in-crop-mark-1512-0-0-0.awebp)
+
+“闭包陷阱” 最大的问题就是在函数数内无法获取的最新的 state 的值，那 React 提供了哪些方法来解决呢？
+
+1. useRef 
+2. 使用状态更新函数
+
+```jsx
+const [value, setValue] = useState(0)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      // 回调函数的最新值
+      setValue(value => value + 1)
+    }, 1000);
+    return () => {
+      clearInterval(timer)
+    }
+  }, [])
+```
+
+
+
+### 与hook依赖
+
+**useEffect**、**useLayoutEffect**、**useCallback**、**useMemo** 的第二个参数为依赖数组，依·赖数组中任意一个依赖变化（浅比较）会有如下效果：
+
+1. **useEffect**、**useLayoutEffect** 内部的副作用函数会执行，并且副作用函数可以获取到当前所有依赖的最新值。
+2. **useCallback**、**useMemo** 会返回新的函数或对象，并缺内部的函数也能获取到当前所有依赖的最新值。
+
+利用这个机制理论可以解决“闭包陷阱”，但是在某种情况下不适用：
+
+```jsx
+const Counter = () => {
+  const [value, setValue] = useState(0)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      console.log('tick:', value+1)
+      setValue(value + 1)
+    }, 1000);
+    return () => {
+    	console.log('clear')
+      clearInterval(timer)
+    }
+  - }, [])
+  + }, [value])
+
+  return (
+    <div>
+      <p>Counter</p>
+      <div>count: {value}</div>
+    </div>
+  )
+}
+```
+
+上面的代码我们把 value 作为依赖项加入到依赖数组，却是能够实现功能，但是每次都会经历 `clearInterval -> setValue ->clearInterval `的循环。这就**造成了不必要的性能消耗**。还有一种极端的情况，如果我们没有返回取消定时器的函数，**就会不断增加新的定时器**。
+
+
+
+
+
+[再学 React Hooks (一）：闭包陷阱 - 掘金 (juejin.cn)](https://juejin.cn/post/6972893133243695141#heading-3)
+
+[javascript - 详解 React 中的闭包问题 - zidan blog - SegmentFault 思否](https://segmentfault.com/a/1190000044152201)
+
+
+
+
+
+## 自定义hook是独立的
+
+今天在项目中在两个地方使用到了同一个自定义hook，我希望的是这两个自定义hook的内容是同步的，但是并不是这样的，每一个自定义hook都拥有自己独立的state和函数鸭鸭！！
+
+
+
+
+
 
 
 
