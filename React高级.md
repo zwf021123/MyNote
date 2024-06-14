@@ -1152,6 +1152,243 @@ useEffect(() => {
 
 
 
+
+
+## 你可能不需要Effect
+
+Effect 是 React 范式中的一种脱围机制。它们让你可以 “逃出” React 并使组件和一些外部系统同步，比如非 React 组件、网络和浏览器 DOM。
+
+可能你只是想要根据props或state的变化来更新一个组件的state，那么可能你并不需要使用到Effect
+
+移除不必要的 Effect 可以让你的代码更容易理解，运行得更快，并且更少出错。
+
+
+
+### 两种情况
+
+有两种不必使用 Effect 的常见情况：
+
+- **使用Effect来计算渲染所需数据**，例如你想要在展示一个列表之前先做筛选：你的直觉可能是写一个当列表变化时更新 state 变量的 Effect，但是这是低效的，当你更新这个 state 时，React 首先会调用你的组件函数来计算应该显示在屏幕上的内容，然后 React 会把这些变化“[提交](https://react.docschina.org/learn/render-and-commit)”到 DOM 中来更新屏幕，之后React才会执行你的Effect，但是此时你的目的已经达到了，Effect只是做了一样的操作
+- **使用Effect处理用户事件**，例如，你想在用户购买一个产品时发送一个 `/api/buy` 的 POST 请求并展示一个提示。在这个购买按钮的点击事件处理函数中，你确切地知道会发生什么。但是当一个 Effect 运行时，你却不知道用户做了什么（例如，点击了哪个按钮）。这就是为什么你通常应该在相应的事件处理函数中处理用户事件。
+
+
+
+下面是一些实例：
+
+
+
+### 一些例子
+
+#### 根据prop或state来更新state
+
+假设你有一个包含了两个 state 变量的组件：`firstName` 和 `lastName`。你想通过把它们联结起来计算出 `fullName`。此外，每当 `firstName` 和 `lastName` 变化时，你希望 `fullName` 都能更新。你的第一直觉可能是添加一个 state 变量：`fullName`，并在一个 Effect 中更新它：
+
+```jsx
+function Form() {
+  const [firstName, setFirstName] = useState('Taylor');
+  const [lastName, setLastName] = useState('Swift');
+
+  // 🔴 避免：多余的 state 和不必要的 Effect
+  const [fullName, setFullName] = useState('');
+  useEffect(() => {
+    setFullName(firstName + ' ' + lastName);
+  }, [firstName, lastName]);
+  // ...
+}
+```
+
+大可不必这么复杂。而且这样效率也不高：它先是用 `fullName` 的旧值执行了整个渲染流程，然后立即使用更新后的值又重新渲染了一遍。让我们移除 state 变量和 Effect：
+
+```jsx
+function Form() {
+  const [firstName, setFirstName] = useState('Taylor');
+  const [lastName, setLastName] = useState('Swift');
+  // ✅ 非常好：在渲染期间进行计算
+  const fullName = firstName + ' ' + lastName;
+  // ...
+}
+```
+
+总结：**如果一个值可以基于现有的props或state计算得到，那么就不要将其作为一个state，而是在渲染过程中直接计算即可**
+
+
+
+#### 缓存昂贵的计算
+
+如下这个例子中，组件使用接受到的props中的filter对另一个props中的todos进行筛选，计算得到渲染需要的数据，根据上一个例子，我们知道我们会这么做了
+
+```jsx
+function TodoList({ todos, filter }) {
+  const [newTodo, setNewTodo] = useState('');
+  // ✅ 如果 getFilteredTodos() 的耗时不长，这样写就可以了。
+  const visibleTodos = getFilteredTodos(todos, filter);
+  // ...
+}
+```
+
+一般来说，这段代码没有问题！但是，`getFilteredTodos()` 的耗时可能会很长，或者你有很多 `todos`
+
+但是！！！当`newTodo`这样其他不相干的state变化导致组件重新渲染，那么我们又要重新计算visibleTodos，可能造成不必要的成本计算
+
+你可以使用 [`useMemo`](https://zh-hans.react.dev/reference/react/useMemo) Hook 缓存（或者说 [记忆（memoize）](https://en.wikipedia.org/wiki/Memoization)）一个昂贵的计算。
+
+```jsx
+import { useMemo, useState } from 'react';
+
+function TodoList({ todos, filter }) {
+  const [newTodo, setNewTodo] = useState('');
+  const visibleTodos = useMemo(() => {
+    // ✅ 除非 todos 或 filter 发生变化，否则不会重新执行
+    return getFilteredTodos(todos, filter);
+  }, [todos, filter]);
+  // ...
+}
+```
+
+**这会告诉 React，除非 todos 或 filter 发生变化，否则不要重新执行传入的函数**。React 会在初次渲染的时候记住 `getFilteredTodos()` 的返回值。在下一次渲染中，它会检查 `todos` 或 `filter` 是否发生了变化。如果它们跟上次渲染时一样，`useMemo` 会直接返回它最后保存的结果。如果不一样，React 将再次调用传入的函数（并保存它的结果）。
+
+**注意：**你传入`useMemo`的函数会在渲染期间执行，所以它仅仅适用于纯函数场景
+
+
+
+#### 当props变化时重置所有state
+
+`ProfilePage` 组件接收一个 prop：`userId`。页面上有一个评论输入框，你用了一个 state：`comment` 来保存它的值
+
+需求：希望在userId变化时重置页面上的表单：
+
+你可能会这么做：
+
+```jsx
+export default function ProfilePage({ userId }) {
+  const [comment, setComment] = useState('');
+
+  // 🔴 避免：当 prop 变化时，在 Effect 中重置 state
+  useEffect(() => {
+    setComment('');
+  }, [userId]);
+  // ...
+}
+```
+
+这样是低效的：
+
+1. 因为 `ProfilePage` 和它的子组件首先会用旧值渲染，然后再用新值重新渲染
+2. 如果表单有很多项目呢，如果表单项是嵌套的呢（就需要在useEffect中将每一个表单项中的state都进行重置！！）
+
+最好的做法是这样：
+
+你为每一个用户的个人表单制作为一个组件，并且提供`key`告诉React它们是不同的组件
+
+```jsx
+export default function ProfilePage({ userId }) {
+  return (
+    <Profile
+      userId={userId}
+      key={userId}
+    />
+  );
+}
+
+function Profile({ userId }) {
+  // ✅ 当 key 变化时，该组件内的 comment 或其他 state 会自动被重置
+  const [comment, setComment] = useState('');
+  // ...
+}
+```
+
+通过之前的学习我们知道，在相同的位置渲染同一个组件，React会保留state
+
+而我们**通过将 userId 作为 key 传递给 Profile 组件，使  React 将具有不同 userId 的两个 Profile 组件视为两个不应共享任何状态的不同组件**。
+
+因此，当`key`变化时React将会重新创建DOM，并且重置`Profile`组件和它所有子组件的state，我们就轻松实现了这个需求
+
+
+
+#### 当prop变化时调整部分state
+
+有时候，当 prop 变化时，你可能只想重置或调整部分 state ，而不是所有 state。
+
+`List` 组件接收一个 `items` 列表作为 prop，然后用 state 变量 `selection` 来保持已选中的项。当 `items` 接收到一个不同的数组时，你想将 `selection` 重置为 `null`：
+
+```jsx
+function List({ items }) {
+  const [isReverse, setIsReverse] = useState(false);
+  const [selection, setSelection] = useState(null);
+
+  // 🔴 避免：当 prop 变化时，在 Effect 中调整 state
+  useEffect(() => {
+    setSelection(null);
+  }, [items]);
+  // ...
+}
+```
+
+这样的做法还是不太好，因为每当`item`变化时，`List`及其子组件会先使用旧的`selection`值渲染，如何React会更新DOM并且执行Effect，最后才调用setSelection(null)使得`List`及其子组件重新渲染
+
+好一些的做法：
+
+```jsx
+function List({ items }) {
+  const [isReverse, setIsReverse] = useState(false);
+  const [selection, setSelection] = useState(null);
+
+  // 好一些：在渲染期间调整 state
+  const [prevItems, setPrevItems] = useState(items);
+  if (items !== prevItems) {
+    setPrevItems(items);
+    setSelection(null);
+  }
+  // ...
+}
+```
+
+但是这样的代码会降低代码的可读性，上面的例子中，在渲染过程中直接调用了`setSelection`，当它执行到`return`语句退出后，React将会立即重新渲染`List`，但是此时React还没有渲染`List`的子组件或更新DOM，因此使得`List`的子组件可以跳过渲染旧的`selection`值
+
+**虽然这种方式比 Effect 更高效，但大多数组件也不需要它**。无论你怎么做，根据 props 或其他 state 来调整 state 都会使数据流更难理解和调试。总是检查是否可以通过添加 [key 来重置所有 state](https://zh-hans.react.dev/learn/you-might-not-need-an-effect#resetting-all-state-when-a-prop-changes)，或者 [在渲染期间计算所需内容](https://zh-hans.react.dev/learn/you-might-not-need-an-effect#updating-state-based-on-props-or-state)。例如，你可以存储已选中的 **item ID** 而不是存储（并重置）已选中的 **item**：
+
+```jsx
+function List({ items }) {
+  const [isReverse, setIsReverse] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+  // ✅ 非常好：在渲染期间计算所需内容
+  const selection = items.find(item => item.id === selectedId) ?? null;
+  // ...
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## 使用自定义Hook复用逻辑
 
 React 有一些内置 Hook，例如 `useState`，`useContext` 和 `useEffect`。有时你需要一个用途更特殊的 Hook：例如获取数据，记录用户是否在线或者连接聊天室。虽然 React 中可能没有这些 Hook，但是你可以根据应用需求创建自己的 Hook。

@@ -460,23 +460,9 @@ render(<App />, document.getElementById('root'))
 
 ## bug记录
 
-### 永远不要将React.lazy放到组件内部
-
-![71774549155](web-terminal-react.assets/1717745491554.png)
-
-如上图所示，我将`React.lazy`方法放到了组件内部执行，导致了页面出现频繁闪动！！！
-
-这是因为在组件内部执行该方法会导致lazy组件状态重置
-
-
-
-
+思考umi框架在这个项目中的作用或意义
 
 执行命令后无法自动滚到到底部
-
-
-
-
 
 啊啊啊 使用仓库时忘记useSnapshot了
 
@@ -492,7 +478,33 @@ render(<App />, document.getElementById('root'))
 
 
 
+只要是在setTabCompletion函数内的所有state都不能得到最新值！
 
+如果用户在输入一半内容回到中间内容点击补全呢
 
+还是先把整个项目所有功能跑通再进行项目优化吧
 
+切换目录时提示内容有误
+
+执行完命令有时候hintValue没有消除
+
+出现异常鼠标没有变化
+
+~~prompt不是最新的~~
+
+~~loading放回到terminal中~~
+
+~~订阅space的变化发请求保存~~
+
+~~优化DDOS图片显示
+
+~~hot命令图片popup显示不对
+
+~~moyu组件重新渲染导致游戏过程不见（使用useRef在每一次渲染中保留之前的游戏是什么）~~
+
+快捷键清空hint没有清空
+
+历史命令切换不会触发提示
+
+将所有link换成react的github
 
