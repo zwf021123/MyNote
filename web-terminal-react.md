@@ -508,3 +508,5 @@ render(<App />, document.getElementById('root'))
 
 将所有link换成react的github
 
+所有请求的异常处理替换
+
