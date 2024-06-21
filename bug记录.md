@@ -1865,7 +1865,11 @@ element样式不跟过去
 
 ~~modal宽度变小~~
 
-检验group与field数量是否一致可新增提示	
+~~检验group与field数量是否一致可新增提示~~
+
+
+
+start_time and end_time的意义
 
 
 
@@ -1873,3 +1877,185 @@ element样式不跟过去
 
 
 
+## 第十五周
+
+### 问卷控件封装
+
+思路：使用css设置好各个元素的初始状态，使用style来设置transition以便同步外层传入的delay和duration，设置一个state变量activeIndex记录当前页面，如果是当前页面则设置一个class（里面保存的是用户要看到的位置或形态，如果是与prop相关可能需要使用style配合css的`!important`），但是这样只能实现进入时动画，要想实现退出时的动画，我们还需要监听activeIndex改变时利用一个定时器等待离开动画的结束（也需要一个变量记录是否在exit同时根据该变量赋予class），等待结束之后才真正修改activeIndex
+
+核心代码如下：
+
+这里很妙，必须是当前页面同时还不处于离开状态才赋予show
+
+```js
+:class="{ show: index === activeIndex && !isExiting }"
+```
+
+```js
+			async swipePrev() {
+				if (this.activeIndex <= 0) return;
+				this.$nextTick(async () => {
+					const progress = this.$refs.progressRef;
+					this.isExiting = true;
+					progress.prevStep();
+                    // await 一个定时器（定时器的时间即是离开动画的duration
+					await this.waitDuration();
+					this.activeIndex--;
+				});
+			},
+			async swipeNext() {
+				if (this.activeIndex >= this.questions.length - 1) return;
+				this.$nextTick(async () => {
+					const progress = this.$refs.progressRef;
+					console.log('progress', progress);
+					this.isExiting = true;
+					progress.nextStep();
+					await this.waitDuration();
+					this.activeIndex++;
+				});
+			}
+```
+
+
+
+#### 设置了 index1-index2这样的key导致拿不到数据？？？
+
+好奇怪，今天发现在uniapp中使用类似`index1-index2`这样的key赋予v-for中的元素竟然拿不到对应元素值
+
+未查明原因
+
+
+
+#### css属性transition立即执行
+
+需求是希望在进入页面时就有进入动画
+
+解决办法：transition属性是需要你所指定的property有所变化才会执行动画，这里我使用的地方是一个多页的modal框，但是因为我在一开始进入modal所指定了页面下标值就是第一个页面，因此不会有变化，要想有变化，我们只需在开始时不要指定一个modal进入展示的页面下标值，反而在mounted后再赋予它真正想要的展示页面下标值即可
+
+
+
+：deep失效
+
+
+
+~~进度条窄一点上移点~~
+
+背景先就位（
+
+~~标题下移一些~~
+
+~~题目多一些~~
+
+现在要做多选吗
+
+~~统一居中~~
+
+~~是否未来问卷背景图可能都是不一样的（如果不是可能意义不大~~
+
+滚动条恢复原样（回到原先问卷时
+
+
+
+
+
+明确需求：
+
+第一层在前一个页面开始离开时，第二个页面开始进入，会出现
+
+（但是现在是等待第一个页面元素完全离开后，第二个页面开始进入）
+
+解决办法：
+
+使用direction变量避免前后两个元素都被赋予show，同时利用`index === activeIndex + 1 && isExiting`控制第一个页面开始离开则第二个页面立即开始进来
+
+```vue
+		<div
+			class="pages"
+			v-for="(page, index) in questions"
+			:key="index"
+			:class="{
+				show:
+					(index === activeIndex && !isExiting) ||
+					(direction === 1 && index === activeIndex + 1 && isExiting) ||
+					(direction === -1 && index === activeIndex - 1 && isExiting)
+			}"
+			:style="[pageBgStyle]"
+			@touchstart="touchstart"
+			@touchend="touchend"
+			@transitionend.stop="handleTransitionEnd"
+		>
+```
+
+```js
+			waitDuration() {
+				// 用于等待离开动画
+				return new Promise((resolve, reject) => {
+					console.log('此页面等待时间', this.getMaxTime);
+					setTimeout(() => {
+						this.isExiting = false;
+						resolve('时间到了');
+					}, this.bgDuration * 1000 + 100);
+                    // 这里直接等待背景先就位
+				});
+			},
+```
+
+
+
+
+
+#### transition控制transform突然加速
+
+transition控制的transform的动画在执行过程中偶尔会出现突然结束的情况
+
+分析原因：存在其他的js代码或css在动画执行过程中突然改变了正在执行的动画transition属性，观察微信中对应元素可以发现，当出现突然加速的同时类名show被同时赋予给了元素（注意此时该元素已经拥有show属性），而导致在动画执行过程中类名show提前被赋予给元素的原因就是用于等待当前页面动画结束的函数计算公式有误！！！
+
+![71887884242](bug记录.assets/1718878842423.png)
+
+由于每个页面的option数量不同且设置了延迟，因此这里还需要加上延迟的时间，那么每个页面需要等待的时间其实是不同的，这也就是为什么偶现的原因啦~~
+
+方法尝试：将代码中的`!important`相关代码删除替换为其他解决方案，同时删除无用的与transform有关的属性
+
+~~y=kx+z~~
+
+~~(4+1)*(0.1+0.5)/2~~
+
+~~An=a1+ (n-1)×d~~
+
+~~extra + (eachQuestionWaitNumber[index]-1)*delay~~
+
+~~a5 = a1 + 4*d~~
+
+~~extra+4*delay~~
+
+~~n*(a1+an)/2~~
+
+~~先看看是不是等差数列吧~~
+
+~~先写死等待时间测试吧(可以解决，但是还需思考等待时间计算公式)~~
+
+~~max（背景1的duration，背景2的duration，背景3的duration+delay求和）~~
+
+
+
+
+
+####设置了问卷内容的allDelay后发现导致离开页面的动画不需要allDelay
+
+发现由于背景变化设置了opacity，实际动画过程中使用的await定时器并不是需要完全等待当前页面的所有第三层内容完全离开（因为还没完全离开opacity就已经变得很小了），因此直接将该定时器的时间设置为背景的过渡时间，需求中刚好需要等待背景先就位
+
+
+
+~~首页和尾页还是需要transform~~
+
+点击时的阴影
+
+进度条的边框
+
+尝试1/12提示第几个题目
+
+选项选中时的颜色
+
+按钮变为全圆
+
+点击时背景貌似超出按钮边界了
