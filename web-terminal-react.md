@@ -462,33 +462,27 @@ render(<App />, document.getElementById('root'))
 
 思考umi框架在这个项目中的作用或意义
 
-执行命令后无法自动滚到到底部
+~~执行命令后无法自动滚到到底部（暂时使用300ms滚动）~~
 
-啊啊啊 使用仓库时忘记useSnapshot了
-
-
+~~啊啊啊 使用仓库时忘记useSnapshot了~~
 
 ~~currentCommand有很大的渲染问题（貌似并不会引起渲染问题，因为在修改currentNewCommand时该变量还未被渲染到state里~~
 
-
-
 ~~useHistory存在问题~~
 
-子命令tab不能补全
+~~子命令tab不能补全~~
 
-
-
-只要是在setTabCompletion函数内的所有state都不能得到最新值！
+~~只要是在setTabCompletion函数内的所有state都不能得到最新值！（闭包陷阱）~~
 
 如果用户在输入一半内容回到中间内容点击补全呢
 
 还是先把整个项目所有功能跑通再进行项目优化吧
 
-切换目录时提示内容有误
+~~切换目录时提示内容有误~~
 
-执行完命令有时候hintValue没有消除
+~~执行完命令有时候hintValue没有消除~~
 
-出现异常鼠标没有变化
+~~出现异常鼠标没有变化~~
 
 ~~prompt不是最新的~~
 
@@ -496,17 +490,37 @@ render(<App />, document.getElementById('root'))
 
 ~~订阅space的变化发请求保存~~
 
-~~优化DDOS图片显示
+~~优化DDOS图片显示~~
 
-~~hot命令图片popup显示不对
+~~hot命令图片popup显示不对~~
 
 ~~moyu组件重新渲染导致游戏过程不见（使用useRef在每一次渲染中保留之前的游戏是什么）~~
 
-快捷键清空hint没有清空
+~~快捷键清空hint没有清空~~
 
-历史命令切换不会触发提示
+~~历史命令切换不会触发提示（因为没有同步输入框到hint而是直接写在onChange事件里了~~
 
-将所有link换成react的github
+~~将所有link换成react的github~~
 
-所有请求的异常处理替换
+~~所有请求的异常处理替换（因为现在后端使用了sentStatus）~~
+
+在第一次请求当前用户的space后总是导致触发space的subscribe而发送请求（挂起
+
+~~使用ls命令导致prompt变为local（已修复，因为没用使用store里的user）~~
+
+为什么logout不会导致触发space的subscribe(挂起)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
