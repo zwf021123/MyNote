@@ -317,6 +317,42 @@ const Counter = () => {
 
 
 
+## 为什么一个ignore变量就可以避免竞争问题
+
+首先要知道什么是竞争问题：
+
+```jsx
+  useEffect(() => {
+    fetchResults(query, page).then(json => {
+      setResults(json);
+    });
+  }, [query, page]);
+```
+
+如上所示，这段代码使用`useEffect`去同步发送请求，例如query是一个会被频繁输入的state，例如输入hello，那么这里一共会发送5次请求，包括query的值为h、he、hel、hell、hello的请求，但是请求是异步的，我们无法保证异步请求的结果到达顺序，假设hell的请求在hello的请求到来之后回来了，那么你可能会得到非预期的Results因为它的setResults是最后才调用的！！
+
+```jsx
+  useEffect(() => {
+    let ignore = false;
+    fetchResults(query, page).then(json => {
+      if (!ignore) {
+        setResults(json);
+      }
+    });
+    return () => {
+      ignore = true;
+    };
+  }, [query, page]);
+```
+
+要解决这种问题很简单，在闭包内定义一个局部变量就好了
+
+因为每当query的值改变时useEffect被执行，那么定义的局部变量也会被重新定义赋值为初始值，而清理函数会将之前执行的那次useEffect的局部变量设置为`true`，那么即使这一次执行的useEffect的请求响应回来了，那么也不会执行`setResults`进而不会导致错误的Result被记录
+
+
+
+
+
 
 
 # 补充学习React相关

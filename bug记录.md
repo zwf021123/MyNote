@@ -2046,17 +2046,7 @@ transition控制的transform的动画在执行过程中偶尔会出现突然结�
 
 
 
-~~首页和尾页还是需要transform~~
 
-点击时的阴影
-
-进度条的边框
-
-尝试1/12提示第几个题目
-
-选项选中时的颜色
-
-按钮变为全圆
 
 
 
@@ -2070,6 +2060,109 @@ transition控制的transform的动画在执行过程中偶尔会出现突然结�
 
 
 
+~~首页和尾页还是需要transform~~
+
+~~点击时的阴影~~
+
+~~进度条的边框~~
+
+~~尝试1/12提示第几个题目~~
+
+~~选项选中时的颜色~~
+
+~~按钮变为全圆~~
+
+~~点击时背景貌似超出按钮边界了~~
+
+~~当await时间设置为0时出现当前页面离开出现闪现（第三次的外层div忘记加transition了）~~
+
+不对称transition是否需要考虑animation
+
+如果是animation怎么写
+
+明确需求：
+
+- 进入时为隐藏状态+靠下面位置，进入后为显示状态+正常位置（要有延迟）
+- 离开时为显示状态+正常位置，离开后为缩小为0.8+隐藏状态（无需延迟）
+- 所有的显示隐藏为淡入淡出
+
+```js
+
+```
 
 
-点击时背景貌似超出按钮边界了
+
+
+
+
+
+## 第十六周
+
+~~按钮颜色变回~~
+
+~~动画上下掉落与淡入淡出~~
+
+### 适配移动端
+
+今天看到一段代码是这样做的：
+
+```js
+const { body } = document;
+const WIDTH = 992; // Bootstrap's responsive design breakpoint
+
+function isMobile() {
+    const rect = body.getBoundingClientRect();
+    return rect.width - 1 < WIDTH; // Check if viewport width is less than 992px
+}
+
+// Example usage:
+if (isMobile()) {
+    console.log("This is a mobile device.");
+} else {
+    console.log("This is not a mobile device.");
+}
+
+```
+
+即通过`body.getBoundingClientRect()`获取到当前的视口宽度与设置的宽度WIDTH比较判断是否是移动端设备
+
+> **为什么用 992 作为断点？**
+>
+> 992 这个数值来自于 Bootstrap 的响应式设计标准。Bootstrap 使用一系列媒体查询断点来创建流畅的响应式设计，这些断点是：
+>
+> - 超小屏幕（手机，小于 576px）
+> - 小屏幕（平板电脑，大于等于 576px）
+> - 中等屏幕（桌面显示器，大于等于 768px）
+> - 大屏幕（大桌面显示器，大于等于 992px）
+> - 超大屏幕（超大桌面显示器，大于等于 1200px）
+>
+> 在这种情况下，992px 是一个常用的断点，用于区分中等屏幕和大屏幕设备。因此，检查视口宽度是否小于 992px 是一种有效的方法来判断设备是否是移动设备或小屏幕设备。
+
+
+
+~~支持点击空白退出modal，esc~~
+
+~~radio的选项与label间距变小为4px~~
+
+~~不用加粗~~
+
+~~改为去重就好~~
+
+~~截断实时数据~~
+
+移动端可拖动？
+
+以前的逻辑会默认往前推30分钟去请求数据
+
+
+
+### 问卷动画出现IOS端正常安卓端闪烁
+
+询问GPT发现可能是因为的使用background-position来进行动画移动导致的，现代的浏览器对`transform`的属性的硬件加速支持更好
+
+
+
+
+
+~~更新文档到mzg~~
+

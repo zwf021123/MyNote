@@ -1361,25 +1361,490 @@ function List({ items }) {
 
 
 
+### 在事件处理函数中共享逻辑
+
+假设你现在处于一个产品页面，页面上拥有两个按钮（购买和付款），都可以让你购买该产品。当用户将产品添加进购物车时，你想显示一个通知。在两个按钮的 click 事件处理函数中都调用 `showNotification()` 感觉有点重复，所以你可能想把这个逻辑放在一个 Effect 中：
+
+```jsx
+function ProductPage({ product, addToCart }) {
+  // 🔴 避免：在 Effect 中处理属于事件特定的逻辑
+  useEffect(() => {
+    if (product.isInCart) {
+      showNotification(`已添加 ${product.name} 进购物车！`);
+    }
+  }, [product]);
+
+  function handleBuyClick() {
+    addToCart(product);
+  }
+
+  function handleCheckoutClick() {
+    addToCart(product);
+    navigateTo('/checkout');
+  }
+  // ...
+}
+```
+
+这个 Effect 是多余的。而且很可能会导致问题。
+
+例如，假设你的应用在页面重新加载之前 “记住” 了购物车中的产品。如果你把一个产品添加到购物车中并刷新页面，通知将再次出现。每次刷新该产品页面时，它都会出现。这是因为 `product.isInCart` 在页面加载时已经是 `true` 了，所以上面的 Effect 每次都会调用 `showNotification()`。
+
+**当你不确定某些代码应该放在 Effect 中还是事件处理函数中时，先自问 为什么 要执行这些代码。Effect 只用来执行那些显示给用户时组件 需要执行 的代码**。在这个例子中，通知应该在用户 **按下按钮** 后出现，而不是因为页面显示出来时！
+
+删除 Effect 并将共享的逻辑放入一个被两个事件处理程序调用的函数中：
+
+```jsx
+function ProductPage({ product, addToCart }) {
+  // ✅ 非常好：事件特定的逻辑在事件处理函数中处理
+  function buyProduct() {
+    addToCart(product);
+    showNotification(`已添加 ${product.name} 进购物车！`);
+  }
+
+  function handleBuyClick() {
+    buyProduct();
+  }
+
+  function handleCheckoutClick() {
+    buyProduct();
+    navigateTo('/checkout');
+  }
+  // ...
+}
+```
 
 
 
+### 发送POST请求
+
+这个 `Form` 组件会发送两种 POST 请求。它在页面加载之际会发送一个分析请求。当你填写表格并点击提交按钮时，它会向 `/api/register` 接口发送一个 POST 请求：
+
+```jsx
+function Form() {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+
+  // ✅ 非常好：这个逻辑应该在组件显示时执行
+  useEffect(() => {
+    post('/analytics/event', { eventName: 'visit_form' });
+  }, []);
+
+  // 🔴 避免：在 Effect 中处理属于事件特定的逻辑
+  const [jsonToSubmit, setJsonToSubmit] = useState(null);
+  useEffect(() => {
+    if (jsonToSubmit !== null) {
+      post('/api/register', jsonToSubmit);
+    }
+  }, [jsonToSubmit]);
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    setJsonToSubmit({ firstName, lastName });
+  }
+  // ...
+    
+  function handleSubmit(e) {
+    e.preventDefault();
+    // ✅ 非常好：事件特定的逻辑在事件处理函数中处理
+    post('/api/register', { firstName, lastName });
+  }
+}
+```
+
+很明显，我们只想在用户点击提交时发送请求，而不是在页面表单数据被修改时发送请求！
 
 
 
+### 链式计算
+
+有时候你可能想链接多个 Effect，每个 Effect 都基于某些 state 来调整其他的 state：
+
+如下是一个关于游戏的例子：
+
+```jsx
+function Game() {
+  const [card, setCard] = useState(null);
+  const [goldCardCount, setGoldCardCount] = useState(0);
+  const [round, setRound] = useState(1);
+  const [isGameOver, setIsGameOver] = useState(false);
+
+  // 🔴 避免：链接多个 Effect 仅仅为了相互触发调整 state
+  useEffect(() => {
+    if (card !== null && card.gold) {
+      setGoldCardCount(c => c + 1);
+    }
+  }, [card]);
+
+  useEffect(() => {
+    if (goldCardCount > 3) {
+      setRound(r => r + 1)
+      setGoldCardCount(0);
+    }
+  }, [goldCardCount]);
+
+  useEffect(() => {
+    if (round > 5) {
+      setIsGameOver(true);
+    }
+  }, [round]);
+
+  useEffect(() => {
+    alert('游戏结束！');
+  }, [isGameOver]);
+
+  function handlePlaceCard(nextCard) {
+    if (isGameOver) {
+      throw Error('游戏已经结束了。');
+    } else {
+      setCard(nextCard);
+    }
+  }
+```
+
+在卡片数量改变时其余的相关变量也需要改变
+
+这段代码里有两个问题。
+
+一个问题是它非常低效：在链式的每个 `set` 调用之间，组件（及其子组件）都不得不重新渲染。在上面的例子中，在最坏的情况下（`setCard` → 渲染 → `setGoldCardCount` → 渲染 → `setRound` → 渲染 → `setIsGameOver` → 渲染）有三次不必要的重新渲染。
+
+即使不考虑渲染效率问题，随着代码不断扩展，你会遇到这条 “链式” 调用不符合新需求的情况。试想一下，你现在需要添加一种方法来回溯游戏的历史记录，可以通过更新每个 state 变量到之前的值来实现。然而，将 `card` 设置为之前的的某个值会再次触发 Effect 链并更改你正在显示的数据。这样的代码往往是僵硬而脆弱的。
+
+在这个例子中，更好的做法是：尽可能在渲染期间进行计算，以及在事件处理函数中调整 state：
+
+```jsx
+function Game() {
+  const [card, setCard] = useState(null);
+  const [goldCardCount, setGoldCardCount] = useState(0);
+  const [round, setRound] = useState(1);
+
+  // ✅ 尽可能在渲染期间进行计算
+  const isGameOver = round > 5;
+
+  function handlePlaceCard(nextCard) {
+    if (isGameOver) {
+      throw Error('游戏已经结束了。');
+    }
+
+    // ✅ 在事件处理函数中计算剩下的所有 state
+    setCard(nextCard);
+    if (nextCard.gold) {
+      if (goldCardCount <= 3) {
+        setGoldCardCount(goldCardCount + 1);
+      } else {
+        setGoldCardCount(0);
+        setRound(round + 1);
+        if (round === 5) {
+          alert('游戏结束！');
+        }
+      }
+    }
+  }
+
+  // ...
+```
+
+如果你实现了一个回溯游戏历史的方法，现在你可以将每个 state 变量设置为之前的任何的一个值，而不会触发每个调整其他值的 Effect 链
+
+> 值得一提的是：
+>
+> 在事件处理函数内部，[state 的行为类似快照](https://react.docschina.org/learn/state-as-a-snapshot)。例如，即使你调用了 `setRound(round + 1)`，`round` 变量仍然是用户点击按钮时的值。如果你需要使用下一个值进行计算，则需要像这样手动定义它：`const nextRound = round + 1`。
+>
+> 在某些情况下，你**无法** 在事件处理函数中直接计算出下一个 state。例如，试想一个具有多个下拉菜单的表单，如果下一个下拉菜单的选项取决于前一个下拉菜单选择的值。**这时，Effect 链是合适的**，因为你需要与网络进行同步。
 
 
 
+### 初始化应用
+
+有些逻辑只需要在应用加载时执行一次。
+
+你可能想把它放在一个顶层组件的 Effect 中：
+
+```jsx
+function App() {
+  // 🔴 避免：把只需要执行一次的逻辑放在 Effect 中
+  useEffect(() => {
+    loadDataFromLocalStorage();
+    checkAuthToken();
+  }, []);
+  // ...
+}
+```
+
+然后，你很快就会发现它在 [开发环境会执行两次](https://react.docschina.org/learn/synchronizing-with-effects#how-to-handle-the-effect-firing-twice-in-development)。这会导致一些问题——例如，它可能使身份验证 token 无效，因为该函数不是为被调用两次而设计的。一般来说，当组件重新挂载时应该具有一致性。包括你的顶层 `App` 组件
+
+尽管在实际的生产环境中因为它是顶级组件它可能永远不会被重新挂载
+
+如果某些逻辑必须在 **每次应用加载时执行一次**，而不是在 **每次组件挂载时执行一次**，可以添加一个顶层变量来记录它是否已经执行过了：
+
+```jsx
+let didInit = false;
+
+function App() {
+  useEffect(() => {
+    if (!didInit) {
+      didInit = true;
+      // ✅ 只在每次应用加载时执行一次
+      loadDataFromLocalStorage();
+      checkAuthToken();
+    }
+  }, []);
+  // ...
+}
+```
+
+你也可以在模块初始化和应用渲染之前执行它：
+
+```jsx
+if (typeof window !== 'undefined') { // 检测我们是否在浏览器环境
+   // ✅ 只在每次应用加载时执行一次
+  checkAuthToken();
+  loadDataFromLocalStorage();
+}
+
+function App() {
+  // ...
+}
+```
+
+当然这种做法也有缺点：
+
+顶层代码会在组件被**导入**时执行一次，即使组件并未被渲染，为了避免在导入任意组件时降低性能或产生意外行为，**请不要过度使用这种方法**，建议将应用级别的初始化逻辑保留在像 `App.js` 这样的根组件模块或你的应用入口中
 
 
 
+### 通知父组件有关state变化的信息
+
+假设你正在编写一个有具有内部 state `isOn` 的 `Toggle` 组件，该 state 可以是 `true` 或 `false`。有几种不同的方式来进行切换（通过点击或拖动）。你希望在 `Toggle` 的 state 变化时通知父组件，因此你暴露了一个 `onChange` 事件并在 `Effect` 中调用它：
+
+```jsx
+function Toggle({ onChange }) {
+  const [isOn, setIsOn] = useState(false);
+
+  // 🔴 避免：onChange 处理函数执行的时间太晚了
+  useEffect(() => {
+    onChange(isOn);
+  }, [isOn, onChange])
+
+  function handleClick() {
+    setIsOn(!isOn);
+  }
+
+  function handleDragEnd(e) {
+    if (isCloserToRightEdge(e)) {
+      setIsOn(true);
+    } else {
+      setIsOn(false);
+    }
+  }
+
+  // ...
+}
+```
+
+React执行过程：`Toggle`首先更新自己的state，然后React将其渲染到屏幕上，再执行Effect中的代码才去调用父组件的`onChange`函数，父组件才开始更新自己的state，再次开启一次渲染。。。
+
+删除 Effect，并在同一个事件处理函数中更新 **两个** 组件的 state：
+
+```jsx
+function Toggle({ onChange }) {
+  const [isOn, setIsOn] = useState(false);
+
+  function updateToggle(nextIsOn) {
+    // ✅ 非常好：在触发它们的事件中执行所有更新
+    setIsOn(nextIsOn);
+    onChange(nextIsOn);
+  }
+
+  function handleClick() {
+    updateToggle(!isOn);
+  }
+
+  function handleDragEnd(e) {
+    if (isCloserToRightEdge(e)) {
+      updateToggle(true);
+    } else {
+      updateToggle(false);
+    }
+  }
+
+  // ...
+}
+```
+
+通过这种方式，React会批量处理来自不同组件的更新，所以只有一次渲染
+
+你也可以完全移除该 state，并从父组件中接收 `isOn`：
+
+```jsx
+// ✅ 也很好：该组件完全由它的父组件控制
+function Toggle({ isOn, onChange }) {
+  function handleClick() {
+    onChange(!isOn);
+  }
+
+  function handleDragEnd(e) {
+    if (isCloserToRightEdge(e)) {
+      onChange(true);
+    } else {
+      onChange(false);
+    }
+  }
+
+  // ...
+}
+```
+
+“[状态提升](https://react.docschina.org/learn/sharing-state-between-components)” 允许父组件通过切换自身的 state 来完全控制 `Toggle` 组件。这意味着父组件会包含更多的逻辑，但整体上需要关心的状态变少了。每当你尝试保持两个不同的 state 变量之间的同步时，试试状态提升！
 
 
 
+### 将数据传递给父组件
+
+`Child` 组件获取了一些数据并在 Effect 中传递给 `Parent` 组件：
+
+```jsx
+function Parent() {
+  const [data, setData] = useState(null);
+  // ...
+  return <Child onFetched={setData} />;
+}
+
+function Child({ onFetched }) {
+  const data = useSomeAPI();
+  // 🔴 避免：在 Effect 中传递数据给父组件
+  useEffect(() => {
+    if (data) {
+      onFetched(data);
+    }
+  }, [onFetched, data]);
+  // ...
+}
+```
+
+在 React 中，数据从父组件流向子组件。当你在屏幕上看到了一些错误时，你可以通过一路追踪组件树来寻找错误信息是从哪个组件传递下来的，从而找到传递了错误的 prop 或具有错误的 state 的组件。当子组件在 Effect 中更新其父组件的 state 时，数据流变得非常难以追踪。既然子组件和父组件都需要相同的数据，那么可以让父组件获取那些数据，并将其 **向下传递** 给子组件：
+
+```jsx
+function Parent() {
+  const data = useSomeAPI();
+  // ...
+  // ✅ 非常好：向子组件传递数据
+  return <Child data={data} />;
+}
+
+function Child({ data }) {
+  // ...
+}
+```
 
 
 
+### 订阅外部store
 
+有时候，你的组件可能需要订阅 React state 之外的一些数据。这些数据可能来自第三方库或内置浏览器 API。由于这些数据可能在 React 无法感知的情况下发变化，你需要在你的组件中手动订阅它们。这经常使用 Effect 来实现，例如：
+
+```jsx
+function useOnlineStatus() {
+  // 不理想：在 Effect 中手动订阅 store
+  const [isOnline, setIsOnline] = useState(true);
+  useEffect(() => {
+    function updateState() {
+      setIsOnline(navigator.onLine);
+    }
+
+    updateState();
+
+    window.addEventListener('online', updateState);
+    window.addEventListener('offline', updateState);
+    return () => {
+      window.removeEventListener('online', updateState);
+      window.removeEventListener('offline', updateState);
+    };
+  }, []);
+  return isOnline;
+}
+
+function ChatIndicator() {
+  const isOnline = useOnlineStatus();
+  // ...
+}
+```
+
+这个组件订阅了一个外部的 store 数据（在这里，是浏览器的 `navigator.onLine` API）。由于这个 API 在服务端不存在（因此不能用于初始的 HTML），因此 state 最初被设置为 `true`。每当浏览器 store 中的值发生变化时，组件都会更新它的 state。
+
+实际上，React为我们提供了一个Hook专门用于订阅外部store，即[`useSyncExternalStore`](https://react.docschina.org/reference/react/useSyncExternalStore),与手动使用 Effect 将可变数据同步到 React state 相比，**这种方法能减少错误**。
+
+```jsx
+function subscribe(callback) {
+  window.addEventListener('online', callback);
+  window.addEventListener('offline', callback);
+  return () => {
+    window.removeEventListener('online', callback);
+    window.removeEventListener('offline', callback);
+  };
+}
+
+function useOnlineStatus() {
+  // ✅ 非常好：用内置的 Hook 订阅外部 store
+  return useSyncExternalStore(
+    subscribe, // 只要传递的是同一个函数，React 不会重新订阅
+    () => navigator.onLine, // 如何在客户端获取值
+    () => true // 如何在服务端获取值
+  );
+}
+
+function ChatIndicator() {
+  const isOnline = useOnlineStatus();
+  // ...
+}
+```
+
+
+
+### 发请求获取数据
+
+许多应用使用 Effect 来发起数据获取请求。像这样在 Effect 中写一个数据获取请求是相当常见的：
+
+```jsx
+function SearchResults({ query }) {
+  const [results, setResults] = useState([]);
+  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    // 🔴 避免：没有清除逻辑的获取数据
+    fetchResults(query, page).then(json => {
+      setResults(json);
+    });
+  }, [query, page]);
+
+  function handleNextPageClick() {
+    setPage(page + 1);
+  }
+  // ...
+}
+```
+
+`page` 和 `query` 的来源其实并不重要。只要该组件可见，你就需要通过当前 `page` 和 `query` 的值，保持 `results` 和网络数据的 [同步](https://react.docschina.org/learn/synchronizing-with-effects)。这就是为什么这里是一个 Effect 的原因。
+
+然而，上面的代码有一个问题。假设你快速地输入 `“hello”`。那么 `query` 会从 `“h”` 变成 `“he”`，`“hel”`，`“hell”` 最后是 `“hello”`。这会触发一连串不同的数据获取请求，但无法保证对应的返回顺序。例如，`“hell”` 的响应可能在 `“hello”` 的响应 **之后** 返回。由于它的 `setResults()` 是在最后被调用的，你将会显示错误的搜索结果。这种情况被称为 “[竞态条件](https://en.wikipedia.org/wiki/Race_condition)”：两个不同的请求 “相互竞争”，并以与你预期不符的顺序返回。
+
+**为了修复这个问题，你需要添加一个 清理函数 来忽略较早的返回结果：**
+
+```jsx
+  useEffect(() => {
+    let ignore = false;
+    fetchResults(query, page).then(json => {
+      if (!ignore) {
+        setResults(json);
+      }
+    });
+    return () => {
+      ignore = true;
+    };
+  }, [query, page]);
+```
+
+这确保了当你在 Effect 中获取数据时，除了最后一次请求的所有返回结果都将被忽略。
 
 
 
