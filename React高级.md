@@ -1361,7 +1361,7 @@ function List({ items }) {
 
 
 
-### 在事件处理函数中共享逻辑
+#### 在事件处理函数中共享逻辑
 
 假设你现在处于一个产品页面，页面上拥有两个按钮（购买和付款），都可以让你购买该产品。当用户将产品添加进购物车时，你想显示一个通知。在两个按钮的 click 事件处理函数中都调用 `showNotification()` 感觉有点重复，所以你可能想把这个逻辑放在一个 Effect 中：
 
@@ -1416,7 +1416,7 @@ function ProductPage({ product, addToCart }) {
 
 
 
-### 发送POST请求
+#### 发送POST请求
 
 这个 `Form` 组件会发送两种 POST 请求。它在页面加载之际会发送一个分析请求。当你填写表格并点击提交按钮时，它会向 `/api/register` 接口发送一个 POST 请求：
 
@@ -1456,7 +1456,7 @@ function Form() {
 
 
 
-### 链式计算
+#### 链式计算
 
 有时候你可能想链接多个 Effect，每个 Effect 都基于某些 state 来调整其他的 state：
 
@@ -1554,7 +1554,7 @@ function Game() {
 
 
 
-### 初始化应用
+#### 初始化应用
 
 有些逻辑只需要在应用加载时执行一次。
 
@@ -1613,7 +1613,7 @@ function App() {
 
 
 
-### 通知父组件有关state变化的信息
+#### 通知父组件有关state变化的信息
 
 假设你正在编写一个有具有内部 state `isOn` 的 `Toggle` 组件，该 state 可以是 `true` 或 `false`。有几种不同的方式来进行切换（通过点击或拖动）。你希望在 `Toggle` 的 state 变化时通知父组件，因此你暴露了一个 `onChange` 事件并在 `Effect` 中调用它：
 
@@ -1699,7 +1699,7 @@ function Toggle({ isOn, onChange }) {
 
 
 
-### 将数据传递给父组件
+#### 将数据传递给父组件
 
 `Child` 组件获取了一些数据并在 Effect 中传递给 `Parent` 组件：
 
@@ -1739,7 +1739,7 @@ function Child({ data }) {
 
 
 
-### 订阅外部store
+#### 订阅外部store
 
 有时候，你的组件可能需要订阅 React state 之外的一些数据。这些数据可能来自第三方库或内置浏览器 API。由于这些数据可能在 React 无法感知的情况下发变化，你需要在你的组件中手动订阅它们。这经常使用 Effect 来实现，例如：
 
@@ -1801,7 +1801,7 @@ function ChatIndicator() {
 
 
 
-### 发请求获取数据
+#### 发请求获取数据
 
 许多应用使用 Effect 来发起数据获取请求。像这样在 Effect 中写一个数据获取请求是相当常见的：
 
@@ -1847,6 +1847,242 @@ function SearchResults({ query }) {
 这确保了当你在 Effect 中获取数据时，除了最后一次请求的所有返回结果都将被忽略。
 
 
+
+### 小结
+
+- 如果你可以在渲染期间计算某些内容，则不需要使用 Effect。
+- 想要缓存昂贵的计算，请使用 `useMemo` 而不是 `useEffect`。
+- 想要重置整个组件树的 state，请传入不同的 `key`。
+- 想要在 prop 变化时重置某些特定的 state，请在渲染期间处理。
+- 组件 **显示** 时就需要执行的代码应该放在 Effect 中，否则应该放在事件处理函数中。
+- 如果你需要更新多个组件的 state，最好在单个事件处理函数中处理。
+- 当你尝试在不同组件中同步 state 变量时，请考虑状态提升。
+- 你可以使用 Effect 获取数据，但你需要实现清除逻辑以避免竞态条件。
+
+
+
+
+
+## 响应式Effect的生命周期
+
+Effect 与组件有不同的生命周期。组件可以挂载、更新或卸载。Effect 只能做两件事：开始同步某些东西，然后停止同步它。如果 Effect 依赖于随时间变化的 props 和 state，这个循环可能会发生多次。
+
+React 提供了代码检查规则来检查是否正确地指定了 Effect 的依赖项，这能够使 Effect 与最新的 props 和 state 保持同步。
+
+
+
+### Effect的生命周期
+
+每个 React 组件都经历相同的生命周期：
+
+- 当组件被添加到屏幕上时，它会进行组件的 **挂载**。
+- 当组件接收到新的 props 或 state 时，通常是作为对交互的响应，它会进行组件的 **更新**。
+- 当组件从屏幕上移除时，它会进行组件的 **卸载**。
+
+这是组件的生命周期但并不适用于Effect
+
+如下这个示例：
+
+```jsx
+const serverUrl = 'https://localhost:1234';
+
+function ChatRoom({ roomId }) {
+  useEffect(() => {
+    const connection = createConnection(serverUrl, roomId);
+    connection.connect();
+    return () => {
+      connection.disconnect();
+    };
+  }, [roomId]);
+  // ...
+}
+```
+
+你可能会直观地认为当组件挂载时 React 会 **开始同步**，而当组件卸载时会 **停止同步**。然而，事情并没有这么简单！有时，在组件保持挂载状态的同时，可能还需要 **多次开始和停止同步**。
+
+例如：
+
+这个 `ChatRoom` 组件接收 `roomId` 属性，用户可以在下拉菜单中选择。假设初始时，用户选择了 `"general"` 作为 `roomId`。应用程序会显示 `"general"` 聊天室：
+
+```jsx
+const serverUrl = 'https://localhost:1234';
+
+function ChatRoom({ roomId /* "general" */ }) {
+  // ...
+  return <h1>欢迎来到 {roomId} 房间！</h1>;
+}
+```
+
+在 UI 显示（React渲染）之后，React 将运行 Effect 来 **开始同步**。它连接到 `"general"` 聊天室：
+
+之后，用户在下拉菜单中选择了不同的房间（例如 `"travel"` ）。首先，React 会更新 UI（重新渲染）：
+
+思考接下来应该发生什么。用户在界面中看到 `"travel"` 是当前选定的聊天室。然而，上次运行的 Effect 仍然连接到 `"general"` 聊天室。**roomId 属性已经发生了变化，所以之前 Effect 所做的事情（连接到 "general" 聊天室）不再与 UI 匹配**。
+
+此时，你希望 React 执行两个操作：
+
+1. 停止与旧的 `roomId` 同步（断开与 `"general"` 聊天室的连接）
+2. 开始与新的 `roomId` 同步（连接到 `"travel"` 聊天室）
+
+
+
+### Effect如何重新同步Effect
+
+回想一下，`ChatRoom` 组件已经接收到了 `roomId` 属性的新值。之前它是 `"general"`，现在变成了 `"travel"`。React 需要重新同步 Effect，以重新连接到不同的聊天室。
+
+为了 **停止同步**，React 将调用 Effect 返回的清理函数，该函数在连接到 `"general"` 聊天室后返回。由于 `roomId` 为 `"general"`，清理函数将断开与 `"general"` 聊天室的连接：
+
+```jsx
+function ChatRoom({ roomId /* "general" */ }) {
+
+  useEffect(() => {
+
+    const connection = createConnection(serverUrl, roomId); // 连接到 "general" 聊天室
+
+    connection.connect();
+
+    return () => {
+
+      connection.disconnect(); // 断开与 "general" 聊天室的连接
+
+    };
+
+    // ...
+```
+
+然后，React 将运行在此渲染期间提供的 Effect。这次，`roomId` 为 `"travel"`，因此它将 **开始同步** 到 `"travel"` 聊天室（直到最终也调用了清理函数）：
+
+```jsx
+function ChatRoom({ roomId /* "travel" */ }) {
+
+  useEffect(() => {
+
+    const connection = createConnection(serverUrl, roomId); // 连接到 "travel" 聊天室
+
+    connection.connect();
+
+    // ...
+```
+
+每当组件使用不同的 `roomId` 重新渲染后，Effect 将重新进行同步。例如，假设用户将 `roomId` 从 `"travel"` 更改为 `"music"`。React 将再次通过调用清理函数 **停止同步** Effect（断开与 `"travel"` 聊天室的连接）。然后，它将通过使用新的 `roomId` 属性再次运行 Effect 的主体部分 **开始同步**（连接到 `"music"` 聊天室）。
+
+最后，当用户切换到不同的屏幕时，`ChatRoom` 组件将被卸载。现在没有必要保持连接了。React 将 **最后一次停止同步** Effect，并从 `"music"` 聊天室断开连接。
+
+
+
+### 从Effect的角度思考
+
+让我们总结一下从 `ChatRoom` 组件的角度所发生的一切：
+
+1. `ChatRoom` 组件挂载，`roomId` 设置为 `"general"`
+2. `ChatRoom` 组件更新，`roomId` 设置为 `"travel"`
+3. `ChatRoom` 组件更新，`roomId` 设置为 `"music"`
+4. `ChatRoom` 组件卸载
+
+在组件生命周期的每个阶段，Effect 执行了不同的操作：
+
+1. Effect 连接到了 `"general"` 聊天室
+2. Effect 断开了与 `"general"` 聊天室的连接，并连接到了 `"travel"` 聊天室
+3. Effect 断开了与 `"travel"` 聊天室的连接，并连接到了 `"music"` 聊天室
+4. Effect 断开了与 `"music"` 聊天室的连接
+
+现在让我们从 Effect 本身的角度来思考所发生的事情：
+
+```jsx
+  useEffect(() => {
+    // Effect 连接到了通过 roomId 指定的聊天室...
+    const connection = createConnection(serverUrl, roomId);
+    connection.connect();
+    return () => {
+      // ...直到它断开连接
+      connection.disconnect();
+    };
+  }, [roomId]);
+```
+
+这段代码的结构可能会将所发生的事情看作是一系列不重叠的时间段：
+
+1. Effect 连接到了 `"general"` 聊天室（直到断开连接）
+2. Effect 连接到了 `"travel"` 聊天室（直到断开连接）
+3. Effect 连接到了 `"music"` 聊天室（直到断开连接）
+
+之前，你是从组件的角度思考的。当你从组件的角度思考时，很容易将 Effect 视为在特定时间点触发的“回调函数”或“生命周期事件”，例如“渲染后”或“卸载前”。这种思维方式很快变得复杂，所以最好避免使用。
+
+
+
+### React如何知道需要重新进行Effect的同步
+
+这是因为 **你告诉了 React** 它的代码依赖于 `roomId`，通过将其包含在 [依赖列表](https://react.docschina.org/learn/synchronizing-with-effects#step-2-specify-the-effect-dependencies) 中。
+
+每次在组件重新渲染后，React 都会查看传递的依赖项数组。如果数组中的任何值与上一次渲染时在相同位置传递的值不同，React 将重新同步 Effect。
+
+例如，如果在初始渲染时传递了 `["general"]`，然后在下一次渲染时传递了 `["travel"]`，React 将比较 `"general"` 和 `"travel"`。这些是不同的值（使用 [`Object.is`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/is) 进行比较），因此 React 将重新同步 Effect。另一方面，如果组件重新渲染但 `roomId` 没有发生变化，Effect 将继续连接到相同的房间。
+
+
+
+
+
+### 每个 Effect 表示一个独立的同步过程
+
+抵制将与 Effect 无关的逻辑添加到已经编写的 Effect 中，仅仅因为这些逻辑需要与 Effect 同时运行。例如，假设你想在用户访问房间时发送一个分析事件。你已经有一个依赖于 `roomId` 的 Effect，所以你可能会想要将分析调用添加到那里：
+
+```jsx
+function ChatRoom({ roomId }) {
+  useEffect(() => {
+    logVisit(roomId);
+    const connection = createConnection(serverUrl, roomId);
+    connection.connect();
+    return () => {
+      connection.disconnect();
+    };
+  }, [roomId]);
+  // ...
+}
+```
+
+但是如果未来该Effect的依赖项发生了改变，可能Effect的执行行为并非你想要的了
+
+记录访问行为是 **一个独立的过程**，与连接不同。将它们作为两个单独的 Effect 编写：
+
+```jsx
+function ChatRoom({ roomId }) {
+  useEffect(() => {
+    logVisit(roomId);
+  }, [roomId]);
+
+  useEffect(() => {
+    const connection = createConnection(serverUrl, roomId);
+    // ...
+  }, [roomId]);
+  // ...
+}
+```
+
+**代码中的每个 Effect 应该代表一个独立的同步过程。**
+
+在上面的示例中，删除一个 Effect 不会影响另一个 Effect 的逻辑。这表明它们同步不同的内容，因此将它们拆分开是有意义的。另一方面，如果将一个内聚的逻辑拆分成多个独立的 Effects，代码可能会看起来更加“清晰”，但 [维护起来会更加困难](https://react.docschina.org/learn/you-might-not-need-an-effect#chains-of-computations)。这就是为什么你应该考虑这些过程是相同还是独立的，而不是只考虑代码是否看起来更整洁。
+
+
+
+### Effect 会“响应”于响应式值
+
+即只有会随时间变化的值被赋予作为依赖项时，他才会有意义
+
+
+
+### 没有依赖项的Effect的含义
+
+Effect 的代码不使用任何响应式值，因此它的依赖可以是空的 (`[]`)
+
+从组件的角度来看，空的 `[]` 依赖数组意味着这个 Effect 仅在组件挂载时连接到聊天室，并在组件卸载时断开连接。（请记住，在开发环境中，React 仍会 [额外执行一次](https://react.docschina.org/learn/lifecycle-of-reactive-effects#how-react-verifies-that-your-effect-can-re-synchronize) 来对逻辑进行压力测试。）
+
+
+
+### 在组件主体中声明的所有变量都是响应式的 
+
+Props 和 state 并不是唯一的响应式值。从它们计算出的值也是响应式的。如果 props 或 state 发生变化，组件将重新渲染，从中计算出的值也会随之改变。这就是**为什么 Effect 使用的组件主体中的所有变量都应该在依赖列表中**。
+
+**组件内部的所有值（包括 props、state 和组件体内的变量）都是响应式的。任何响应式值都可以在重新渲染时发生变化，所以需要将响应式值包括在 Effect 的依赖项中**。
 
 
 
